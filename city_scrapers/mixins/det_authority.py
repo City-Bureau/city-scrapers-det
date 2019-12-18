@@ -46,6 +46,7 @@ class DetAuthorityMixin:
     def _parse_prev_meetings(self, response):
         """Parse all previous meetings"""
         link_map = self._parse_prev_links(response)
+        last_year = datetime.today().replace(year=datetime.today().year - 1)
         for dt, links in link_map.items():
             link_text = ' '.join(link['title'] for link in links)
             meeting = self._set_meeting_defaults(response)
@@ -55,6 +56,10 @@ class DetAuthorityMixin:
             meeting['classification'] = self._parse_classification(meeting)
             meeting['status'] = self._get_status(meeting, text=link_text)
             meeting['id'] = self._get_id(meeting)
+            if (
+                meeting["start"] < last_year and not self.settings.getbool("CITY_SCRAPERS_ARCHIVE")
+            ):
+                continue
             yield meeting
 
     @staticmethod

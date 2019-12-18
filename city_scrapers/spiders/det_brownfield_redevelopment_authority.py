@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from datetime import datetime
 
 from city_scrapers_core.constants import ADVISORY_COMMITTEE, BOARD, COMMITTEE, FORUM, NOT_CLASSIFIED
 from city_scrapers_core.items import Meeting
@@ -32,13 +33,17 @@ class DetBrownfieldRedevelopmentAuthoritySpider(CityScrapersSpider):
 
     def _parse_meetings(self, response):
         meeting_link_map = self._parse_meeting_links(response)
+        last_year = datetime.today().replace(year=datetime.today().year - 1)
         for title, date_text in meeting_link_map.keys():
             classification = self._parse_classification(title)
+            start = self._parse_start(date_text, classification)
+            if start < last_year and not self.settings.getbool("CITY_SCRAPERS_ARCHIVE"):
+                continue
             meeting = Meeting(
                 title=title,
                 description='',
                 classification=classification,
-                start=self._parse_start(date_text, classification),
+                start=start,
                 end=None,
                 time_notes=self._parse_time_notes(classification),
                 all_day=False,

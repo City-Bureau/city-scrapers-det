@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import datetime
 
 from city_scrapers_core.constants import BOARD, COMMITTEE
 from city_scrapers_core.items import Meeting
@@ -20,7 +21,11 @@ class DetLandBankSpider(CityScrapersSpider):
         ).extract_first()
         entries = json.loads(data.strip()[:-1])
 
+        last_year = datetime.today().replace(year=datetime.today().year - 1)
         for item in entries:
+            start = self._parse_start(item)
+            if start < last_year and not self.settings.getbool("CITY_SCRAPERS_ARCHIVE"):
+                continue
             meeting = Meeting(
                 title=item['title_tmp'],
                 description=item['content'],

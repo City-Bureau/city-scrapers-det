@@ -5,6 +5,7 @@ import pytest
 from city_scrapers_core.constants import BOARD, PASSED, TENTATIVE
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
+from scrapy.settings import Settings
 
 from city_scrapers.spiders.det_general_retirement_system import DetGeneralRetirementSystemSpider
 
@@ -18,6 +19,8 @@ test_past_response = file_response(
 )
 
 spider = DetGeneralRetirementSystemSpider()
+spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
+
 freezer = freeze_time('2019-04-05')
 freezer.start()
 spider._parse_past_documents(test_past_response)
@@ -26,7 +29,7 @@ freezer.stop()
 
 
 def test_total():
-    assert len(parsed_items) == 103
+    assert len(parsed_items) == 40
 
 
 def test_title():

@@ -6,6 +6,7 @@ import scrapy
 from city_scrapers_core.constants import BOARD, CANCELLED, PASSED
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
+from scrapy.settings import Settings
 
 from city_scrapers.spiders.det_brownfield_redevelopment_authority import (
     DetBrownfieldRedevelopmentAuthoritySpider
@@ -16,6 +17,7 @@ test_response = file_response(
     url='http://www.degc.org/public-authorities/dbra/'
 )
 spider = DetBrownfieldRedevelopmentAuthoritySpider()
+spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
 
 
 def test_initial_request_count():

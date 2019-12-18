@@ -6,6 +6,7 @@ import scrapy
 from city_scrapers_core.constants import BOARD, PASSED, TENTATIVE
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
+from scrapy.settings import Settings
 
 from city_scrapers.spiders.det_economic_development_corporation import (
     DetEconomicDevelopmentCorporationSpider
@@ -26,13 +27,17 @@ test_response = file_response(
 )
 freezer = freeze_time('2018-07-27')
 spider = DetEconomicDevelopmentCorporationSpider()
+spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
+
 freezer.start()
 parsed_items = [item for item in spider._next_meetings(test_response)]
 freezer.stop()
 
 
 def test_initial_request_count():
+    freezer.start()
     items = list(spider.parse(test_response))
+    freezer.stop()
     assert len(items) == 4
     urls = {r.url for r in items if isinstance(r, scrapy.Request)}
     assert urls == {
@@ -100,12 +105,16 @@ test_prev_response = file_response(
     join(dirname(__file__), "files", "det_economic_development_corporation_prev.html"),
     url='http://www.degc.org/public-authorities/edc/fy-2017-2018-meetings/',
 )
+freezer.start()
 parsed_prev_items = [item for item in spider._parse_prev_meetings(test_prev_response)]
 parsed_prev_items = sorted(parsed_prev_items, key=lambda x: x['start'], reverse=True)
+freezer.stop()
 
 
 def test_request_count():
+    freezer.start()
     requests = list(spider._prev_meetings(test_response))
+    freezer.stop()
     urls = {r.url for r in requests}
     assert len(requests) == 3
     assert urls == {
@@ -116,8 +125,7 @@ def test_request_count():
 
 
 def test_prev_meeting_count():
-    # 2017-2018 page (20 meetings)
-    assert len(parsed_prev_items) == 20
+    assert len(parsed_prev_items) == 17
 
 
 def test_prev_title():

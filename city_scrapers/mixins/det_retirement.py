@@ -75,7 +75,10 @@ class DetRetirementMixin:
                 )
             )
 
+        last_year = datetime.today().replace(year=datetime.today().year - 1)
         for meeting in meetings:
+            if meeting["start"] < last_year and not self.settings.getbool("CITY_SCRAPERS_ARCHIVE"):
+                continue
             meeting['status'] = self._get_status(meeting)
             meeting['id'] = self._get_id(meeting)
             yield meeting

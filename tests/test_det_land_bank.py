@@ -2,8 +2,10 @@ from datetime import datetime
 from os.path import dirname, join
 
 import pytest
-from city_scrapers_core.constants import BOARD, PASSED
+from city_scrapers_core.constants import COMMITTEE, PASSED
 from city_scrapers_core.utils import file_response
+from freezegun import freeze_time
+from scrapy.settings import Settings
 
 from city_scrapers.spiders.det_land_bank import DetLandBankSpider
 
@@ -12,20 +14,29 @@ test_response = file_response(
     url='https://buildingdetroit.org/events/meetings'
 )
 spider = DetLandBankSpider()
+spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
+
+freezer = freeze_time("2019-01-01")
+freezer.start()
 parsed_items = [item for item in spider.parse(test_response)]
 parsed_items = sorted(parsed_items, key=lambda x: x['start'])
+freezer.stop()
+
+
+def test_count():
+    assert len(parsed_items) == 50
 
 
 def test_title():
-    assert parsed_items[0]['title'] == 'Board Of Director Meeting'
+    assert parsed_items[0]['title'] == 'Finance/Audit Committee'
 
 
 def test_description():
-    assert parsed_items[0]['description'] == ''
+    assert parsed_items[0]['description'] == 'Tuesday’s at 1:00 p.m.'
 
 
 def test_start():
-    assert parsed_items[0]['start'] == datetime(2014, 1, 21, 14)
+    assert parsed_items[0]['start'] == datetime(2018, 1, 9, 13, 0)
 
 
 def test_end():
@@ -33,7 +44,7 @@ def test_end():
 
 
 def test_id():
-    assert parsed_items[0]['id'] == 'det_land_bank/201401211400/x/board_of_director_meeting'
+    assert parsed_items[0]['id'] == 'det_land_bank/201801091300/x/finance_audit_committee'
 
 
 def test_status():
@@ -43,7 +54,7 @@ def test_status():
 def test_location():
     assert parsed_items[0]['location'] == {
         'name': '',
-        'address': '500 Griswold Street, Suite 1200 Detroit, MI 48226'
+        'address': '500 Griswold St, Suite 1200 Detroit, Michigan 48226'
     }
 
 
@@ -52,15 +63,11 @@ def test_source():
 
 
 def test_links():
-    assert parsed_items[0]['links'] == [{
-        'href':
-            'https://s3.us-east-2.amazonaws.com/dlba-production-bucket/Meetings/documents/01172018085612.pdf',  # noqa
-        'title': 'Minutes'
-    }]
+    assert parsed_items[0]['links'] == []
 
 
 def test_classification():
-    assert parsed_items[0]['classification'] == BOARD
+    assert parsed_items[0]['classification'] == COMMITTEE
 
 
 @pytest.mark.parametrize('item', parsed_items)
