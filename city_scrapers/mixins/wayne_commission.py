@@ -16,11 +16,14 @@ class WayneCommissionMixin:
 
     def parse(self, response):
         for item in self._parse_entries(response):
+            start = self._parse_start(item)
+            if not start:
+                continue
             meeting = Meeting(
                 title=self.meeting_name,
                 description=self.description,
                 classification=self.classification,
-                start=self._parse_start(item),
+                start=start,
                 end=None,
                 time_notes='',
                 all_day=False,
@@ -55,8 +58,12 @@ class WayneCommissionMixin:
         year_str = datetime.now().year
         # Dateparse can't always handle the inconsistent dates, so
         # let's normalize them using scrapy's regular expressions.
-        month_str = item.xpath('.//td[2]/text()').re(r'[a-zA-Z]{3}')[0]
-        day_str = item.xpath('.//td[2]/text()').re(r'\d+')[0]
+        month_match = item.xpath('.//td[2]/text()').re(r'[a-zA-Z]{3}')
+        day_match = item.xpath('.//td[2]/text()').re(r'\d+')
+        if len(month_match) == 0 or len(day_match) == 0:
+            return
+        month_str = month_match[0]
+        day_str = day_match[0]
         time_str = item.xpath('.//td[3]/text()').extract_first().replace(";", ":")
         return dateparse('{0} {1} {2} {3}'.format(month_str, day_str, year_str, time_str))
 
