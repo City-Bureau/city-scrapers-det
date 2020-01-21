@@ -64,7 +64,7 @@ class WayneCommissionMixin:
             return
         month_str = month_match[0]
         day_str = day_match[0]
-        time_str = item.xpath('.//td[3]/text()').extract_first().replace(";", ":")
+        time_str = (item.xpath('.//td[3]/text()').extract_first() or "").replace(";", ":")
         return dateparse('{0} {1} {2} {3}'.format(month_str, day_str, year_str, time_str))
 
     def _parse_status(self, item, meeting):
