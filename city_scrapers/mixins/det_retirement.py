@@ -84,14 +84,16 @@ class DetRetirementMixin:
             yield meeting
 
     def _parse_title(self, response, item=None):
+        if 'board_of_trustees' in response.url:
+            meeting_str = 'Board of Trustees'
+        else:
+            meeting_str = 'Investment Committee'
         if (
             item is not None
             and 'special' in ' '.join(item.css('td:first-child *::text').extract()).lower()
         ):
-            return 'Special Meeting'
-        if 'board_of_trustees' in response.url:
-            return 'Board of Trustees'
-        return 'Investment Committee'
+            meeting_str += ": Special Meeting"
+        return meeting_str
 
     def _parse_classification(self, response):
         if 'board_of_trustees' in response.url:
@@ -102,6 +104,9 @@ class DetRetirementMixin:
         date_str = re.sub(
             r'\(.+\)', '', ' '.join(item.css('td:first-child *::text').extract()).strip()
         )
+        date_match = re.search(r"[A-Z][a-z]{2,8} \d{1,2},? \d{4}", date_str)
+        if date_match:
+            date_str = date_match.group()
         time_str = ' '.join(item.css('td:nth-child(2) *::text').extract()
                             ).strip().replace('Noon', 'PM').replace('.', '').replace(' M', 'M')
         dt_str = re.sub(r'\s+', ' ', '{} {}'.format(date_str, time_str)).strip()
