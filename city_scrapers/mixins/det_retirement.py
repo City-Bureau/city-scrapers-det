@@ -102,7 +102,8 @@ class DetRetirementMixin:
 
     def _parse_start(self, item):
         date_str = re.sub(
-            r'\(.+\)', '', ' '.join(item.css('td:first-child *::text').extract()).strip()
+            r"\s+", " ",
+            re.sub(r'\(.+\)', '', ' '.join(item.css('td:first-child *::text').extract()).strip())
         )
         date_match = re.search(r"[A-Z][a-z]{2,8} \d{1,2},? \d{4}", date_str)
         if date_match:
