@@ -209,7 +209,10 @@ class DetCityMixin:
     def _parse_time_str(self, time_str):
         """Handle parsing a variety of time strings"""
         time_fmt = '%I:%M%p'
-        time_str = re.sub(r'\s+', '', re.sub(r'to|from|\.', '', time_str.lower())).replace('o', '0')
+        time_str = re.sub(
+            r':+', ':',
+            re.sub(r'\s+', '', re.sub(r'to|from|\.', '', time_str.lower())).replace('o', '0')
+        )
         if ':' not in time_str:
             time_fmt = '%I%p'
         elif len(time_str) < 6:
