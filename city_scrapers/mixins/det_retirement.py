@@ -55,7 +55,11 @@ class DetRetirementMixin:
             if default_start_time is None:
                 default_start_time = start.time()
             links = self.document_date_map.pop(start.date(), [])
-            item_kwargs = {**meeting_kwargs, 'title': self._parse_title(response, item=item)}
+            item_kwargs = {
+                **meeting_kwargs,
+                'title': self._parse_title(response, item=item),
+                "description": " ".join(item.css("*::text").extract()),
+            }
             meetings.append(
                 Meeting(
                     **item_kwargs,
@@ -79,7 +83,9 @@ class DetRetirementMixin:
         for meeting in meetings:
             if meeting["start"] < last_year and not self.settings.getbool("CITY_SCRAPERS_ARCHIVE"):
                 continue
-            meeting['status'] = self._get_status(meeting)
+            # Unset description since it's used as a placeholder
+            meeting['status'] = self._get_status(meeting, text=meeting["description"])
+            meeting["description"] = ""
             meeting['id'] = self._get_id(meeting)
             yield meeting
 
@@ -110,6 +116,8 @@ class DetRetirementMixin:
             date_str = date_match.group()
         time_str = ' '.join(item.css('td:nth-child(2) *::text').extract()
                             ).strip().replace('Noon', 'PM').replace('.', '').replace(' M', 'M')
+        if "cancel" in time_str.lower():
+            time_str = "12:00 am"
         dt_str = re.sub(r'\s+', ' ', '{} {}'.format(date_str, time_str)).strip()
         return datetime.strptime(dt_str, '%B %d, %Y %I:%M %p')
 
