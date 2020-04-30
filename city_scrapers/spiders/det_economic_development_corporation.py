@@ -14,3 +14,7 @@ class DetEconomicDevelopmentCorporationSpider(DetAuthorityMixin, CityScrapersSpi
         'name': 'DEGC, Guardian Building',
         'address': '500 Griswold St, Suite 2200, Detroit, MI 48226'
     }
+
+    def _validate_location(self, text):
+        # Overriding for now
+        pass
