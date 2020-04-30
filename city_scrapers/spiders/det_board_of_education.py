@@ -73,7 +73,13 @@ class DetBoardOfEducationSpider(CityScrapersSpider):
 
     def _parse_location(self, item):
         """Parse or generate location."""
-        loc_line = re.search(r"(?<=LOCATION\:).*(?=STATUS\:)", item, flags=re.DOTALL).group()
+        loc_line_match = re.search(r"(?<=LOCATION\:).*(?=STATUS\:)", item, flags=re.DOTALL)
+        if not loc_line_match:
+            return {
+                "address": "",
+                "name": "",
+            }
+        loc_line = loc_line_match.group()
         # Remove newlines where text is cut off
         loc_text = re.sub(r"\r\n\s+", "", loc_line).strip()
         if "detroit" not in loc_text.lower():
