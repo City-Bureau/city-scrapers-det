@@ -114,6 +114,7 @@ class DetRetirementMixin:
         date_match = re.search(r"[A-Z][a-z]{2,8} \d{1,2},? \d{4}", date_str)
         if date_match:
             date_str = date_match.group()
+        date_str = re.sub(r"cancel[a-z]+", "", date_str, flags=re.I).strip()
         time_str = ' '.join(item.css('td:nth-child(2) *::text').extract()
                             ).strip().replace('Noon', 'PM').replace('.', '').replace(' M', 'M')
         if "cancel" in time_str.lower():
