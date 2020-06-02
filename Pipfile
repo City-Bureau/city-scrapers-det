@@ -9,9 +9,8 @@ scrapy = "*"
 scrapy-sentry = "*"
 legistar = {git = "https://github.com/opencivicdata/python-legistar-scraper"}
 city-scrapers-core = {extras = ["azure"],version = "*"}
-pywin32 = {version = "*",sys_platform = "== 'win32'"}
+pypiwin32 = {version = "*",markers = "sys_platform == 'win32'"}
 scrapy-wayback-middleware = "*"
-zipp = "==0.6.0"
 
 [dev-packages]
 freezegun = "*"
