@@ -43,7 +43,9 @@ class DetBoardOfEducationSpider(CityScrapersSpider):
 
     def _parse_title(self, item):
         """Parse or generate meeting title."""
-        title_line = re.search(r"(?<=SUMMARY\:).*(?=CLASS\:)", item, flags=re.DOTALL).group()
+        title_line = re.search(
+            r"(?<=SUMMARY\:).*(?=CLASS\:)", item, flags=re.DOTALL
+        ).group()
         # Remove newlines where text is cut off
         return re.sub(r"\n\s+|(\(Open\))", "", title_line).strip()
 
@@ -73,7 +75,9 @@ class DetBoardOfEducationSpider(CityScrapersSpider):
 
     def _parse_location(self, item):
         """Parse or generate location."""
-        loc_line_match = re.search(r"(?<=LOCATION\:).*(?=STATUS\:)", item, flags=re.DOTALL)
+        loc_line_match = re.search(
+            r"(?<=LOCATION\:).*(?=STATUS\:)", item, flags=re.DOTALL
+        )
         if not loc_line_match:
             return {
                 "address": "",
@@ -84,7 +88,8 @@ class DetBoardOfEducationSpider(CityScrapersSpider):
         loc_text = re.sub(r"\r\n\s+", "", loc_line).strip()
         if "detroit" not in loc_text.lower():
             loc_text += " Detroit, MI"
-        # Name is present, but in an inconsistent format so defaulting to address to be safe
+        # Name is present, but in an inconsistent format so defaulting to address to
+        # be safe
         return {
             "address": loc_text,
             "name": "",

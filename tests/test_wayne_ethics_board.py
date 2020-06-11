@@ -59,21 +59,22 @@ def test_location():
 
 
 def test_source():
-    assert parsed_items[0]["source"
-                           ] == "https://www.waynecounty.com/boards/ethicsboard/documents.aspx"
+    assert (
+        parsed_items[0]["source"]
+        == "https://www.waynecounty.com/boards/ethicsboard/documents.aspx"
+    )
 
 
 def test_links():
     assert parsed_items[0]["links"] == [
         {
-            'href': 'https://www.waynecounty.com/documents/ethicsboard/ethics_agenda022019.pdf',
-            'title': 'Agenda'
+            "href": "https://www.waynecounty.com/documents/ethicsboard/ethics_agenda022019.pdf",  # noqa
+            "title": "Agenda",
         },
         {
-            'href':
-                'https://www.waynecounty.com/documents/ethicsboard/ethics_board_minutes_2-20-19.pdf',  # noqa
-            'title': 'Minutes'
-        }
+            "href": "https://www.waynecounty.com/documents/ethicsboard/ethics_board_minutes_2-20-19.pdf",  # noqa
+            "title": "Minutes",
+        },
     ]
 
 

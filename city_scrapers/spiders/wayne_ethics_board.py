@@ -59,14 +59,18 @@ class WayneEthicsBoardSpider(CityScrapersSpider):
         try:
             return datetime.strptime(date_str, "%B %d, %Y").replace(hour=9)
         except ValueError:
-            return datetime.strptime(date_str.replace("Sept", "Sep"), "%b %d, %Y").replace(hour=9)
+            return datetime.strptime(
+                date_str.replace("Sept", "Sep"), "%b %d, %Y"
+            ).replace(hour=9)
 
     def _parse_links(self, item, response):
         """Parse or generate links."""
         links = []
         for link in item.css("a"):
-            links.append({
-                "href": response.urljoin(link.attrib["href"]),
-                "title": link.xpath("./text()").extract_first(),
-            })
+            links.append(
+                {
+                    "href": response.urljoin(link.attrib["href"]),
+                    "title": link.xpath("./text()").extract_first(),
+                }
+            )
         return links

@@ -21,13 +21,15 @@ class WayneLocalEmergencyPlanningSpider(CityScrapersSpider):
         """
 
         # dates in the page before 'Schedule' are not relevant
-        relevant_text = response.text[response.text.index("Schedule"):]
+        relevant_text = response.text[response.text.index("Schedule") :]
         # check to see if the meeting location still looks right (didn't move)
         self._validate_location(relevant_text)
         # match dates and try to grab the day of the week if it is present
         days = "Sunday, |Monday, |Tuesday, |Wednesday, |Thursday, |Friday, |Saturday, "
         date_expression = "[A-Z][a-z]{2,8} \\d{1,2},? \\d{4}"
-        meeting_dates = re.findall(r"(?:" + days + ")?" + date_expression, str(relevant_text))
+        meeting_dates = re.findall(
+            r"(?:" + days + ")?" + date_expression, str(relevant_text)
+        )
 
         for item in meeting_dates:
             meeting = Meeting(
@@ -51,11 +53,11 @@ class WayneLocalEmergencyPlanningSpider(CityScrapersSpider):
     def _parse_title(self, item):
         """Parse or generate meeting title."""
         # best to stay with 'Local Emergency Planning Committee' for all meetings
-        return 'Local Emergency Planning Committee'
+        return "Local Emergency Planning Committee"
 
     def _parse_description(self, item):
         """Parse or generate meeting description."""
-        return ""  # no description of this specific meeting is shown, so we return an empty string
+        return ""  # no description of this meeting is shown, so we return an empty str
 
     def _parse_classification(self, item):
         """Parse or generate classification from allowed options."""
@@ -72,7 +74,9 @@ class WayneLocalEmergencyPlanningSpider(CityScrapersSpider):
 
     def _parse_time_notes(self, item):
         """Parse any additional notes on the timing of the meeting"""
-        return "The Wayne County LEPC meets quarterly. All meetings will be at 2:00 p.m."
+        return (
+            "The Wayne County LEPC meets quarterly. All meetings will be at 2:00 p.m."
+        )
 
     def _parse_all_day(self, item):
         """Parse or generate all-day status. Defaults to False."""
@@ -80,10 +84,10 @@ class WayneLocalEmergencyPlanningSpider(CityScrapersSpider):
 
     def _parse_location(self, item):
         """Parse or generate location."""
-        ''' from webpage:
+        """ from webpage:
             Wayne County Community College, 21000 Northline Road, Taylor,
             in the MIPSE Building. The MIPSE Building is the fire training
-            facility located at the rear of the campus.'''
+            facility located at the rear of the campus."""
         return {
             "address": "21000 Northline Road, Taylor, MI  48180",
             "name": "Wayne County Community College, in the MIPSE Building",

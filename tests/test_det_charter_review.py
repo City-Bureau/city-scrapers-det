@@ -25,7 +25,9 @@ freezer.stop()
 
 
 def test_title():
-    assert parsed_items[0]["title"] == "Citizen Focus Group: Equitable Planning & Zoning"
+    assert (
+        parsed_items[0]["title"] == "Citizen Focus Group: Equitable Planning & Zoning"
+    )
 
 
 def test_description():
@@ -45,8 +47,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0][
-        "id"] == "det_charter_review/201907101730/x/citizen_focus_group_equitable_planning_zoning"
+    assert (
+        parsed_items[0]["id"]
+        == "det_charter_review/201907101730/x/citizen_focus_group_equitable_planning_zoning"  # noqa
+    )
 
 
 def test_status():
@@ -61,7 +65,9 @@ def test_location():
 
 
 def test_source():
-    assert parsed_items[0]["source"] == "https://sites.google.com/view/detroitcharter2018"
+    assert (
+        parsed_items[0]["source"] == "https://sites.google.com/view/detroitcharter2018"
+    )
 
 
 def test_links():

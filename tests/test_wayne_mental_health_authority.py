@@ -7,7 +7,9 @@ from city_scrapers_core.constants import ADVISORY_COMMITTEE, PASSED
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 
-from city_scrapers.spiders.wayne_mental_health_authority import WayneMentalHealthAuthoritySpider
+from city_scrapers.spiders.wayne_mental_health_authority import (
+    WayneMentalHealthAuthoritySpider,
+)
 
 test_response = file_response(
     join(dirname(__file__), "files", "wayne_mental_health_authority.html"),
@@ -25,8 +27,9 @@ freezer = freeze_time("2019-08-29")
 freezer.start()
 
 spider._parse_documents(test_doc_response)
-parsed_items = sorted([item for item in spider._parse_schedule(test_response)],
-                      key=itemgetter("start"))
+parsed_items = sorted(
+    [item for item in spider._parse_schedule(test_response)], key=itemgetter("start")
+)
 
 freezer.stop()
 
@@ -56,8 +59,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0][
-        "id"] == "wayne_mental_health_authority/201901071300/x/recipient_rights_advisory_committee"
+    assert (
+        parsed_items[0]["id"]
+        == "wayne_mental_health_authority/201901071300/x/recipient_rights_advisory_committee"  # noqa
+    )
 
 
 def test_status():
@@ -69,26 +74,32 @@ def test_location():
 
 
 def test_source():
-    assert parsed_items[0][
-        "source"
-    ] == "https://www.dwihn.org/about-us/dwmha-authority-board/board-directors-2017-committee-and-board-meeting-schedule/"  # noqa
+    assert (
+        parsed_items[0]["source"]
+        == "https://www.dwihn.org/about-us/dwmha-authority-board/board-directors-2017-committee-and-board-meeting-schedule/"  # noqa
+    )
 
 
 def test_links():
     assert parsed_items[0]["links"] == []
-    assert parsed_items[11]["links"] == [{
-        "href": "https://www.dwmha.com/index.php/download_file/1421/",
-        "title": "Agenda"
-    }, {
-        "href": "https://www.dwmha.com/index.php/download_file/1427/",
-        "title": "Resolution #1 - Provider Network"
-    }, {
-        "href": "https://www.dwmha.com/index.php/download_file/1428/",
-        "title": "Resolution #2 - 298 Pilot Project"
-    }, {
-        "href": "https://www.dwmha.com/index.php/download_file/1429/",
-        "title": "Resolution #3 - Funding to PIHP Milliman's Recommendation"
-    }]
+    assert parsed_items[11]["links"] == [
+        {
+            "href": "https://www.dwmha.com/index.php/download_file/1421/",
+            "title": "Agenda",
+        },
+        {
+            "href": "https://www.dwmha.com/index.php/download_file/1427/",
+            "title": "Resolution #1 - Provider Network",
+        },
+        {
+            "href": "https://www.dwmha.com/index.php/download_file/1428/",
+            "title": "Resolution #2 - 298 Pilot Project",
+        },
+        {
+            "href": "https://www.dwmha.com/index.php/download_file/1429/",
+            "title": "Resolution #3 - Funding to PIHP Milliman's Recommendation",
+        },
+    ]
 
 
 def test_classification():

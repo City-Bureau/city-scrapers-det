@@ -6,7 +6,9 @@ from city_scrapers_core.constants import ADVISORY_COMMITTEE, BOARD, COMMITTEE, P
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 
-from city_scrapers.spiders.det_regional_transit_authority import DetRegionalTransitAuthoritySpider
+from city_scrapers.spiders.det_regional_transit_authority import (
+    DetRegionalTransitAuthoritySpider,
+)
 
 test_response = file_response(
     join(dirname(__file__), "files", "det_regional_transit_authority.html"),
@@ -33,9 +35,12 @@ def test_title():
 def test_all_committees():
     titles = {item["title"] for item in parsed_items}
     assert titles == {
-        "Board of Directors", "Citizens Advisory Committee", "Executive and Policy Committee",
-        "Finance and Budget Committee", "Planning and Service Coordination Committee",
-        "Providers Advisory Council"
+        "Board of Directors",
+        "Citizens Advisory Committee",
+        "Executive and Policy Committee",
+        "Finance and Budget Committee",
+        "Planning and Service Coordination Committee",
+        "Providers Advisory Council",
     }
 
 
@@ -53,8 +58,10 @@ def test_end():
 
 
 def test_id():
-    assert parsed_items[0]["id"
-                           ] == "det_regional_transit_authority/201901171400/x/board_of_directors"
+    assert (
+        parsed_items[0]["id"]
+        == "det_regional_transit_authority/201901171400/x/board_of_directors"
+    )
 
 
 def test_status():
@@ -70,28 +77,32 @@ def test_source():
 
 
 def test_links():
-    assert parsed_items[
-        0
-    ]["links"
-      ] == [{
-          "href":
-              "https://drive.google.com/file/d/15v3P0WhECD5wqvSgoOxOyPeBH0a0sXrY/view?usp=sharing",
-          "title": "Meeting Notice"
-      }, {
-          "href":
-              "https://drive.google.com/file/d/156c6S6EjD6bHxduTeuFFQOdCM7AyYob2/view?usp=sharing",
-          "title": "Agenda & Documents"
-      }, {
-          "href":
-              "https://drive.google.com/file/d/16VxOoX8jkjKrkKjcliwgl1s4c-BXAHZA/view?usp=sharing",
-          "title": "Meeting Summary"
-      }]
+    assert parsed_items[0]["links"] == [
+        {
+            "href": "https://drive.google.com/file/d/15v3P0WhECD5wqvSgoOxOyPeBH0a0sXrY/view?usp=sharing",  # noqa
+            "title": "Meeting Notice",
+        },
+        {
+            "href": "https://drive.google.com/file/d/156c6S6EjD6bHxduTeuFFQOdCM7AyYob2/view?usp=sharing",  # noqa
+            "title": "Agenda & Documents",
+        },
+        {
+            "href": "https://drive.google.com/file/d/16VxOoX8jkjKrkKjcliwgl1s4c-BXAHZA/view?usp=sharing",  # noqa
+            "title": "Meeting Summary",
+        },
+    ]
 
 
 def test_classification():
     bod = [item for item in parsed_items if item["title"] == "Board of Directors"][0]
-    ca = [item for item in parsed_items if item["title"] == "Citizens Advisory Committee"][0]
-    epc = [item for item in parsed_items if item["title"] == "Executive and Policy Committee"][0]
+    ca = [
+        item for item in parsed_items if item["title"] == "Citizens Advisory Committee"
+    ][0]
+    epc = [
+        item
+        for item in parsed_items
+        if item["title"] == "Executive and Policy Committee"
+    ][0]
     assert bod["classification"] == BOARD
     assert ca["classification"] == ADVISORY_COMMITTEE
     assert epc["classification"] == COMMITTEE

@@ -49,8 +49,10 @@ def test_time_notes():
 
 def test_id():
     assert parsed_items[0]["id"] == "wayne_land_bank/201901171400/x/board_of_directors"
-    assert parsed_items[1]["id"] == "wayne_land_bank/201902201100/x/board_of_directors"\
-                                    + "_special_meeting"
+    assert (
+        parsed_items[1]["id"]
+        == "wayne_land_bank/201902201100/x/board_of_directors" + "_special_meeting"
+    )
 
 
 def test_status():
@@ -60,13 +62,15 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Wayne County Treasurer's Office",
-        "address": "400 Monroe St 5th Floor, Detroit, MI 48226"
+        "address": "400 Monroe St 5th Floor, Detroit, MI 48226",
     }
 
 
 def test_source():
-    assert parsed_items[0][
-        "source"] == "https://public-wclb.epropertyplus.com/landmgmtpub/app/base/customPage"
+    assert (
+        parsed_items[0]["source"]
+        == "https://public-wclb.epropertyplus.com/landmgmtpub/app/base/customPage"
+    )
 
 
 def test_links():

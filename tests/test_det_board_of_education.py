@@ -14,7 +14,7 @@ with open(join(dirname(__file__), "files", "det_board_of_education.ics"), "rb") 
 test_response = TextResponse(
     url="https://www.detroitk12.org/site/handlers/icalfeed.ashx?MIID=14864",
     body=body,
-    encoding="utf-8"
+    encoding="utf-8",
 )
 spider = DetBoardOfEducationSpider()
 
@@ -51,8 +51,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0]["id"
-                           ] == "det_board_of_education/201904161730/x/dpscd_regular_board_meeting"
+    assert (
+        parsed_items[0]["id"]
+        == "det_board_of_education/201904161730/x/dpscd_regular_board_meeting"
+    )
 
 
 def test_status():
@@ -63,7 +65,7 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "",
-        "address": "Renaissance High School, Detroit, MI 48235, USA"
+        "address": "Renaissance High School, Detroit, MI 48235, USA",
     }
 
 

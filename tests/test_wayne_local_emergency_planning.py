@@ -6,7 +6,9 @@ from city_scrapers_core.constants import ADVISORY_COMMITTEE
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 
-from city_scrapers.spiders.wayne_local_emergency_planning import WayneLocalEmergencyPlanningSpider
+from city_scrapers.spiders.wayne_local_emergency_planning import (
+    WayneLocalEmergencyPlanningSpider,
+)
 
 test_response = file_response(
     join(dirname(__file__), "files", "wayne_local_emergency_planning.html"),
@@ -39,13 +41,15 @@ def test_end():
 
 
 def test_time_notes():
-    EXPECTED_TIME_NOTES = "The Wayne County LEPC meets quarterly. All meetings will be at 2:00 p.m."
+    EXPECTED_TIME_NOTES = (
+        "The Wayne County LEPC meets quarterly. All meetings will be at 2:00 p.m."
+    )
     assert parsed_items[0]["time_notes"] == EXPECTED_TIME_NOTES
 
 
 def test_id():
-    EXPECTED_ID = '''wayne_local_emergency_planning/201903061400/'''
-    EXPECTED_ID += '''x/local_emergency_planning_committee'''
+    EXPECTED_ID = """wayne_local_emergency_planning/201903061400/"""
+    EXPECTED_ID += """x/local_emergency_planning_committee"""
     assert parsed_items[0]["id"] == EXPECTED_ID
 
 
@@ -68,12 +72,14 @@ def test_status3():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Wayne County Community College, in the MIPSE Building",
-        "address": "21000 Northline Road, Taylor, MI  48180"
+        "address": "21000 Northline Road, Taylor, MI  48180",
     }
 
 
 def test_source():
-    EXPECTED_SOURCE = "https://www.waynecounty.com/departments/hsem/wayne-county-lepc.aspx"
+    EXPECTED_SOURCE = (
+        "https://www.waynecounty.com/departments/hsem/wayne-county-lepc.aspx"
+    )
     assert parsed_items[0]["source"] == EXPECTED_SOURCE
 
 

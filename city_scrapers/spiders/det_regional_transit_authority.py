@@ -42,8 +42,9 @@ class DetRegionalTransitAuthoritySpider(CityScrapersSpider):
                 yield meeting
 
     def _parse_title(self, item):
-        return re.sub(r"\s+", " ",
-                      " ".join(item.css(".elementor-tab-title *::text").extract())).strip()
+        return re.sub(
+            r"\s+", " ", " ".join(item.css(".elementor-tab-title *::text").extract())
+        ).strip()
 
     @staticmethod
     def _parse_classification(title):
@@ -69,8 +70,12 @@ class DetRegionalTransitAuthoritySpider(CityScrapersSpider):
     def _parse_links(item):
         """Parse or generate links."""
         anchors = item.xpath(".//a")
-        return [{
-            "href": anchor.xpath("@href").extract_first(""),
-            "title": re.sub(r"\s+", " ",
-                            anchor.xpath(".//text()").extract_first("")).strip(),
-        } for anchor in anchors]
+        return [
+            {
+                "href": anchor.xpath("@href").extract_first(""),
+                "title": re.sub(
+                    r"\s+", " ", anchor.xpath(".//text()").extract_first("")
+                ).strip(),
+            }
+            for anchor in anchors
+        ]

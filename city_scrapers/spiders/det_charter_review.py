@@ -16,15 +16,16 @@ class DetCharterReviewSpider(CityScrapersSpider):
         today = datetime.now()
         last_week = today - timedelta(days=7)
         in_two_months = today + timedelta(days=60)
-        return [(
-            "https://clients6.google.com/calendar/v3/calendars/detroitcrc2018@gmail.com/events"
-            "?calendarId=detroitcrc2018@gmail.com&singleEvents=true&timeZone=America/Detroit&"
-            "sanitizeHtml=true&timeMin={}T00:00:00-05:00&timeMax={}T00:00:00-05:00&"
-            "key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs"
-        ).format(
-            last_week.strftime("%Y-%m-%d"),
-            in_two_months.strftime("%Y-%m-%d"),
-        )]
+        return [
+            (
+                "https://clients6.google.com/calendar/v3/calendars/detroitcrc2018@gmail.com/events"  # noqa
+                "?calendarId=detroitcrc2018@gmail.com&singleEvents=true&timeZone=America/Detroit&"  # noqa
+                "sanitizeHtml=true&timeMin={}T00:00:00-05:00&timeMax={}T00:00:00-05:00&"
+                "key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs"
+            ).format(
+                last_week.strftime("%Y-%m-%d"), in_two_months.strftime("%Y-%m-%d"),
+            )
+        ]
 
     def parse(self, response):
         data = json.loads(response.text)
@@ -45,8 +46,8 @@ class DetCharterReviewSpider(CityScrapersSpider):
                 links=[],
                 source="https://sites.google.com/view/detroitcharter2018",
             )
-            meeting['status'] = self._get_status(meeting, text=item["status"])
-            meeting['id'] = self._get_id(meeting)
+            meeting["status"] = self._get_status(meeting, text=item["status"])
+            meeting["id"] = self._get_id(meeting)
             yield meeting
 
     def _parse_title(self, item):

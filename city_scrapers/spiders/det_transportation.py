@@ -7,16 +7,16 @@ from city_scrapers.mixins import DetCityMixin
 class DetTransportationSpider(DetCityMixin, CityScrapersSpider):
     name = "det_transportation"
     agency = "Detroit Department of Transportation"
-    dept_cal_id = '166'
-    agency_cal_id = 'All'
-    dept_doc_id = '166'
-    agency_doc_id = 'None'
+    dept_cal_id = "166"
+    agency_cal_id = "All"
+    dept_doc_id = "166"
+    agency_doc_id = "None"
 
     def _parse_classification(self, response):
         event_title = super()._parse_title(response).lower()
-        if ('input meeting' in event_title):
+        if "input meeting" in event_title:
             return FORUM
-        elif ('advisory council' in event_title):
+        elif "advisory council" in event_title:
             return ADVISORY_COMMITTEE
         else:
             return BOARD

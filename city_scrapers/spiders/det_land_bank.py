@@ -9,14 +9,14 @@ from dateutil.parser import parse as dateparse
 
 
 class DetLandBankSpider(CityScrapersSpider):
-    name = 'det_land_bank'
-    agency = 'Detroit Land Bank Authority'
-    timezone = 'America/Detroit'
-    start_urls = ['https://buildingdetroit.org/events/meetings']
+    name = "det_land_bank"
+    agency = "Detroit Land Bank Authority"
+    timezone = "America/Detroit"
+    start_urls = ["https://buildingdetroit.org/events/meetings"]
 
     def parse(self, response):
         data = response.xpath(
-            'substring-before(substring-after(//script[contains(text(), "var meeting =")]/text()'
+            'substring-before(substring-after(//script[contains(text(), "var meeting =")]/text()'  # noqa
             ', "var meeting ="), "\n")'
         ).extract_first()
         entries = json.loads(data.strip()[:-1])
@@ -27,27 +27,27 @@ class DetLandBankSpider(CityScrapersSpider):
             if start < last_year and not self.settings.getbool("CITY_SCRAPERS_ARCHIVE"):
                 continue
             meeting = Meeting(
-                title=item['title_tmp'],
-                description=item['content'],
+                title=item["title_tmp"],
+                description=item["content"],
                 classification=self._parse_classification(item),
                 start=self._parse_start(item),
                 end=None,
-                time_notes='',
+                time_notes="",
                 all_day=False,
                 location=self._parse_location(item),
                 links=self._parse_links(item),
                 source=response.url,
             )
 
-            meeting['status'] = self._get_status(meeting, text=item['status'])
-            meeting['id'] = self._get_id(meeting)
+            meeting["status"] = self._get_status(meeting, text=item["status"])
+            meeting["id"] = self._get_id(meeting)
             yield meeting
 
     def _parse_classification(self, item):
         """
         Parse or generate classification (e.g. public health, education, etc).
         """
-        if 'board of director' in item['category_type'].lower():
+        if "board of director" in item["category_type"].lower():
             return BOARD
         return COMMITTEE
 
@@ -55,7 +55,7 @@ class DetLandBankSpider(CityScrapersSpider):
         """
         Parse start date and time.
         """
-        return dateparse(item['start'])
+        return dateparse(item["start"])
 
     def _parse_location(self, item):
         """
@@ -63,17 +63,18 @@ class DetLandBankSpider(CityScrapersSpider):
         left blank and will be geocoded later.
         """
         return {
-            'address':
-                re.sub(
-                    r'\s+', ' ', '{} {}, {} {}'.format(
-                        item['address'], item['city'], item['state'], item['zipcode']
-                    )
-                ).strip(),
-            'name': '',
+            "address": re.sub(
+                r"\s+",
+                " ",
+                "{} {}, {} {}".format(
+                    item["address"], item["city"], item["state"], item["zipcode"]
+                ),
+            ).strip(),
+            "name": "",
         }
 
     def _parse_links(self, item):
         """Parse or generate documents."""
-        if item['file_path']:
-            return [{'href': item['file_path'], 'title': 'Minutes'}]
+        if item["file_path"]:
+            return [{"href": item["file_path"], "title": "Minutes"}]
         return []

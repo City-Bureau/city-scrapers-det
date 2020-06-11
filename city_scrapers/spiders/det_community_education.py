@@ -12,7 +12,7 @@ class DetCommunityEducationSpider(CityScrapersSpider):
     agency = "Detroit Community Education Commission"
     timezone = "America/Detroit"
     start_urls = [
-        "https://cecdetroit.org/wp-json/tribe/events/v1/events?start_date=2018-01-01&per_page=100"
+        "https://cecdetroit.org/wp-json/tribe/events/v1/events?start_date=2018-01-01&per_page=100"  # noqa
     ]
 
     def parse(self, response):
@@ -63,8 +63,9 @@ class DetCommunityEducationSpider(CityScrapersSpider):
         venue = item["venue"]
         return {
             "name": venue["venue"],
-            "address":
-                " ".join([venue[a] for a in ["address", "city", "state", "zip"] if a in venue])
+            "address": " ".join(
+                [venue[a] for a in ["address", "city", "state", "zip"] if a in venue]
+            ),
         }
 
     def _parse_links(self, item):

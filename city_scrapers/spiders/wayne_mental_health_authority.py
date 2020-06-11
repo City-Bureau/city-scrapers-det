@@ -12,7 +12,9 @@ class WayneMentalHealthAuthoritySpider(CityScrapersSpider):
     name = "wayne_mental_health_authority"
     agency = "Detroit Wayne Mental Health Authority"
     timezone = "America/Detroit"
-    start_urls = ["https://www.dwihn.org/about-us/dwmha-authority-board/board-meeting-documents/"]
+    start_urls = [
+        "https://www.dwihn.org/about-us/dwmha-authority-board/board-meeting-documents/"
+    ]
     location = {
         "name": "Detroit Wayne Integrated Health Network",
         "address": "707 W Milwaukee Ave, Detroit, MI 48202",
@@ -27,7 +29,7 @@ class WayneMentalHealthAuthoritySpider(CityScrapersSpider):
         yield scrapy.Request(
             "https://www.dwihn.org/about-us/dwmha-authority-board/board-directors-2017-committee-and-board-meeting-schedule/",  # noqa
             callback=self._parse_schedule,
-            dont_filter=True
+            dont_filter=True,
         )
 
     def _parse_documents(self, response):
@@ -40,15 +42,19 @@ class WayneMentalHealthAuthoritySpider(CityScrapersSpider):
                 link_start = self._parse_link_start(link_item)
                 if not link_start:
                     continue
-                self.link_map[(meeting_title, link_start)].append({
-                    "href": link_item.css("a::attr(href)").extract_first(),
-                    "title": "Agenda",
-                })
+                self.link_map[(meeting_title, link_start)].append(
+                    {
+                        "href": link_item.css("a::attr(href)").extract_first(),
+                        "title": "Agenda",
+                    }
+                )
                 for sub_link in link_item.xpath("./following-sibling::*[1]/li"):
-                    self.link_map[(meeting_title, link_start)].append({
-                        "href": sub_link.css("a::attr(href)").extract_first(),
-                        "title": " ".join(sub_link.css("*::text").extract()),
-                    })
+                    self.link_map[(meeting_title, link_start)].append(
+                        {
+                            "href": sub_link.css("a::attr(href)").extract_first(),
+                            "title": " ".join(sub_link.css("*::text").extract()),
+                        }
+                    )
 
     def _parse_schedule(self, response):
         """
@@ -93,7 +99,9 @@ class WayneMentalHealthAuthoritySpider(CityScrapersSpider):
     def _parse_title(self, item):
         """Parse or generate meeting title."""
         title_str = re.sub(
-            r"\s+", " ", " ".join(item.css("*::text").extract()).strip().title().split(" - ")[0]
+            r"\s+",
+            " ",
+            " ".join(item.css("*::text").extract()).strip().title().split(" - ")[0],
         ).strip()
         if "Full Board" in title_str:
             return "Board of Directors"
@@ -145,7 +153,9 @@ class WayneMentalHealthAuthoritySpider(CityScrapersSpider):
             return re.sub(r"[\.\s]", "", time_match.group())
 
     def _parse_link_meeting_title(self, item):
-        item_str = re.sub(r"\s+", " ", " ".join(item.css("*::text").extract()).title()).strip()
+        item_str = re.sub(
+            r"\s+", " ", " ".join(item.css("*::text").extract()).title()
+        ).strip()
         if "Full Board" in item_str:
             return "Board of Directors"
         if "Committee" not in item_str:
