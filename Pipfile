@@ -15,7 +15,6 @@ scrapy-wayback-middleware = "*"
 [dev-packages]
 freezegun = "*"
 pytest = "*"
-pathlib2 = {version = "*",python_version = "< '3.6'"}
 "flake8" = "*"
 isort = "*"
 yapf = "*"
