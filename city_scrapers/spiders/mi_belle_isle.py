@@ -59,22 +59,27 @@ class MiBelleIsleSpider(CityScrapersSpider):
         )
         meridian_str = re.findall(r"am|pm", time_str.lower())[0]
 
-        time_start_str = re.findall(r"(\d+?:*?\d*?)(?=\s*-)", time_str)[0]
-        time_end_str = re.findall(r"((?<=-)\s*)(\d+?:*?\d*)", time_str)[0][1]
-
         try:
             date_value = dateparse(date_str)
         except Exception:
             return None, None
+
+        if "-" in time_str:
+            time_start_str = re.findall(r"(\d+?:*?\d*?)(?=\s*-)", time_str)[0]
+            time_end_str = re.findall(r"((?<=-)\s*)(\d+?:*?\d*)", time_str)[0][1]
+            end_value = dateparse(
+                "{} {} {}".format(date_str, time_end_str, meridian_str)
+            )
+            end_dt = datetime.combine(date_value.date(), end_value.time())
+        else:
+            time_start_str = time_str
+            end_dt = None
+
         start_value = dateparse(
             "{} {} {}".format(date_str, time_start_str, meridian_str)
         )
-        end_value = dateparse("{} {} {}".format(date_str, time_end_str, meridian_str))
 
-        return (
-            datetime.combine(date_value.date(), start_value.time()),
-            datetime.combine(date_value.date(), end_value.time()),
-        )
+        return datetime.combine(date_value.date(), start_value.time()), end_dt
 
     def _parse_location(self, item):
         """Parse or generate location."""
