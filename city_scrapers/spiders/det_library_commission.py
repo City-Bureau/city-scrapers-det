@@ -87,6 +87,8 @@ class DetLibraryCommissionSpider(CityScrapersSpider):
         script_contents = response.css(
             'script[type="text/javascript"]::text'
         ).extract_first()
+        if script_contents is None:
+            return {"name": "", "address": ""}
         addr_str = unquote(
             re.search(r"(?<=destination=).*(?=\';)", script_contents).group(),
         ).replace("\n", " ")
