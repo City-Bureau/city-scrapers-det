@@ -1,8 +1,9 @@
-name: Cron Build
+name: Cron
 
 on:
   schedule:
     - cron: "23 8 * * *"
+  workflow_dispatch:
 
 env:
   CI: true
