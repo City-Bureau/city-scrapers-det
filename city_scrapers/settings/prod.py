@@ -45,9 +45,3 @@ FEED_URI = (
 )
 
 SPIDER_MIDDLEWARES = {}
-
-if os.getenv("WAYBACK_ENABLED"):
-    SPIDER_MIDDLEWARES = {
-        **SPIDER_MIDDLEWARES,
-        "city_scrapers.middleware.CityScrapersWaybackMiddleware": 500,
-    }
