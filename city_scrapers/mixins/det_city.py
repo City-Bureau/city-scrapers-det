@@ -151,6 +151,8 @@ class DetCityMixin:
         """Parse the start datetime"""
         date_str = response.css(".date time::attr(datetime)").extract_first()
         time_str = "".join(response.css("article.time::text").extract()).strip()
+        if not time_str:
+            time_str = "".join(response.css("article.time *::text").extract()).strip()
         time_split = re.split(r"-|(?<=m)(?: to)?\s+(?=\d)", time_str)
         start_str = time_split[0].strip()
         start_str = re.sub(r"\.|from", "", start_str.lower())
