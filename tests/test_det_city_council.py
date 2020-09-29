@@ -8,76 +8,78 @@ from freezegun import freeze_time
 
 from city_scrapers.spiders.det_city_council import DetCityCouncilSpider
 
-freezer = freeze_time("2019-02-22")
+freezer = freeze_time("2020-09-29")
 freezer.start()
 
 test_response = file_response(
     join(dirname(__file__), "files", "det_city_council.html"),
-    url="https://detroitmi.gov/events/public-health-and-safety-standing-committee-02-25-19",  # noqa
+    url="https://pub-detroitmi.escribemeetings.com/Meetings.aspx",
 )
 spider = DetCityCouncilSpider()
-item = spider.parse_event_page(test_response)
+parsed_items = [i for i in spider._parse_upcoming_meetings(test_response)] + [
+    i for i in spider._parse_past_meetings(test_response)
+]
 
 freezer.stop()
 
 
 def test_title():
-    assert item["title"] == "Public Health and Safety Standing Committee"
+    assert parsed_items[0]["title"] == "City Council Formal Session"
 
 
 def test_description():
-    assert item["description"] == ""
+    assert parsed_items[0]["description"] == ""
 
 
 def test_start():
-    assert item["start"] == datetime(2019, 2, 25, 10, 0)
+    assert parsed_items[0]["start"] == datetime(2020, 9, 29, 10, 0)
 
 
 def test_end():
-    assert item["end"] == datetime(2019, 2, 25, 13, 0)
+    assert parsed_items[0]["end"] is None
 
 
 def test_time_notes():
-    assert item["time_notes"] == "Estimated 3 hour duration"
+    assert parsed_items[0]["time_notes"] == ""
 
 
 def test_id():
     assert (
-        item["id"]
-        == "det_city_council/201902251000/x/public_health_and_safety_standing_committee"
+        parsed_items[0]["id"]
+        == "det_city_council/202009291000/x/city_council_formal_session"
     )
 
 
 def test_status():
-    assert item["status"] == TENTATIVE
+    assert parsed_items[0]["status"] == TENTATIVE
 
 
 def test_location():
-    assert item["location"] == {
+    assert parsed_items[0]["location"] == {
         "name": "Committee of the Whole Room",
-        "address": "2 Woodward Avenue, Suite 1300 Detroit, MI 48226",
+        "address": "1340 Coleman A. Young Municipal Center Detroit, MI 48226",
     }
 
 
 def test_source():
     assert (
-        item["source"]
-        == "https://detroitmi.gov/events/public-health-and-safety-standing-committee-02-25-19"  # noqa
+        parsed_items[0]["source"]
+        == "https://pub-detroitmi.escribemeetings.com/Meeting.aspx?Id=00c8942e-5eff-4224-8f30-ac0d1aa465eb&lang=English"  # noqa
     )
 
 
 def test_links():
-    assert item["links"] == [
+    assert parsed_items[0]["links"] == [
         {
-            "href": "https://detroitmi.gov/sites/detroitmi.localhost/files/events/2019-02/cal%202-25-19%20PHS.pdf",  # noqa
-            "title": "cal 2-25-19 PHS.pdf",
+            "href": "https://pub-detroitmi.escribemeetings.com/Meeting.aspx?Id=00c8942e-5eff-4224-8f30-ac0d1aa465eb&Agenda=Agenda&lang=English",  # noqa
+            "title": "Agenda (HTML)",
         }
     ]
 
 
 def test_all_day():
-    assert item["all_day"] is False
+    assert parsed_items[0]["all_day"] is False
 
 
 def test_classification():
-    assert item["classification"] == COMMITTEE
+    assert parsed_items[1]["classification"] == COMMITTEE
