@@ -47,7 +47,7 @@ def test_time_notes():
 def test_id():
     assert (
         parsed_items[test_number]["id"]
-        == "det_regional_convention/201501290830/x/" + "boards_of_directors"
+        == "det_regional_convention/201501290830/x/" + "board_of_directors"
     )
 
 
