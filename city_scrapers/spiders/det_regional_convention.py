@@ -85,7 +85,7 @@ class DetRegionalConventionSpider(CityScrapersSpider):
                 ]
                 return " ".join(title_list)
         else:
-            return "Boards of Directors"
+            return "Board of Directors"
 
     def _parse_description(self, item):
         """Parse or generate meeting description."""

@@ -25,7 +25,7 @@ test_number = 0
 
 
 def test_title():
-    assert parsed_items[test_number]["title"] == "Boards of Directors"
+    assert parsed_items[test_number]["title"] == "Board of Directors"
 
 
 def test_description():
