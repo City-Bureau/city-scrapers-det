@@ -27,8 +27,6 @@ class DetRegionalConventionSpider(CityScrapersSpider):
                 div[@class='event_list']//div[@class='info clearfix']//h3"
             ):
                 start = self._parse_start(meeting, future_meeting)
-                print(start)
-                print(title)
                 if None in (start, title):
                     continue
                 meeting = Meeting(
@@ -144,7 +142,7 @@ class DetRegionalConventionSpider(CityScrapersSpider):
     def _parse_links(self, item, future_meeting):
         """Parse or generate links."""
         if future_meeting:
-            return None
+            return []
         else:
             report_link = item.xpath("./@href")[0].get()
             report_desc = item.xpath("./@title")[0].get()
