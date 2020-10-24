@@ -23,8 +23,9 @@ freezer.stop()
 
 
 def test_title():
-    assert parsed_items[0]["title"] == ("Mayor's Workforce Development " +
-                                        "Board (MWDB) Meeting")
+    assert parsed_items[0]["title"] == (
+        "Mayor's Workforce Development " + "Board (MWDB) Meeting"
+    )
 
 
 def test_description():
@@ -44,8 +45,10 @@ def test_end():
 
 
 def test_id():
-    assert parsed_items[0]["id"] == ("det_employment_solutions/202010261400/x/" +
-                                     "mayor_s_workforce_development_board_mwdb_meeting")
+    assert parsed_items[0]["id"] == (
+        "det_employment_solutions/202010261400/x/"
+        + "mayor_s_workforce_development_board_mwdb_meeting"
+    )
 
 
 # def test_status():
@@ -54,26 +57,26 @@ def test_id():
 
 def test_location():
     assert parsed_items[0]["location"] == {
-        "name": ("All meetings for the Mayor’s Workforce Development Board " +
-                 "(MWDB) will take place at Detroit Public Safety Headquarters"),
-        "address": "301 Third Ave., Detroit, MI 48226 (Location subject to change)"
+        "name": (
+            "All meetings for the Mayor’s Workforce Development Board "
+            + "(MWDB) will take place at Detroit Public Safety Headquarters"
+        ),
+        "address": "301 Third Ave., Detroit, MI 48226 (Location subject to change)",
     }
 
 
 def test_source():
     assert parsed_items[0]["source"] == (
-            "https://www.descmiworks.com/about-us/public-meetings/")
+        "https://www.descmiworks.com/about-us/public-meetings/"
+    )
 
 
 def test_links():
-    assert parsed_items[0]["links"] == [{
-      "href": "",
-      "title": ""
-    }]
+    assert parsed_items[0]["links"] == [{"href": "", "title": ""}]
 
 
 def test_classification():
-    assert parsed_items[0]["classification"] == BOARD 
+    assert parsed_items[0]["classification"] == BOARD
 
 
 @pytest.mark.parametrize("item", parsed_items)
