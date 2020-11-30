@@ -25,17 +25,20 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
         if not item:
             return None
         info = item.get()
-        # Right now there are only 2 parsable meeting types on the webpage
+        # There are 3 meeting types mentioned on the webpage
         if "mwdb" in info:
             return self.MEETING_TYPES[0]
         if "CEAC" in info:
             return self.MEETING_TYPES[1]
         if "DESC" in info:
+            # DESC meetings currently have parsable links only
             return self.MEETING_TYPES[2]
 
     def parse(self, response):
         """
         `parse` should always `yield` Meeting items.
+
+        NOTE: If the HTML structure changes this will need to be re-written.
 
         NOTE: The entire monthly schedules are ONLY available for download
         in a docx and pdf format.
@@ -67,7 +70,7 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
             ):
                 meeting = Meeting(
                     title=self._parse_title(items, meeting_type),
-                    description=self._parse_description(items),
+                    description="",
                     classification=self._parse_classification(items, meeting_type),
                     start=self._parse_start(meeting_item, meeting_type),
                     end=self._parse_end(meeting_item, meeting_type),
@@ -90,11 +93,6 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
             return "Career and Education Advisory Council (CEAC) Meeting"
         return "DESC Meeting"
 
-    def _parse_description(self, item):
-        """Parse or generate meeting description."""
-        # TODO
-        return ""
-
     def _parse_classification(self, item, meeting_type):
         """Parse or generate classification from allowed options."""
         if meeting_type == "MWDB":
@@ -110,41 +108,8 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
 
         return BOARD
 
-    def _parse_start(self, item, meeting_type):
-        """Parse start datetime as a naive datetime object."""
-        # TODO: consolidate duplicate logic between start/end parse methods
-        if meeting_type is None:
-            return
-        if meeting_type == "MWDB":
-            # remove the 'nd' 'rd' 'th' from number day
-            caldate = item.css("strong ::text").get().strip()[:-2]
-            timeframe = item.css("p ::text").get().strip().split(" - ")
-            # webpage dates don't include year, assume year of now
-            curr_year = str(datetime.now().year)
-            date_str = "{} {} {}".format(caldate, curr_year, timeframe[0])
-            date_str_fmt = "%A, %B %d %Y %I:%M%p"
-        if meeting_type == "CEAC":
-            # date is in the format: 11/23/2020 – 11 am – 12:30 pm
-            parsed_item = re.compile("(: )|( – )").split(
-                item.css("ul > li ::text").get().strip()
-            )
-            caldate = parsed_item[0].split("/")
-            timeframe = parsed_item[3]
-            start_time = re.compile("(-)|(–)").split(timeframe)[0]
-            if ":" not in start_time:
-                start_time = ":00 ".join(start_time.split(" "))
-            if len(caldate[2]) == 2:
-                caldate[2] = "20" + caldate[2]
-            date_str = "{} {}".format("/".join(caldate), start_time.replace(" ", ""))
-            date_str_fmt = "%m/%d/%Y %I:%M%p"
-        if meeting_type == "DESC":
-            date_str = "9:45 am"
-            date_str_fmt = "%I:%M %p"
-
-        return datetime.strptime(date_str, date_str_fmt)
-
-    def _parse_end(self, item, meeting_type):
-        """Parse end datetime as a naive datetime object. Added by pipeline if None"""
+    def find_date(self, item, meeting_type, is_start=False):
+        """Parses item and creates a datetime formatted string."""
         if meeting_type is None:
             return None
         if meeting_type == "MWDB":
@@ -152,9 +117,14 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
             caldate = item.css("strong ::text").get().strip()[:-2]
             timeframe = item.css("p ::text").get().strip().split(" - ")
             # webpage dates don't include year, assume year of now
-            # XXX: this might lead to bugs when jumping form december to january
             curr_year = str(datetime.now().year)
-            date_str = "{} {} {}".format(caldate, curr_year, timeframe[1])
+            curr_month = str(datetime.now().month)
+            # If the current month is not January but January is in the meeting
+            # date than the meeting date falls in the next year.
+            if curr_month != "1" and "January" in caldate:
+                curr_year = str(int(curr_year) + 1)
+            meeting_time = timeframe[0] if is_start else timeframe[1]
+            date_str = "{} {} {}".format(caldate, curr_year, meeting_time)
             date_str_fmt = "%A, %B %d %Y %I:%M%p"
         if meeting_type == "CEAC":
             # date is in the format: 11/23/2020 – 11 am – 12:30 pm
@@ -162,18 +132,31 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
                 item.css("ul > li ::text").get().strip()
             )
             caldate = parsed_item[0].split("/")
-            timeframe = parsed_item[3]
-            end_time = re.compile("(-)|(–)").split(timeframe)[0]
-            if ":" not in end_time:
-                end_time = ":00 ".join(end_time.split(" "))
+            timeframe = re.compile("(-)|(–)").split(parsed_item[3])
+            if len(timeframe) < 2 and (not is_start):
+                return None
+            meeting_time = timeframe[0] if is_start else timeframe[3]
+            if ":" not in meeting_time:
+                meeting_time = ":00 ".join(meeting_time.split(" "))
             if len(caldate[2]) == 2:
                 caldate[2] = "20" + caldate[2]
-            date_str = "{} {}".format("/".join(caldate), end_time.replace(" ", ""))
+            date_str = "{} {}".format("/".join(caldate), meeting_time.replace(" ", ""))
             date_str_fmt = "%m/%d/%Y %I:%M%p"
         if meeting_type == "DESC":
-            return
+            if not is_start:
+                return None
+            date_str = "9:45 am"
+            date_str_fmt = "%I:%M %p"
 
         return datetime.strptime(date_str, date_str_fmt)
+
+    def _parse_start(self, item, meeting_type):
+        """Parse start datetime as a naive datetime object."""
+        return self.find_date(item, meeting_type, True)
+
+    def _parse_end(self, item, meeting_type):
+        """Parse end datetime as a naive datetime object. Added by pipeline if None"""
+        return self.find_date(item, meeting_type)
 
     def _parse_time_notes(self, item):
         """Parse any additional notes on the timing of the meeting"""
@@ -193,8 +176,8 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
         href = ""
         title = ""
         if meeting_type == "CEAC":
-            href = item.css("a::attr(href)").get()
-            title = item.css("a ::text").get()
+            href = item.css("a::attr(href)").get() or ""
+            title = item.css("a ::text").get() or ""
         if meeting_type == "DESC":
             href = item.css("::attr(href)").get()
             title = item.css("strong ::text").get()

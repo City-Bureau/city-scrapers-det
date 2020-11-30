@@ -2,7 +2,7 @@ from datetime import datetime
 from os.path import dirname, join
 
 import pytest
-from city_scrapers_core.constants import BOARD
+from city_scrapers_core.constants import ADVISORY_COMMITTEE, BOARD
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 
@@ -26,6 +26,10 @@ def test_title():
     assert parsed_items[0]["title"] == (
         "Mayor's Workforce Development " + "Board (MWDB) Meeting"
     )
+    assert parsed_items[2]["title"] == (
+        "Career and Education Advisory Council (CEAC) Meeting"
+    )
+    assert parsed_items[3]["title"] == ("DESC Meeting")
 
 
 def test_description():
@@ -34,14 +38,14 @@ def test_description():
 
 def test_start():
     assert parsed_items[0]["start"] == datetime(2020, 10, 26, 14, 0)
+    assert parsed_items[1]["start"] == datetime(2020, 12, 8, 10, 0)
+    assert parsed_items[2]["start"] == datetime(2020, 10, 13, 11, 0)
 
 
 def test_end():
     assert parsed_items[0]["end"] == datetime(2020, 10, 26, 16, 0)
-
-
-# def test_time_notes():
-#     assert parsed_items[0]["time_notes"] == "EXPECTED TIME NOTES"
+    assert parsed_items[1]["end"] == datetime(2020, 12, 8, 12, 0)
+    assert parsed_items[2]["end"] == datetime(2020, 10, 13, 12, 30)
 
 
 def test_id():
@@ -73,10 +77,20 @@ def test_source():
 
 def test_links():
     assert parsed_items[0]["links"] == [{"href": "", "title": ""}]
+    assert parsed_items[2]["links"] == [{"href": "", "title": ""}]
+    assert parsed_items[3]["links"] == [
+        {
+            "href": "https://www.descmiworks.com/wp-content/uploads/PUBLIC-MEETING-"
+            "ANNOUNCEMENT-Executive-Committee-Meeting-8-25-2020.pdf",
+            "title": "Executive Committee Meeting",
+        }
+    ]
 
 
 def test_classification():
     assert parsed_items[0]["classification"] == BOARD
+    assert parsed_items[2]["classification"] == ADVISORY_COMMITTEE
+    assert parsed_items[3]["classification"] == BOARD
 
 
 @pytest.mark.parametrize("item", parsed_items)
