@@ -57,7 +57,7 @@ class MiBelleIsleSpider(CityScrapersSpider):
         time_str = re.sub(
             r"[^a-zA-Z,\d\s:-]", "", item.css("td:nth-child(2) *::text").extract_first()
         )
-        meridian_str = re.findall(r"am|pm", time_str.lower())[0]
+        meridian_str = re.findall(r"(am|pm)", time_str.lower())[0]
 
         try:
             date_value = dateparse(date_str)
@@ -72,7 +72,7 @@ class MiBelleIsleSpider(CityScrapersSpider):
             )
             end_dt = datetime.combine(date_value.date(), end_value.time())
         else:
-            time_start_str = time_str
+            time_start_str = re.search(r"(\d+)(:\d+)?", time_str).group()
             end_dt = None
 
         start_value = dateparse(
