@@ -25,6 +25,8 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
         if not item:
             return None
         info = item.get()
+        if "No Upcoming Meetings" in info:
+            return None
         # There are 3 meeting types mentioned on the webpage
         if "mwdb" in info:
             return self.MEETING_TYPES[0]
@@ -60,11 +62,15 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
         location = self._parse_location(meeting_sections[0])
         # Appends the css selector for the right section on the page
         meeting_sections.append(
-            elementor_row.css("div.elementor-row > div.elementor-element-77d4b08")
+            elementor_row.css(
+                "div.elementor-row > " "div.elementor-column:nth-child(2) > div > div"
+            )
         )
 
         for items in meeting_sections[1:]:
             meeting_type = self.get_meeting_type(items)
+            if not meeting_type:
+                continue
             for meeting_item in items.css(
                 self.MEETING_TYPE_TO_CSS_SELECTOR_MAP[meeting_type]
             ):
@@ -121,7 +127,7 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
             curr_month = str(datetime.now().month)
             # If the current month is not January but January is in the meeting
             # date than the meeting date falls in the next year.
-            if curr_month != "1" and "January" in caldate:
+            if (curr_month != "1") and ("January" in caldate or "February" in caldate):
                 curr_year = str(int(curr_year) + 1)
             meeting_time = timeframe[0] if is_start else timeframe[1]
             date_str = "{} {} {}".format(caldate, curr_year, meeting_time)
@@ -165,11 +171,9 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
     def _parse_location(self, item):
         """Parse or generate location."""
         location_info = item.css("p ::text").get()
+        location_info = location_info.replace(" (Location subject to change)", "")
         first_comma_index = location_info.find(", ")
-        return {
-            "address": location_info[first_comma_index + 3 :],
-            "name": location_info[0:first_comma_index],
-        }
+        return {"address": location_info[first_comma_index + 3 :], "name": ""}
 
     def _parse_links(self, item, meeting_type):
         """Parse or generate links."""

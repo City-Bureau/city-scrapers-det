@@ -61,11 +61,8 @@ def test_id():
 
 def test_location():
     assert parsed_items[0]["location"] == {
-        "name": (
-            "All meetings for the Mayor’s Workforce Development Board "
-            + "(MWDB) will take place at Detroit Public Safety Headquarters"
-        ),
-        "address": "301 Third Ave., Detroit, MI 48226 (Location subject to change)",
+        "name": "",
+        "address": "301 Third Ave., Detroit, MI 48226",
     }
 
 
