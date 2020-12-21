@@ -119,8 +119,15 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
         if meeting_type is None:
             return None
         if meeting_type == "MWDB":
+            # Currently the date is formatted as ex: "Monday, December 20th"
+            parsed_date = item.css("strong ::text").get().split(",")
+            # If no "," then there should only be one result from split()
+            caldate = parsed_date[0].strip()
+            if len(parsed_date) > 1:
+                # If "," found, use the second item from split() result
+                caldate = parsed_date[1].strip()
             # remove the 'nd' 'rd' 'th' from number day
-            caldate = item.css("strong ::text").get().strip()[:-2]
+            caldate = caldate[:-2]
             timeframe = item.css("p ::text").get().strip().split(" - ")
             # webpage dates don't include year, assume year of now
             curr_year = str(datetime.now().year)
@@ -131,7 +138,7 @@ class DetEmploymentSolutionsSpider(CityScrapersSpider):
                 curr_year = str(int(curr_year) + 1)
             meeting_time = timeframe[0] if is_start else timeframe[1]
             date_str = "{} {} {}".format(caldate, curr_year, meeting_time)
-            date_str_fmt = "%A, %B %d %Y %I:%M%p"
+            date_str_fmt = "%B %d %Y %I:%M%p"
         if meeting_type == "CEAC":
             # date is in the format: 11/23/2020 – 11 am – 12:30 pm
             parsed_item = re.compile("(: )|( – )").split(
