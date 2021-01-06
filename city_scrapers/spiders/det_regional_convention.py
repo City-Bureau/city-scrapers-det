@@ -96,7 +96,7 @@ class DetRegionalConventionSpider(CityScrapersSpider):
     def _parse_start(self, item, future_meeting):
         """Parse start datetime as a naive datetime object."""
         if future_meeting:
-            time_unparsed = item.xpath("text()").getall()[2]
+            time_unparsed = " ".join(item.xpath("text()").getall()[1:])
             time_struct = r"(\d{1,2}):(\d{2})(\s*[ap]m?)"
             time_str = re.search(time_struct, time_unparsed)
             date_str = " ".join(item.xpath(".//span/text()").getall())
