@@ -1,6 +1,6 @@
 import re
 
-from city_scrapers_core.constants import CITY_COUNCIL, COMMITTEE
+from city_scrapers_core.constants import CITY_COUNCIL, COMMITTEE, FORUM
 from city_scrapers_core.spiders import CityScrapersSpider
 
 from city_scrapers.mixins import DetCityMixin
@@ -15,6 +15,9 @@ class DetCityCouncilSpider(DetCityMixin, CityScrapersSpider):
         # Ignore districts, president if title not sufficient
         meeting = super().parse_event_page(response)
         tags = self._parse_tags(response)
+        # Include Budget Priorities meetings
+        if "budget" in meeting["title"].lower():
+            return meeting
         if any(["District" in tag for tag in tags]) or re.match(
             r"Coffee|Recess|District \d{1,2}", meeting["title"], flags=re.IGNORECASE
         ):
@@ -25,8 +28,11 @@ class DetCityCouncilSpider(DetCityMixin, CityScrapersSpider):
         return ""
 
     def _parse_classification(self, response):
-        if "Committee" in self._parse_title(response):
+        title = self._parse_title(response)
+        if "Committee" in title:
             return COMMITTEE
+        if "forum" in title.lower():
+            return FORUM
         return CITY_COUNCIL
 
     def _parse_tags(self, response):
