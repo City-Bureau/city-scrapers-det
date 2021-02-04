@@ -1,5 +1,3 @@
-import re
-
 from city_scrapers_core.constants import BOARD
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import LegistarSpider
@@ -12,7 +10,8 @@ class DetWaterSewageDepartmentSpider(LegistarSpider):
     start_urls = ["https://dwsd.legistar.com/Calendar.aspx"]
 
     def parse_legistar(self, events):
-        for event, _ in events:
+        for event in events:
+            location = self._parse_location(event)
             meeting = Meeting(
                 title=event["Name"],
                 description="",
@@ -21,11 +20,14 @@ class DetWaterSewageDepartmentSpider(LegistarSpider):
                 end=None,
                 time_notes="",
                 all_day=False,
-                location=self._parse_location(event),
+                location=location,
                 links=self.legistar_links(event),
                 source=self.legistar_source(event),
             )
-            meeting["status"] = self._get_status(meeting, event["Meeting Location"])
+
+            meeting["status"] = self._get_status(
+                meeting, text=" ".join([location["name"], location["address"]])
+            )
             meeting["id"] = self._get_id(meeting)
             yield meeting
 
@@ -33,11 +35,11 @@ class DetWaterSewageDepartmentSpider(LegistarSpider):
         """
         Parse location
         """
-        address = item.get("Meeting Location", None)
-        if address:
-            address = re.sub(
-                r"\s+", " ", re.sub(r"(\n)|(--em--)|(--em)|(em--)", " ", address),
-            ).strip()
+        address = item.get("Meeting Location", "")
+        if isinstance(address, dict):
+            address = address.get("label", "")
+        if "online" in address.lower():
+            address = "Virtual Meeting"
 
         if "water board" in address.lower():
             addr_split = address.split(", ")

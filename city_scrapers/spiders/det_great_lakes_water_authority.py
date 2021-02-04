@@ -12,7 +12,7 @@ class DetGreatLakesWaterAuthoritySpider(LegistarSpider):
     start_urls = ["https://glwater.legistar.com/Calendar.aspx"]
 
     def parse_legistar(self, events):
-        for event, _ in events:
+        for event in events:
             start = self.legistar_start(event)
             meeting = Meeting(
                 title=event["Name"],
