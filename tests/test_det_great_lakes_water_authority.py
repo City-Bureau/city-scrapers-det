@@ -19,9 +19,7 @@ freezer = freeze_time("2018-12-27")
 freezer.start()
 
 spider = DetGreatLakesWaterAuthoritySpider()
-parsed_items = [
-    item for item in spider.parse_legistar([(item, None) for item in test_response])
-]
+parsed_items = [item for item in spider.parse_legistar(test_response)]
 
 freezer.stop()
 
