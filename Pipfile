@@ -10,6 +10,7 @@ scrapy-sentry = "*"
 city-scrapers-core = {extras = ["azure"],version = "*"}
 pypiwin32 = {version = "*",markers = "sys_platform == 'win32'"}
 scrapy-wayback-middleware = "*"
+python-dateutil = "*"
 
 [dev-packages]
 freezegun = "*"
