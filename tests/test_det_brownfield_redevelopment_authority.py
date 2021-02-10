@@ -2,8 +2,7 @@ from datetime import datetime
 from os.path import dirname, join
 
 import pytest
-import scrapy
-from city_scrapers_core.constants import BOARD, CANCELLED, PASSED
+from city_scrapers_core.constants import BOARD, PASSED, TENTATIVE
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 from scrapy.settings import Settings
@@ -13,52 +12,33 @@ from city_scrapers.spiders.det_brownfield_redevelopment_authority import (
 )
 
 test_response = file_response(
-    join(dirname(__file__), "files", "det_brownfield_redevelopment_authority.html"),
-    url="http://www.degc.org/public-authorities/dbra/",
+    join(dirname(__file__), "files", "det_authority.html"),
+    url="https://www.degc.org/public-authorities/",
 )
 spider = DetBrownfieldRedevelopmentAuthoritySpider()
 spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
 
-
-def test_initial_request_count():
-    items = list(spider.parse(test_response))
-    assert len(items) == 3
-    urls = {r.url for r in items if isinstance(r, scrapy.Request)}
-    assert urls == {
-        "http://www.degc.org/public-authorities/dbra/fy-2018-2019-notices-agendas-and-minutes/",  # noqa
-        "http://www.degc.org/public-authorities/dbra/fy-2017-2018-meetings/",
-        "http://www.degc.org/public-authorities/dbra/dbra-fy-2016-2017-meetings/",
-    }
-
-
-test_meetings = file_response(
-    join(
-        dirname(__file__),
-        "files",
-        "det_brownfield_redevelopment_authority_meetings.html",
-    ),
-    url="http://www.degc.org/public-authorities/dbra/fy-2017-2018-meetings/",
+test_prev_meetings = file_response(
+    join(dirname(__file__), "files", "det_brownfield_redevelopment_authority.html",),
+    url="https://www.degc.org/dbra/",
 )
-freezer = freeze_time("2018-07-28")
-spider = DetBrownfieldRedevelopmentAuthoritySpider()
+freezer = freeze_time("2021-02-10")
 freezer.start()
 
-parsed_items = [item for item in spider._parse_meetings(test_meetings)]
+parsed_items = [item for item in spider._next_meetings(test_response)] + [
+    item for item in spider._parse_prev_meetings(test_prev_meetings)
+]
 parsed_items = sorted(parsed_items, key=lambda x: x["id"], reverse=True)
 freezer.stop()
 
 
 def test_meeting_count():
-    ids = {item["id"] for item in parsed_items}
-    assert len(parsed_items) == 51
-    assert len(ids) == 51
+    assert len(parsed_items) == 55
 
 
 def test_title():
     assert parsed_items[0]["title"] == "Board of Directors"
-    assert (
-        parsed_items[1]["title"] == "Harmonie Social Club City Council Public Hearing"
-    )
+    assert parsed_items[4]["title"] == "LBRF Committee"
 
 
 def test_description():
@@ -66,8 +46,8 @@ def test_description():
 
 
 def test_start():
-    assert parsed_items[0]["start"] == datetime(2019, 12, 19, 16)
-    assert parsed_items[1]["start"] == datetime(2019, 4, 11)
+    assert parsed_items[0]["start"] == datetime(2021, 2, 24, 16)
+    assert parsed_items[1]["start"] == datetime(2021, 2, 18, 16)
 
 
 def test_end():
@@ -77,12 +57,12 @@ def test_end():
 def test_id():
     assert (
         parsed_items[0]["id"]
-        == "det_brownfield_redevelopment_authority/201912191600/x/board_of_directors"
+        == "det_brownfield_redevelopment_authority/202102241600/x/board_of_directors"
     )
 
 
 def test_status():
-    assert parsed_items[0]["status"] == CANCELLED
+    assert parsed_items[0]["status"] == TENTATIVE
     assert parsed_items[-1]["status"] == PASSED
 
 
@@ -91,18 +71,24 @@ def test_location():
 
 
 def test_source():
-    assert (
-        parsed_items[0]["source"]
-        == "http://www.degc.org/public-authorities/dbra/fy-2017-2018-meetings/"
-    )
+    assert parsed_items[0]["source"] == test_response.url
 
 
 def test_links():
-    assert parsed_items[0]["links"] == [
+    assert parsed_items[0]["links"] == []
+    assert parsed_items[2]["links"] == [
         {
-            "href": "http://www.degc.org/wp-content/uploads/DBRA-121918-Meeting-Cancellation.pdf",  # noqa
-            "title": "DBRA Regular Meeting Cancellation Notice",
-        }
+            "href": "https://www.degc.org/wp-content/uploads/2021/02/CAC-Regular-Meeting-Cancellation-Notice-021021.pdf",  # noqa
+            "title": "DBRA-CAC REGULAR MEETING CANCELLATION NOTICE",
+        },
+        {
+            "href": "https://www.degc.org/wp-content/uploads/2021/02/021021-DBRA-Regular-Meeting-Notice-.pdf",  # noqa
+            "title": "DBRA REGULAR MEETING NOTICE",
+        },
+        {
+            "href": "https://www.degc.org/wp-content/uploads/2021/02/DBRA-Agenda-021021.pdf",  # noqa
+            "title": "DBRA REGULAR MEETING AGENDA",
+        },
     ]
 
 
