@@ -10,8 +10,9 @@ class DetNeighborhoodDevelopmentCorporationSpider(
     name = "det_neighborhood_development_corporation"
     agency = "Detroit Neighborhood Development Corporation"
     timezone = "America/Detroit"
-    start_urls = ["http://www.degc.org/public-authorities/ndc/"]
+    agency_url = "https://www.degc.org/ndc/"
     title = "Board of Directors"
+    tab_title = "NDC"
     classification = BOARD
     location = {
         "name": "DEGC, Guardian Building",

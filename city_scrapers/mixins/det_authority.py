@@ -1,6 +1,6 @@
 import re
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, time
 
 from city_scrapers_core.constants import BOARD
 from city_scrapers_core.items import Meeting
@@ -11,7 +11,10 @@ class DetAuthorityMixin:
 
     timezone = "America/Detroit"
     title = "Board of Directors"
+    tab_title = ""
+    start_urls = ["https://www.degc.org/public-authorities/"]
     classification = BOARD
+    default_start_time = time(0)
     location = {
         "name": "DEGC, Guardian Building",
         "address": "500 Griswold St, Suite 2200, Detroit, MI 48226",
@@ -20,17 +23,27 @@ class DetAuthorityMixin:
     def parse(self, response):
         """Parse both the upcoming and previous meetings"""
         yield from self._next_meetings(response)
-        yield from self._prev_meetings(response)
+        yield response.follow(self.agency_url, callback=self._parse_prev_meetings)
 
     def _next_meetings(self, response):
         """Parse upcoming meetings"""
-        next_meeting_text = " ".join(
-            response.css(".content-itemContent *::text").extract()
+        page_text = " ".join(response.css(".et_pb_text_inner *::text").extract())
+        self._validate_location(page_text)
+        tab_links = [
+            (i, l.strip())
+            for i, l in enumerate(
+                response.css(".et_pb_tabs_controls a *::text").extract()
+            )
+        ]
+        tab_idx = [
+            i for i, l in tab_links if l.lower().strip() == self.tab_title.lower()
+        ][0]
+        tab_contents = "\n".join(
+            response.css(".et_pb_tab")[tab_idx].css("*::text").extract()
         )
-        self._validate_location(next_meeting_text)
-        self.default_start_time = self._parse_start_time(next_meeting_text)
+        self.default_start_time = self._parse_start_time(tab_contents)
         for meeting_start in re.findall(
-            r"[a-zA-Z]{3,10}\s+\d{1,2},?\s+\d{4}.*?(?=\.)", next_meeting_text
+            r"[a-zA-Z]{3,10}\s+\d{1,2},?\s+\d{4}.*", tab_contents
         ):
             meeting = self._set_meeting_defaults(response)
             meeting["start"] = self._parse_start(meeting_start, self.default_start_time)
@@ -38,17 +51,6 @@ class DetAuthorityMixin:
             meeting["status"] = self._get_status(meeting, text=meeting_start)
             meeting["id"] = self._get_id(meeting)
             yield meeting
-
-    def _prev_meetings(self, response):
-        """Follow all potential previous meeting links"""
-        for prev_meetings_link in response.css(
-            'a[href*="meetings/"], a[href*="minutes"]'
-        ):
-            if ".pdf" in prev_meetings_link.attrib["href"].lower():
-                continue
-            yield response.follow(
-                prev_meetings_link, callback=self._parse_prev_meetings
-            )
 
     def _parse_prev_meetings(self, response):
         """Parse all previous meetings"""
@@ -122,7 +124,7 @@ class DetAuthorityMixin:
     def _parse_prev_links(self, response):
         """Parse links from previous meeting pages"""
         link_map = defaultdict(list)
-        for link in response.css("li.linksGroup-item a"):
+        for link in response.css(".et_pb_tab_content a"):
             link_text, link_date = self._parse_link_text_date(link)
             if not link_date:
                 continue
@@ -146,7 +148,10 @@ class DetAuthorityMixin:
         if not link_date_match:
             return link_text, None
         link_date_str = link_date_match.group().replace(",", "")
-        link_date = datetime.strptime(link_date_str, "%B %d %Y").date()
+        try:
+            link_date = datetime.strptime(link_date_str, "%B %d %Y").date()
+        except ValueError:
+            return None, None
         return link_text, link_date
 
     def _set_meeting_defaults(self, response):
