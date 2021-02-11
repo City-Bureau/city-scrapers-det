@@ -17,38 +17,43 @@ class WayneElectionCommissionSpider(CityScrapersSpider):
     }
 
     def parse(self, response):
-        non_empty_rows_xpath = "//tbody/tr[child::td]"
-        for item in response.xpath(non_empty_rows_xpath):
-            start = self._parse_start(item)
-            if start is None:
-                continue
-            meeting = Meeting(
-                title="Election Commission",
-                description="",
-                classification=COMMISSION,
-                start=start,
-                end=None,
-                time_notes="",
-                all_day=False,
-                location=self.location,
-                links=self._parse_links(item, response),
-                source=response.url,
-            )
-            meeting["status"] = self._get_status(meeting)
-            meeting["id"] = self._get_id(meeting)
-            yield meeting
+        year_str = ""
+        for table in response.css("article table"):
+            header_str = " ".join(table.css("th *::text").extract())
+            year_match = re.search(r"\d{4}", header_str)
+            # Override the year if provided, otherwise use the last year in the loop
+            if year_match:
+                year_str = year_match.group()
+            for item in table.css("tr"):
+                start = self._parse_start(item, year_str)
+                if start is None:
+                    continue
+                meeting = Meeting(
+                    title="Election Commission",
+                    description="",
+                    classification=COMMISSION,
+                    start=start,
+                    end=None,
+                    time_notes="",
+                    all_day=False,
+                    location=self.location,
+                    links=self._parse_links(item, response),
+                    source=response.url,
+                )
+                meeting["status"] = self._get_status(
+                    meeting, text=" ".join(item.css("td *::text").extract())
+                )
+                meeting["id"] = self._get_id(meeting)
+                yield meeting
 
     @staticmethod
-    def _parse_start(item):
+    def _parse_start(item, year_str):
         """Parse start datetime."""
-        year_xpath = item.xpath("ancestor::table/thead//strong/text()").extract_first()
-        year_regex = re.compile(r"\d{4}")
-        year_str = year_regex.findall(year_xpath)[0]
-        month_day_str = item.xpath("td[1]//text()").extract_first()
-        try:
-            return parse(month_day_str + ", " + year_str)
-        except Exception:
+        date_cell_str = item.xpath("td[1]//text()").extract_first() or ""
+        date_match = re.search(r"[A-Z][a-z]{2,9} \d\d?", date_cell_str)
+        if not date_match:
             return
+        return parse(f"{date_match.group()} {year_str}")
 
     def _parse_links(self, item, response):
         """
