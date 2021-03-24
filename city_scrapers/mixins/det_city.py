@@ -30,7 +30,7 @@ class DetCityMixin:
     @property
     def start_urls(self):
         """Start with documents if provided, otherwise from events"""
-        if self.agency_doc_id:
+        if self.agency_doc_id or self.dept_doc_id:
             agency_doc_id = self.agency_doc_id
             if isinstance(agency_doc_id, list):
                 agency_doc_id = agency_doc_id[0]
@@ -39,7 +39,7 @@ class DetCityMixin:
                     self.doc_query_param_dept,
                     self.dept_doc_id,
                     self.doc_query_param,
-                    agency_doc_id,
+                    agency_doc_id or "",
                 )
             ]
         else:
@@ -65,7 +65,7 @@ class DetCityMixin:
             return (
                 "https://detroitmi.gov/Calendar-and-Events?"
                 "field_start_value={}&term_node_tid_depth={}&term_node_tid_depth_1={}"
-            ).format(start_date, self.dept_cal_id, self.agency_cal_id)
+            ).format(start_date, self.dept_cal_id or "All", self.agency_cal_id or "All")
 
     def parse(self, response):
         """Set parse method based on the response URL"""
