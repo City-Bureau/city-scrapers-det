@@ -1,9 +1,10 @@
 from datetime import datetime
 from os.path import dirname, join
 
-import pytest
+import pytest  # noqa
 from city_scrapers_core.constants import COMMISSION, PASSED
 from city_scrapers_core.utils import file_response
+from freezegun import freeze_time
 
 from city_scrapers.spiders.det_entertainment_commission import (
     DetEntertainmentCommissionSpider,
@@ -11,62 +12,73 @@ from city_scrapers.spiders.det_entertainment_commission import (
 
 test_response = file_response(
     join(dirname(__file__), "files", "det_entertainment_commission.html"),
-    url="https://www.detroitsentertainmentcommission.com/services",
+    url="https://detroitmi.gov/events/detroit-entertainment-commission-meeting-3-15-2021",  # noqa
 )
+
+freezer = freeze_time("2021-03-24")
+freezer.start()
+
 spider = DetEntertainmentCommissionSpider()
-parsed_items = [item for item in spider.parse(test_response)]
+item = spider.parse_event_page(test_response)
+
+freezer.stop()
 
 
 def test_title():
-    assert parsed_items[0]["title"] == "Entertainment Commission"
+    assert item["title"] == "Entertainment Commission"
 
 
 def test_description():
-    assert parsed_items[0]["description"] == ""
+    assert item["description"] == ""
 
 
 def test_start():
-    assert parsed_items[0]["start"] == datetime(2018, 7, 16, 17)
+    assert item["start"] == datetime(2021, 3, 15, 17)
 
 
 def test_end():
-    assert parsed_items[0]["end"] is None
+    assert item["end"] == datetime(2021, 3, 15, 20)
+
+
+def test_time_notes():
+    assert item["time_notes"] == "Estimated 3 hour duration"
 
 
 def test_id():
     assert (
-        parsed_items[0]["id"]
-        == "det_entertainment_commission/201807161700/x/entertainment_commission"
+        item["id"]
+        == "det_entertainment_commission/202103151700/x/entertainment_commission"
     )
 
 
 def test_status():
-    assert parsed_items[0]["status"] == PASSED
+    assert item["status"] == PASSED
 
 
 def test_location():
-    assert parsed_items[0]["location"] == {
-        "name": "Coleman A. Young Municipal Center",
-        "address": "2 Woodward Ave, Detroit, MI 48226",
-    }
+    assert item["location"] == {"name": "", "address": ""}
 
 
 def test_source():
-    assert (
-        parsed_items[0]["source"]
-        == "https://www.detroitsentertainmentcommission.com/services"
-    )
+    assert item["source"] == test_response.url
 
 
 def test_links():
-    assert parsed_items[0]["links"] == []
+    assert item["links"] == [
+        {
+            "href": "https://detroitmi.gov/sites/detroitmi.localhost/files/events/2021-03/Agenda%20March%2015%202021.pdf",  # noqa
+            "title": "Agenda",
+        },
+        {
+            "href": "https://detroitmi.gov/sites/detroitmi.localhost/files/events/2021-03/DEC%20Virtual%20Notice%20for%20March%2015%202021.pdf",  # noqa
+            "title": "DEC Virtual Notice for March 15 2021.pdf",
+        },
+    ]
 
 
-@pytest.mark.parametrize("item", parsed_items)
-def test_all_day(item):
+def test_all_day():
     assert item["all_day"] is False
 
 
-@pytest.mark.parametrize("item", parsed_items)
-def test_classification(item):
+def test_classification():
     assert item["classification"] == COMMISSION
