@@ -1,58 +1,79 @@
-import re
+import json
+from datetime import datetime
 
-from city_scrapers_core.constants import BOARD, COMMITTEE, NOT_CLASSIFIED
+from city_scrapers_core.constants import COMMISSION, FORUM
 from city_scrapers_core.items import Meeting
-from city_scrapers_core.spiders import LegistarSpider
+from city_scrapers_core.spiders import CityScrapersSpider
+from scrapy.http import HtmlResponse
 
 
-class DetGreatLakesWaterAuthoritySpider(LegistarSpider):
+class DetGreatLakesWaterAuthoritySpider(CityScrapersSpider):
     name = "det_great_lakes_water_authority"
     agency = "Detroit Great Lakes Water Authority"
     timezone = "America/Detroit"
-    start_urls = ["https://glwater.legistar.com/Calendar.aspx"]
+    start_urls = ["https://www.glwater.org/events?start_date=2018-01-01&per_page=100"]
+    start_urls = ["https://www.glwater.org/wp-json/tribe/events/v1/events"]
+    def parse(self, response):
+        """
+        `parse` should always `yield` Meeting items.
 
-    def parse_legistar(self, events):
-        for event in events:
-            start = self.legistar_start(event)
+        Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
+        needs.
+        """
+        res = json.loads(response.text)
+        for item in res["events"]:
+            # Ignore webinars
+            if "webinar" in item["title"].lower():
+                continue
             meeting = Meeting(
-                title=event["Name"],
+                title=item["title"].strip(),
                 description="",
-                classification=self._parse_classification(event["Name"]),
-                start=start,
+                classification=self._parse_classification(item),
+                start=self._parse_start(item),
                 end=None,
-                time_notes="",
                 all_day=False,
-                location=self._parse_location(event),
-                links=self.legistar_links(event),
-                source=self.legistar_source(event),
+                time_notes="",
+                location=self._parse_location(item),
+                links=self._parse_links(item),
+                source=item["url"],
             )
 
-            meeting["status"] = self._get_status(meeting, text=event["Meeting Time"])
+            meeting["status"] = self._get_status(meeting)
             meeting["id"] = self._get_id(meeting)
+
             yield meeting
 
-    def _parse_classification(self, name):
-        if "board" in name.lower():
-            return BOARD
-        elif "committee" in name.lower():
-            return COMMITTEE
-        return NOT_CLASSIFIED
+    def _parse_start(self, item):
+        """Parse start datetime as a naive datetime object."""
+        return datetime.strptime(item["start_date"], "%Y-%m-%d %H:%M:%S")
+
+    def _parse_classification(self, item):
+        """Parse classification from item title"""
+        if any(
+            p in item["title"].lower()
+            for p in ["info session", "community event", "community meeting"]
+        ):
+            return FORUM
+        return COMMISSION
 
     def _parse_location(self, item):
-        """
-        Parse location
-        """
-        address = item.get("Meeting Location", "")
-        if address:
-            address = re.sub(
-                r"\s+", " ", re.sub(r"(\n)|(--em--)|(--em)|(em--)", " ", address),
-            ).strip()
-        if "water board building" in address.lower():
-            return {
-                "name": "Water Board Building",
-                "address": "735 Randolph St Detroit, MI 48226",
-            }
+        """Parse or generate location."""
+        venue = item["venue"]
         return {
-            "name": "",
-            "address": address,
+            "name": venue["venue"],
+            "address": " ".join(
+                [venue[a] for a in ["address", "city", "state", "zip"] if a in venue]
+            ),
         }
+
+    def _parse_links(self, item):
+        """Parse or generate links."""
+        res = HtmlResponse(url=item["url"], body=item["description"], encoding="utf-8")
+        links = []
+        for link in res.css("a"):
+            link_href = res.urljoin(link.attrib["href"])
+            link_title = " ".join(link.css("* ::text").extract()).strip()
+            if "viewform" not in link_href and link_title:
+                links.append({"href": link_href, "title": link_title})
+        return links
+
