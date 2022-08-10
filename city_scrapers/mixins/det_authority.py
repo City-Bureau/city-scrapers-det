@@ -1,5 +1,5 @@
-import re
 import json
+import re
 from collections import defaultdict
 from datetime import datetime, time
 
@@ -31,14 +31,18 @@ class DetAuthorityMixin:
         page_text = " ".join(response.css(".et_pb_text_inner *::text").extract())
         self._validate_location(page_text)
 
-        events = [i for i in response.css("script").extract() if '"@type":"Event"' in i][0]
-        events = re.sub( "<[^<]+?>", "", events)
+        events = [
+            i for i in response.css("script").extract() if '"@type":"Event"' in i
+        ][0]
+        events = re.sub("<[^<]+?>", "", events)
         events = json.loads(events)
 
         for event in events:
-            if self.tab_title.lower() in event['url']:
+            if self.tab_title.lower() in event["url"]:
                 meeting = self._set_meeting_defaults(response)
-                meeting["start"] = datetime.fromisoformat(event["startDate"]).replace(tzinfo=None)
+                meeting["start"] = datetime.fromisoformat(event["startDate"]).replace(
+                    tzinfo=None
+                )
                 meeting["links"] = self._parse_event_links(event)
                 meeting["status"] = self._get_status(meeting, text=event["name"])
                 meeting["id"] = self._get_id(meeting)
@@ -46,12 +50,13 @@ class DetAuthorityMixin:
 
     def _parse_event_links(self, event):
         """Parse links in a given event dictionary"""
-        links = [{ "href": event["url"], "title": ""}]
+        links = [{"href": event["url"], "title": ""}]
         if event["description"]:
-            zoom_link = re.search("(?P<url>https?://[^\s]+)", event["description"]).group("url")
-            links.append({ "href": zoom_link, "title": "zoom link"})
+            print(event["description"])
+            zoom_link = event["description"].split()[3]
+            links.append({"href": zoom_link, "title": "Zoom Meeting"})
         if "location" in event.keys() and event["location"]["url"]:
-            links.append({ "href": event["location"]["url"], "title": ""})
+            links.append({"href": event["location"]["url"], "title": ""})
 
         return links
 
