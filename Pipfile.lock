@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b431adb44e3e35bf23f9c4145facde3a92453e22fe84c4be219ed9ae04d505dd"
+            "sha256": "8de05ad02511bcbd420ef36c110a9d55e012013721c70e70e400e56cd760abb2"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -42,6 +42,7 @@
                 "sha256:726b86f733dc76218ce45b7a3254b61ba4f0cc3d68b7621be4985248c92ee483",
                 "sha256:899c4b8e2671812d2cf78f107556a27dbb128caaa2bb06094e72a3d5836740af"
             ],
+            "markers": "python_version >= '3.6'",
             "version": "==12.13.1"
         },
         "certifi": {
@@ -133,12 +134,8 @@
             "extras": [
                 "azure"
             ],
-            "hashes": [
-                "sha256:142d8a119d1e62e398a5a248c8c8bb5c3e0ed820f29f6bf03d0ae46b928e8270",
-                "sha256:6218a70c8d9eb01ed4c2cdafdf4fb52dea0292aeb09e24e798ff5fa7c53031bb"
-            ],
-            "index": "pypi",
-            "version": "==0.10.1"
+            "git": "https://github.com/City-Bureau/city-scrapers-core.git",
+            "ref": "aa001e97ad985271debac4f91900d60c8ad97d8a"
         },
         "constantly": {
             "hashes": [
@@ -505,7 +502,7 @@
                 "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983",
                 "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4.0'",
+            "markers": "python_version >= '3.7' and python_version < '4'",
             "version": "==2.28.1"
         },
         "requests-file": {
@@ -555,11 +552,11 @@
         },
         "setuptools": {
             "hashes": [
-                "sha256:63f463b90ff5e0a1422010100268fd688e15c44ae0798659013c8412963e15e4",
-                "sha256:9b5d2cb8df48f005825654e0cb17217418317e4d996c035f0bca7cbaeb8acf51"
+                "sha256:378dcbfcc78b81432934fbd684ece21a82cd4b135315698732f7c8a4b97f81a9",
+                "sha256:7d9ae33bf128569f460a0745e87072a1996f33c9180316c20cc08b130ce816a6"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==64.0.0"
+            "version": "==64.0.1"
         },
         "six": {
             "hashes": [
@@ -598,7 +595,7 @@
                 "sha256:c33ccba33c819596124764c23a97d25f32b28433ba0dedeb77d873a38722c9bc",
                 "sha256:ea6e8fb210b19d950fab93b60c9009226c63a28808bc8386e05301e25883ac0a"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5' and python_version < '4.0'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5' and python_version < '4'",
             "version": "==1.26.11"
         },
         "w3lib": {
