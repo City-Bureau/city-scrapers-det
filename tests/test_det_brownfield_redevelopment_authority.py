@@ -19,7 +19,11 @@ spider = DetBrownfieldRedevelopmentAuthoritySpider()
 spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
 
 test_prev_meetings = file_response(
-    join(dirname(__file__), "files", "det_brownfield_redevelopment_authority.html",),
+    join(
+        dirname(__file__),
+        "files",
+        "det_brownfield_redevelopment_authority.html",
+    ),
     url="https://www.degc.org/dbra/",
 )
 freezer = freeze_time("2021-02-10")

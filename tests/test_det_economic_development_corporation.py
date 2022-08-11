@@ -19,7 +19,11 @@ spider = DetEconomicDevelopmentCorporationSpider()
 spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
 
 test_prev_meetings = file_response(
-    join(dirname(__file__), "files", "det_economic_development_corporation.html",),
+    join(
+        dirname(__file__),
+        "files",
+        "det_economic_development_corporation.html",
+    ),
     url="https://www.degc.org/edc/",
 )
 freezer = freeze_time("2021-02-10")
