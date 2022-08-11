@@ -31,7 +31,8 @@ def test_description():
     cleaned = item["description"]
     ours = " ".join(cleaned.split())
 
-    good_description = """Please join us for the first community input meeting of the year!
+    good_description = """Please join us"""
+    +""" for the first community input meeting of the year!
                     January 17, 2019 5:00pm - 7:00pm
                     at the DDOT Admin Bldg. Topics Include:
                     • Review of December 2018 concerns
