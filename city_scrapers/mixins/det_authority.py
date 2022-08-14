@@ -1,3 +1,4 @@
+import json
 import re
 from collections import defaultdict
 from datetime import datetime, time
@@ -29,28 +30,35 @@ class DetAuthorityMixin:
         """Parse upcoming meetings"""
         page_text = " ".join(response.css(".et_pb_text_inner *::text").extract())
         self._validate_location(page_text)
-        tab_links = [
-            (i, l.strip())
-            for i, l in enumerate(
-                response.css(".et_pb_tabs_controls a *::text").extract()
-            )
-        ]
-        tab_idx = [
-            i for i, l in tab_links if l.lower().strip() == self.tab_title.lower()
+
+        events = [
+            i for i in response.css("script").extract() if '"@type":"Event"' in i
         ][0]
-        tab_contents = "\n".join(
-            response.css(".et_pb_tab")[tab_idx].css("*::text").extract()
-        )
-        self.default_start_time = self._parse_start_time(tab_contents)
-        for meeting_start in re.findall(
-            r"[a-zA-Z]{3,10}\s+\d{1,2},?\s+\d{4}.*", tab_contents
-        ):
-            meeting = self._set_meeting_defaults(response)
-            meeting["start"] = self._parse_start(meeting_start, self.default_start_time)
-            meeting["links"] = self._parse_next_links(meeting["start"], response)
-            meeting["status"] = self._get_status(meeting, text=meeting_start)
-            meeting["id"] = self._get_id(meeting)
-            yield meeting
+        events = re.sub("<[^<]+?>", "", events)
+        events = json.loads(events)
+
+        for event in events:
+            if self.tab_title.lower() in event["url"]:
+                meeting = self._set_meeting_defaults(response)
+                meeting["start"] = datetime.fromisoformat(event["startDate"]).replace(
+                    tzinfo=None
+                )
+                meeting["links"] = self._parse_event_links(event)
+                meeting["status"] = self._get_status(meeting, text=event["name"])
+                meeting["id"] = self._get_id(meeting)
+                yield meeting
+
+    def _parse_event_links(self, event):
+        """Parse links in a given event dictionary"""
+        links = [{"href": event["url"], "title": ""}]
+        if event["description"]:
+            print(event["description"])
+            zoom_link = event["description"].split()[3]
+            links.append({"href": zoom_link, "title": "Zoom Meeting"})
+        if "location" in event.keys() and event["location"]["url"]:
+            links.append({"href": event["location"]["url"], "title": ""})
+
+        return links
 
     def _parse_prev_meetings(self, response):
         """Parse all previous meetings"""

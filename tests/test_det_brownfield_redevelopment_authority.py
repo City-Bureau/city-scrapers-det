@@ -19,7 +19,11 @@ spider = DetBrownfieldRedevelopmentAuthoritySpider()
 spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
 
 test_prev_meetings = file_response(
-    join(dirname(__file__), "files", "det_brownfield_redevelopment_authority.html",),
+    join(
+        dirname(__file__),
+        "files",
+        "det_brownfield_redevelopment_authority.html",
+    ),
     url="https://www.degc.org/dbra/",
 )
 freezer = freeze_time("2021-02-10")
@@ -33,12 +37,14 @@ freezer.stop()
 
 
 def test_meeting_count():
-    assert len(parsed_items) == 55
+    assert len(parsed_items) == 57
 
 
 def test_title():
     assert parsed_items[0]["title"] == "Board of Directors"
-    assert parsed_items[4]["title"] == "LBRF Committee"
+    assert (
+        parsed_items[4]["title"] == "GROBBEL COLD STORAGE CITY COUNCIL Public Hearing"
+    )
 
 
 def test_description():
@@ -46,8 +52,8 @@ def test_description():
 
 
 def test_start():
-    assert parsed_items[0]["start"] == datetime(2021, 2, 24, 16)
-    assert parsed_items[1]["start"] == datetime(2021, 2, 18, 16)
+    assert parsed_items[0]["start"] == datetime(2022, 7, 27, 17)
+    assert parsed_items[1]["start"] == datetime(2022, 7, 27, 16)
 
 
 def test_end():
@@ -57,7 +63,7 @@ def test_end():
 def test_id():
     assert (
         parsed_items[0]["id"]
-        == "det_brownfield_redevelopment_authority/202102241600/x/board_of_directors"
+        == "det_brownfield_redevelopment_authority/202207271700/x/board_of_directors"
     )
 
 
@@ -75,20 +81,14 @@ def test_source():
 
 
 def test_links():
-    assert parsed_items[0]["links"] == []
+    assert parsed_items[0]["links"] == [
+        {
+            "href": "https://www.degc.org/event/dbra-cac-regular-meeting-5/2022-07-27/",
+            "title": "",
+        }
+    ]
     assert parsed_items[2]["links"] == [
-        {
-            "href": "https://www.degc.org/wp-content/uploads/2021/02/CAC-Regular-Meeting-Cancellation-Notice-021021.pdf",  # noqa
-            "title": "DBRA-CAC REGULAR MEETING CANCELLATION NOTICE",
-        },
-        {
-            "href": "https://www.degc.org/wp-content/uploads/2021/02/021021-DBRA-Regular-Meeting-Notice-.pdf",  # noqa
-            "title": "DBRA REGULAR MEETING NOTICE",
-        },
-        {
-            "href": "https://www.degc.org/wp-content/uploads/2021/02/DBRA-Agenda-021021.pdf",  # noqa
-            "title": "DBRA REGULAR MEETING AGENDA",
-        },
+        {"href": "https://www.degc.org/event/dbra-cac-regular-meeting-4/", "title": ""}
     ]
 
 

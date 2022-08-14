@@ -7,7 +7,7 @@ name = "pypi"
 twisted = "*"
 scrapy = "*"
 scrapy-sentry = "*"
-city-scrapers-core = {extras = ["azure"],version = "*"}
+city-scrapers-core = {ref = "main", git = "https://github.com/City-Bureau/city-scrapers-core.git", extras=["azure"]}
 pypiwin32 = {version = "*",markers = "sys_platform == 'win32'"}
 scrapy-wayback-middleware = "*"
 python-dateutil = "*"
@@ -17,4 +17,4 @@ freezegun = "*"
 pytest = "*"
 "flake8" = "*"
 isort = "*"
-black = "==19.10b0"
+black = "==22.6"

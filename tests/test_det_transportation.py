@@ -31,13 +31,13 @@ def test_description():
     cleaned = item["description"]
     ours = " ".join(cleaned.split())
 
-    good_description = """Please join us for the first community input meeting of the year!
+    good_desc = """Please join us for the first community input meeting of the year!
                     January 17, 2019 5:00pm - 7:00pm
                     at the DDOT Admin Bldg. Topics Include:
                     • Review of December 2018 concerns
                     • New Fare Overview (Implementing May 1, 2019)"""
 
-    theirs = " ".join(good_description.split())
+    theirs = " ".join(good_desc.split())
 
     assert ours == theirs
 
