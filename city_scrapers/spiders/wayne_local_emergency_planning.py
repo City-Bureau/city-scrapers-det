@@ -65,7 +65,7 @@ class WayneLocalEmergencyPlanningSpider(CityScrapersSpider):
 
     def _parse_start(self, item):
         """Parse start datetime as a naive datetime object."""
-        dt = parser.parse(item + " 2pm")  # all meetings will be at 2pm
+        dt = parser.parse(item + " 1pm")  # all meetings will be at 1pm
         return dt
 
     def _parse_end(self, item):
@@ -75,7 +75,7 @@ class WayneLocalEmergencyPlanningSpider(CityScrapersSpider):
     def _parse_time_notes(self, item):
         """Parse any additional notes on the timing of the meeting"""
         return (
-            "The Wayne County LEPC meets quarterly. All meetings will be at 2:00 p.m."
+            "The Wayne County LEPC meets quarterly. All meetings will be at 1:00 p.m."
         )
 
     def _parse_all_day(self, item):
