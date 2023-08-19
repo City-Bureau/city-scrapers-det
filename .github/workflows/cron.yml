@@ -7,7 +7,6 @@ on:
 
 env:
   CI: true
-  PIPENV_VENV_IN_PROJECT: true
   SCRAPY_SETTINGS_MODULE: city_scrapers.settings.prod
   AUTOTHROTTLE_MAX_DELAY: 30.0
   AUTOTHROTTLE_START_DELAY: 1.5

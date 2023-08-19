@@ -10,7 +10,6 @@ on:
 
 env:
   CI: true
-  PIPENV_VENV_IN_PROJECT: true
   AUTOTHROTTLE_MAX_DELAY: 30.0
   AUTOTHROTTLE_START_DELAY: 1.5
   AUTOTHROTTLE_TARGET_CONCURRENCY: 3.0
@@ -21,7 +20,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v1
