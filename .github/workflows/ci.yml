@@ -1,10 +1,15 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 env:
   CI: true
-  PIPENV_VENV_IN_PROJECT: true
   AUTOTHROTTLE_MAX_DELAY: 30.0
   AUTOTHROTTLE_START_DELAY: 1.5
   AUTOTHROTTLE_TARGET_CONCURRENCY: 3.0
@@ -13,29 +18,21 @@ jobs:
   check:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 2
       matrix:
-        python-version: [3.8, 3.9, "3.10"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pipenv
 
-      - name: Install Pipenv
-        uses: dschep/install-pipenv-action@v1
-
-      - name: Cache Python dependencies
-        uses: actions/cache@v1
-        with:
-          path: .venv
-          key: pip-${{ matrix.python-version }}-${{ hashFiles('**/Pipfile.lock') }}
-          restore-keys: |
-            pip-${{ matrix.python-version }}-
-            pip-
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
 
       - name: Install dependencies
         run: pipenv sync --dev
