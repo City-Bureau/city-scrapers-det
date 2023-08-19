@@ -14,7 +14,7 @@ test_response = file_response(
 )
 spider = DetEmergencyPlanningSpider()
 
-freezer = freeze_time("2021-03-24")
+freezer = freeze_time("2023-08-19")
 freezer.start()
 
 item = spider.parse_event_page(test_response)
@@ -23,7 +23,7 @@ freezer.stop()
 
 
 def test_title():
-    assert item["title"] == "Local Emergency Planning Committee"
+    assert item["title"] == "National Weather Service SkyWarn Spotter Program Training"
 
 
 def test_description():
@@ -31,11 +31,11 @@ def test_description():
 
 
 def test_start():
-    assert item["start"] == datetime(2021, 2, 16, 14)
+    assert item["start"] == datetime(2023, 4, 29, 13)
 
 
 def test_end():
-    assert item["end"] == datetime(2021, 2, 16, 17)
+    assert item["end"] == datetime(2023, 4, 29, 16)
 
 
 def test_time_notes():
@@ -45,7 +45,7 @@ def test_time_notes():
 def test_id():
     assert (
         item["id"]
-        == "det_emergency_planning/202102161400/x/local_emergency_planning_committee"
+        == "det_emergency_planning/202304291300/x/national_weather_service_skywarn_spotter_program_training"  # noqa
     )
 
 
