@@ -140,7 +140,7 @@ class DetCityMixin:
 
     def _parse_title(self, response):
         """Parse the title, removing the date if included"""
-        title_text = response.css(".page-header > span::text").extract_first()
+        title_text = response.css(".title > span::text").extract_first()
         return re.sub(r"( - )?\d{1,4}-\d{1,2}-\d{1,4}$", "", title_text.strip()).strip()
 
     def _parse_description(self, response):
@@ -213,13 +213,13 @@ class DetCityMixin:
     def _parse_links(self, response, start):
         """Parse links pulled from documents and the agenda"""
         links = self.document_date_map[start.date()]
-        for agenda in response.css(".agenda-min-pres .file-link a"):
-            agenda_url = response.urljoin(agenda.xpath("@href").extract_first())
-            title = agenda.xpath("./text()").extract_first()
+        for link in response.css(".agenda-min-pres .field a"):
+            link_url = response.urljoin(link.xpath("@href").extract_first())
+            title = link.xpath("./text()").extract_first()
             if title.strip().startswith("Agenda"):
                 title = "Agenda"
             links.append(
-                {"title": re.sub(r"\s+", " ", title).strip(), "href": agenda_url}
+                {"title": re.sub(r"\s+", " ", title).strip(), "href": link_url}
             )
         return links
 
