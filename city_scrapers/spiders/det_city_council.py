@@ -14,6 +14,8 @@ class DetCityCouncilSpider(DetCityMixin, CityScrapersSpider):
     def parse_event_page(self, response):
         # Ignore districts, president if title not sufficient
         meeting = super().parse_event_page(response)
+        if meeting is None:
+            return
         tags = self._parse_tags(response)
         # Include Budget Priorities meetings
         if "budget" in meeting["title"].lower():

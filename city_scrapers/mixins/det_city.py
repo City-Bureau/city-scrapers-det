@@ -121,6 +121,9 @@ class DetCityMixin:
     def parse_event_page(self, response):
         """Yield a meeting from an individual event page"""
         start = self._parse_start(response)
+        if not start:
+            return
+
         end, has_end = self._parse_end(response, start)
         meeting = Meeting(
             title=self._parse_title(response),
@@ -156,6 +159,14 @@ class DetCityMixin:
         time_split = re.split(r"-|(?<=m)(?: to)?\s+(?=\d)", time_str)
         start_str = time_split[0].strip()
         start_str = re.sub(r"\.|from", "", start_str.lower())
+        if date_str is None:
+            return
+
+        start_dt = datetime.strptime(date_str[:10], "%Y-%m-%d")
+        # If start str doesn't have numbers, return midnight
+        if not re.search(r"\d+", start_str):
+            return start_dt
+
         if "am" not in start_str and "pm" not in start_str:
             if len(time_split) > 1:
                 end_str = time_split[1].lower().replace(".", "")
@@ -165,8 +176,7 @@ class DetCityMixin:
             start_int = int(re.search(r"\d+", start_str).group())
             start_nums = re.search(r"[\d:]+", start_str).group()
             start_str = start_nums + ("pm" if start_int < 8 else "am")
-        start_date = datetime.strptime(date_str[:10], "%Y-%m-%d").date()
-        return datetime.combine(start_date, self._parse_time_str(start_str))
+        return datetime.combine(start_dt.date(), self._parse_time_str(start_str))
 
     def _parse_end(self, response, start):
         """
