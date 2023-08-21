@@ -5,6 +5,7 @@ from datetime import datetime
 import scrapy
 from city_scrapers_core.constants import BOARD, COMMITTEE
 from city_scrapers_core.items import Meeting
+from dateutil.parser import parse as dateparse
 
 
 class DetRetirementMixin:
@@ -13,6 +14,7 @@ class DetRetirementMixin:
         "address": "500 Woodward Ave. Suite 300 Detroit, MI 48226",
         "name": "Retirement Systems",
     }
+    custom_settings = {"ROBOTSTXT_OBEY": False}
 
     def __init__(self, *args, **kwargs):
         self.document_date_map = defaultdict(list)
@@ -137,7 +139,7 @@ class DetRetirementMixin:
         if "cancel" in time_str.lower():
             time_str = "12:00 am"
         dt_str = re.sub(r"\s+", " ", "{} {}".format(date_str, time_str)).strip()
-        return datetime.strptime(dt_str, "%B %d, %Y %I:%M %p")
+        return dateparse(dt_str)
 
     def _parse_location(self, item):
         location = self.location.copy()
@@ -148,7 +150,8 @@ class DetRetirementMixin:
 
     def _parse_past_documents(self, response):
         for row in response.css("#post tr"):
-            doc_date = self._parse_doc_date(row.css("td::text").extract_first())
+            date_str = row.css("td::text").extract_first().strip()
+            doc_date = self._parse_doc_date(date_str.split(" ")[0])
             self.document_date_map[doc_date] = self._parse_doc_links(row, response)
 
     def _parse_doc_date(self, date_str):
