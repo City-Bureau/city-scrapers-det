@@ -44,11 +44,15 @@ class DetGreatLakesWaterAuthoritySpider(LegistarSpider):
         """
         address = item.get("Meeting Location", "")
         if address:
+            if isinstance(address, dict):
+                address = address.get("label", "")
             address = re.sub(
                 r"\s+",
                 " ",
                 re.sub(r"(\n)|(--em--)|(--em)|(em--)", " ", address),
             ).strip()
+        if "zoom" in address.lower():
+            return {"name": "Remote", "address": ""}
         if "water board building" in address.lower():
             return {
                 "name": "Water Board Building",
