@@ -64,8 +64,10 @@ class WayneCommissionMixin:
             return
         month_str = month_match[0]
         day_str = day_match[0]
-        time_str = (item.xpath(".//td[3]/text()").extract_first() or "").replace(
-            ";", ":"
+        time_str = (
+            (item.xpath(".//td[3]/text()").extract_first() or "")
+            .replace(";", ":")
+            .replace("p.n.", "p.m.")
         )
         return dateparse(
             "{0} {1} {2} {3}".format(month_str, day_str, year_str, time_str)
