@@ -36,10 +36,9 @@ def test_parse_start_end():
     dt_mock.extract.return_value = ["   \n", " 9:10M - 2:00 p.m."]
     response_mock.css.return_value = dt_mock
     spider = MockDetCitySpider()
-    assert spider._parse_start(response_mock) == datetime(2019, 1, 1, 9, 10)
-    assert spider._parse_end(response_mock, datetime(2019, 1, 1, 9, 10))[0] == datetime(
-        2019, 1, 1, 14
-    )
+    start = datetime(2019, 1, 1, 9, 10)
+    assert spider._parse_start(response_mock) == start
+    assert spider._parse_end(response_mock, start) == datetime(2019, 1, 1, 14)
 
 
 def test_parse_time_str():
