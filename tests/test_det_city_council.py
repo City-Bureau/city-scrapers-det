@@ -34,11 +34,11 @@ def test_start():
 
 
 def test_end():
-    assert item["end"] == datetime(2019, 2, 25, 13, 0)
+    assert item["end"] is None
 
 
 def test_time_notes():
-    assert item["time_notes"] == "Estimated 3 hour duration"
+    assert item["time_notes"] == ""
 
 
 def test_id():

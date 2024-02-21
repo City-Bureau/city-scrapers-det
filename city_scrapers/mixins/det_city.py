@@ -124,14 +124,13 @@ class DetCityMixin:
         if not start:
             return
 
-        end, has_end = self._parse_end(response, start)
         meeting = Meeting(
             title=self._parse_title(response),
             description=self._parse_description(response),
             classification=self._parse_classification(response),
             start=start,
-            end=end,
-            time_notes=self._parse_time_notes(has_end),
+            end=self._parse_end(response, start),
+            time_notes="",
             all_day=False,
             location=self._parse_location(response),
             links=self._parse_links(response, start),
@@ -180,7 +179,7 @@ class DetCityMixin:
 
     def _parse_end(self, response, start):
         """
-        Parse the end datetime, returning a boolean indicating whether it was scraped
+        Parse the end datetime.
         """
         time_str = re.sub(
             r"[Nn]oon",
@@ -197,18 +196,14 @@ class DetCityMixin:
             else:
                 end_int = int(re.search(r"\d+", end_str).group())
                 end_str = end_num + ("pm" if end_int < 8 else "am")
-            return (
-                datetime.combine(start.date(), self._parse_time_str(end_str)),
-                True,
-            )
-        else:
-            return start + timedelta(hours=3), False
+            return datetime.combine(start.date(), self._parse_time_str(end_str))
+        return None
 
     def _parse_time_notes(self, has_end):
         """
         Parse time notes based on whether the end datetime was scraped or a default
         """
-        return "" if has_end else "Estimated 3 hour duration"
+        return ""
 
     def _parse_location(self, response):
         """Parse the location name and address from the page"""
