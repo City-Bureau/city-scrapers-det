@@ -6,9 +6,8 @@ name = "pypi"
 [packages]
 twisted = "*"
 scrapy = "<2.10.0"
-scrapy-sentry = "*"
-city-scrapers-core = {ref = "main", git = "https://github.com/City-Bureau/city-scrapers-core.git", extras=["azure"]}
-pypiwin32 = {version = "*",markers = "sys_platform == 'win32'"}
+scrapy-sentry-errors = "1.0.0"
+city-scrapers-core = {ref = "main", git = "https://github.com/City-Bureau/city-scrapers-core.git", extras = ["azure"]}
 scrapy-wayback-middleware = "*"
 python-dateutil = "*"
 
@@ -18,3 +17,6 @@ pytest = "*"
 "flake8" = "*"
 isort = "*"
 black = "*"
+
+[requires]
+python_version = "3.9"
