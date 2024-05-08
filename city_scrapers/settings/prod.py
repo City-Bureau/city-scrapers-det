@@ -4,7 +4,6 @@ from .base import *  # noqa
 
 USER_AGENT = "City Scrapers [production mode]. Learn more and say hello at https://citybureau.org/city-scrapers"  # noqa
 
-# Configure item pipelines
 ITEM_PIPELINES = {
     "city_scrapers_core.pipelines.AzureDiffPipeline": 200,
     "city_scrapers_core.pipelines.MeetingPipeline": 300,
@@ -15,7 +14,7 @@ SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 EXTENSIONS = {
     "city_scrapers_core.extensions.AzureBlobStatusExtension": 100,
-    "scrapy_sentry.extensions.Errors": 10,
+    "scrapy_sentry_errors.extensions.Errors": 10,
     "scrapy.extensions.closespider.CloseSpider": None,
 }
 
@@ -43,5 +42,3 @@ FEED_URI = (
     account_key=AZURE_ACCOUNT_KEY,
     container=AZURE_CONTAINER,
 )
-
-SPIDER_MIDDLEWARES = {}
