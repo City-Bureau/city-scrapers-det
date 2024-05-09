@@ -1,153 +1,117 @@
 import re
 from datetime import datetime, time
 
-from city_scrapers_core.constants import BOARD
+from city_scrapers_core.constants import BOARD, COMMITTEE
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
+from dateutil.parser import parse
 
 
 class DetRegionalConventionSpider(CityScrapersSpider):
     name = "det_regional_convention"
     agency = "Detroit Regional Convention Facility Authority"
     timezone = "America/Detroit"
-    start_urls = ["http://www.drcfa.org/upcoming-meetings"]
+    start_urls = [
+        "https://www.huntingtonplacedetroit.com/about/detroit-regional-convention-facility-authority/upcoming-drcfa-meetings"  # noqa
+    ]
 
     def parse(self, response):
         """
-        `parse` should always `yield` Meeting items.
+        This agency's HTML doesn't have great hierarchy. We parse by
+        looking for header nodes and then checking if the next sibling
+        is a  "faq content_item" node, which indicates a list of meetings.
         """
-        # Scraping upcoming meetings if they become available
-        future_meeting = True
-        for item in response.xpath(
-            "//div[@class='textarea']//div[@class='content clearfix']"
-        )[1:]:
-            title = self._parse_title(item, future_meeting)
-            for meeting in item.xpath(
-                "../following-sibling::div[1][@class='events']//\
-                div[@class='event_list']//div[@class='info clearfix']//h3"
-            ):
-                start = self._parse_start(meeting, future_meeting)
-                if None in (start, title):
-                    continue
-                meeting = Meeting(
-                    title=title,
-                    description=self._parse_description(item),
-                    classification=self._parse_classification(item),
-                    start=start,
-                    end=self._parse_end(item),
-                    all_day=self._parse_all_day(item),
-                    time_notes=self._parse_time_notes(item),
-                    location=self._parse_location(item),
-                    links=self._parse_links(item, future_meeting),
-                    source=self._parse_source(response),
-                )
-
-                meeting["status"] = self._get_status(meeting)
-                meeting["id"] = self._get_id(meeting)
-
-                yield meeting
-
-        future_meeting = False
-        for item in response.xpath("//div[@class='link']/ul/li/a"):
-            start = self._parse_start(item, future_meeting)
-            if start is None:
-                continue
-            meeting = Meeting(
-                title=self._parse_title(item, future_meeting),
-                description=self._parse_description(item),
-                classification=self._parse_classification(item),
-                start=start,
-                end=self._parse_end(item),
-                all_day=self._parse_all_day(item),
-                time_notes=self._parse_time_notes(item),
-                location=self._parse_location(item),
-                links=self._parse_links(item, future_meeting),
-                source=self._parse_source(response),
+        for item in response.css("div.textarea.content_item"):
+            meeting_list = item.xpath(
+                "./following-sibling::div[1][contains(@class, 'faq') and contains(@class, 'content_item')]"  # noqa
             )
+            if meeting_list:
+                # get title from parent node's header
+                title = self._parse_title(item)
+                for meeting in meeting_list.css("div.faq_list_item"):
+                    info_str = meeting.css("p::text").extract_first()
+                    if not info_str:
+                        # some nodes are empty, skip them
+                        continue
+                    start = self.parse_start(info_str)
+                    if not start:
+                        self.log(
+                            f"Failed to parse start time from text: {info_str}"
+                        )  # noqa
+                        continue
+                    meeting = Meeting(
+                        title=title,
+                        description="",
+                        classification=self._parse_classification(title),
+                        start=start,
+                        end=None,
+                        all_day=False,
+                        time_notes="",
+                        location=self._parse_location(info_str),
+                        links=[],
+                        source=response.url,
+                    )
+                    meeting["status"] = self._get_status(meeting)
+                    meeting["id"] = self._get_id(meeting)
+                    yield meeting
 
-            meeting["status"] = self._get_status(meeting)
-            meeting["id"] = self._get_id(meeting)
+    def _parse_title(self, item):
+        header = item.css("div.content.clearfix > h2::text").extract_first()
+        if header is None:
+            raise ValueError(
+                "Header not found – page structure may have changed"
+            )  # noqa
+        # Remove "schedule" from title to get a clean meeting title
+        title = re.sub(r"(?i)schedule", "", header).strip()
+        return title
 
-            yield meeting
+    def parse_start(self, input_str):
+        """
+        Searches text for a date in format "February 1, 2024"
+        or similar and a time in format "12:00 PM" or similar
+        """
+        # parse date
+        date_match = re.search(r"([A-Z][a-z]+ \d{1,2},? \d{4})", input_str)
+        if not date_match:
+            return None
+        try:
+            date_obj = parse(date_match.group(), fuzzy=True)
+            date_obj = date_obj.date()
+        except ValueError:
+            return None
+        except AttributeError:
+            return None
 
-    def _parse_title(self, item, future_meeting):
-        """Parse or generate meeting title."""
-        if future_meeting:
-            for announcement in item.xpath(".//h1/text()"):
-                meeting_announce = announcement.get().split()
-                remove_words = ["dates", "schedule"]
-                title_list = [
-                    word
-                    for word in meeting_announce
-                    if word.lower() not in remove_words
-                ]
-                return " ".join(title_list)
-        else:
-            return "Board of Directors"
+        # parse time in formats
+        time_match = re.search(
+            r"\b([0-9]|1[0-2]):?([0-5][0-9])?\s?(am|pm|AM|PM)\b", input_str
+        )
+        try:
+            time_obj = parse(time_match.group())
+            time_obj = time_obj.time()
+        # default to 12:00 AM if no time found
+        except ValueError:
+            time_obj = time(0, 0)
+        except AttributeError:
+            time_obj = time(0, 0)
 
-    def _parse_description(self, item):
-        """Parse or generate meeting description."""
-        return ""
+        return datetime.combine(date_obj, time_obj)
 
-    def _parse_classification(self, item):
-        """Parse or generate classification from allowed options."""
+    def _parse_location(self, info_str):
+        """
+        Assume location is whatever text is after "in" and
+        collapse whitespace to single spaces so it's cleaner
+        """
+        location_match = re.search(r"in (.+)", info_str)
+        if not location_match:
+            return {"name": "TBD", "address": ""}
+        # clean up whitespace
+        location = re.sub(r"\s+", " ", location_match.group(1)).strip()
+        if "huntington" in location.lower():
+            return {"name": "Huntingdon Place", "address": location}
+        return {"name": "", "address": location}
+
+    def _parse_classification(self, title):
+        if "committee" in title.lower():
+            return COMMITTEE
         return BOARD
-
-    def _parse_start(self, item, future_meeting):
-        """Parse start datetime as a naive datetime object."""
-        if future_meeting:
-            time_unparsed = " ".join(item.xpath("text()").getall()[1:])
-            time_struct = r"(\d{1,2}):(\d{2})(\s*[ap]m?)"
-            time_str = re.search(time_struct, time_unparsed)
-            date_str = " ".join(item.xpath(".//span/text()").getall())
-            if time_str and date_str:
-                datetime_str = date_str + " " + time_str.group(0)
-                datetime_object = datetime.strptime(datetime_str, "%b %d , %Y %I:%M%p")
-                return datetime_object
-            else:
-                return None
-        else:
-            default_starttime = time(8, 30)
-            report_name = item.xpath("./@href")[0].get().split("/")[-1]
-            name_splitted = report_name.replace("-", ".").replace("_", ".").split(".")
-            date_digits = [int(digit) for digit in name_splitted if digit.isdigit()]
-            if len(date_digits) == 3:
-                date_obj = datetime(
-                    2000 + int(str(date_digits[2])[:2]), date_digits[0], date_digits[1]
-                )
-            else:
-                # One meeting does not have similar naming structure
-                return None
-            return datetime.combine(date_obj, default_starttime)
-
-    def _parse_end(self, item):
-        """Parse end datetime as a naive datetime object. Added by pipeline if None"""
-        return None
-
-    def _parse_time_notes(self, item):
-        """Parse any additional notes on the timing of the meeting"""
-        return ""
-
-    def _parse_all_day(self, item):
-        """Parse or generate all-day status. Defaults to False."""
-        return False
-
-    def _parse_location(self, item):
-        """Parse or generate location."""
-        return {
-            "address": "1 Washington Blvd, Detroit, MI 48226",
-            "name": "TCF Center",
-        }
-
-    def _parse_links(self, item, future_meeting):
-        """Parse or generate links."""
-        if future_meeting:
-            return []
-        else:
-            report_link = item.xpath("./@href")[0].get()
-            report_desc = item.xpath("./@title")[0].get()
-            return [{"href": report_link, "title": report_desc}]
-
-    def _parse_source(self, response):
-        """Parse or generate source."""
-        return response.url
