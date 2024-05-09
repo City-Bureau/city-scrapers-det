@@ -41,10 +41,10 @@
         },
         "azure-storage-blob": {
             "hashes": [
-                "sha256:13e16ba42fc54ac2c7e8f976062173a5c82b9ec0594728e134aac372965a11b0",
-                "sha256:c5530dc51c21c9564e4eb706cd499befca8819b10dd89716d3fc90d747556243"
+                "sha256:de6b3bf3a90e9341a6bcb96a2ebe981dffff993e9045818f6549afea827a52a9",
+                "sha256:eeb91256e41d4b5b9bad6a87fd0a8ade07dd58aa52344e2c8d2746e27a017d3b"
             ],
-            "version": "==12.19.1"
+            "version": "==12.20.0"
         },
         "certifi": {
             "hashes": [
@@ -577,7 +577,7 @@
                 "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"
             ],
             "index": "pypi",
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.9.0.post0"
         },
         "pytz": {
@@ -747,7 +747,7 @@
                 "sha256:fd2b8500d64b909289e3541c201b4d672c0e7b458fc20e77bb37f0d71d93a75a"
             ],
             "index": "pypi",
-            "markers": "python_full_version >= '3.6.1' and python_version < '4.0'",
+            "markers": "python_version < '4.0' and python_full_version >= '3.6.1'",
             "version": "==0.3.3"
         },
         "sentry-sdk": {
@@ -779,7 +779,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
         },
         "tldextract": {
@@ -823,7 +823,7 @@
             "markers": "python_version >= '3.7'",
             "version": "==2.1.2"
         },
-        "zope-interface": {
+        "zope.interface": {
             "hashes": [
                 "sha256:014bb94fe6bf1786da1aa044eadf65bc6437bcb81c451592987e5be91e70a91e",
                 "sha256:01a0b3dd012f584afcf03ed814bce0fc40ed10e47396578621509ac031be98bf",
@@ -1026,7 +1026,7 @@
                 "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"
             ],
             "index": "pypi",
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==2.9.0.post0"
         },
         "six": {
@@ -1034,7 +1034,7 @@
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
                 "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
         },
         "tomli": {
