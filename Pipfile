@@ -9,6 +9,9 @@ scrapy-sentry-errors = "1.0.0"
 city-scrapers-core = {ref = "main", git = "https://github.com/City-Bureau/city-scrapers-core.git", extras = ["azure"]}
 scrapy-wayback-middleware = "*"
 python-dateutil = "*"
+harambe-sdk = "*"
+playwright = "*"
+pytz = "*"
 
 [dev-packages]
 freezegun = "*"
