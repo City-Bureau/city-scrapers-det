@@ -7,7 +7,7 @@ on:
 
 env:
   CI: true
-  PYTHON_VERSION: 3.11
+  PYTHON_VERSION: 3.12
   PIPENV_VENV_IN_PROJECT: true
   SCRAPY_SETTINGS_MODULE: city_scrapers.settings.prod
   WAYBACK_ENABLED: true
@@ -40,33 +40,73 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
+          key: v2-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
           restore-keys: |
-            ${{ env.PYTHON_VERSION }}-
-            pip-
+            v2-${{ env.PYTHON_VERSION }}-
 
       - name: Check and conditionally remove invalid virtual environment
         run: |
-          if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
-            echo "Virtual environment exists but Python executable is missing. Rebuilding."
+          # Force rebuild venv to clear dependency conflicts
+          if [ -d ".venv" ]; then
+            echo "Removing existing virtual environment to ensure clean state."
             rm -rf .venv
-          elif [ ! -d ".venv" ]; then
-            echo "No virtual environment found. Will build new one."
-          else
-            echo "Virtual environment appears valid. Reusing."
           fi
+          echo "Will build fresh virtual environment."
 
       - name: Install dependencies
         run: pipenv sync
         env:
           PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
 
-      - name: Run scrapers
-        run: |
-          export PYTHONPATH=$(pwd):$PYTHONPATH
-          ./.deploy.sh
+      # - name: Run Scrapy scrapers
+      #   run: |
+      #     export PYTHONPATH=$(pwd):$PYTHONPATH
+      #     ./.deploy.sh
 
-      - name: Combine output feeds
+      - name: Install Playwright browsers
+        run: pipenv run playwright install chromium
+
+      - name: Run Harambe scrapers
         run: |
           export PYTHONPATH=$(pwd):$PYTHONPATH
-          pipenv run scrapy combinefeeds -s LOG_ENABLED=False
+          ./.deploy-harambe.sh
+
+      - name: Verify Harambe scraper output in Azure
+        run: |
+          # Install Azure CLI storage extension if needed
+          pip install azure-storage-blob
+
+          # List blobs created today for verification
+          python -c "
+          from azure.storage.blob import BlobServiceClient
+          from datetime import datetime
+          import os
+
+          account_name = os.getenv('AZURE_ACCOUNT_NAME')
+          account_key = os.getenv('AZURE_ACCOUNT_KEY')
+          container = os.getenv('AZURE_CONTAINER')
+
+          conn_str = f'DefaultEndpointsProtocol=https;AccountName={account_name};AccountKey={account_key};EndpointSuffix=core.windows.net'
+          blob_service = BlobServiceClient.from_connection_string(conn_str)
+          container_client = blob_service.get_container_client(container)
+
+          now = datetime.now()
+          prefix = f'{now.year}/{now.month:02d}/{now.day:02d}/'
+
+          print(f'Checking for blobs with prefix: {prefix}')
+          blobs = list(container_client.list_blobs(name_starts_with=prefix))
+
+          v2_blobs = [b for b in blobs if 'det_police_fire_retirement_v2' in b.name]
+
+          if v2_blobs:
+              print(f'✓ Found {len(v2_blobs)} det_police_fire_retirement_v2 blob(s):')
+              for blob in v2_blobs:
+                  print(f'  - {blob.name} ({blob.size} bytes)')
+          else:
+              print('⚠ No det_police_fire_retirement_v2 blobs found')
+          "
+
+      # - name: Combine output feeds
+      #   run: |
+      #     export PYTHONPATH=$(pwd):$PYTHONPATH
+      #     pipenv run scrapy combinefeeds -s LOG_ENABLED=False

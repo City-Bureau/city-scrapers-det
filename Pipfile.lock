@@ -1,11 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f0b35fef5e5d5f0adbe88a8f9c97ec4438517fb179c013f3a9127e90529f181f"
+            "sha256": "7d561ef7a66229a1bae85e32ab31cf6abf88129da9a6b87c9894d1d9490725e5"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.11"
+            "python_version": "3.12"
         },
         "sources": [
             {
@@ -736,20 +736,20 @@
         },
         "harambe-core": {
             "hashes": [
-                "sha256:b054909980907f641c38e91319245a118b02e1d30fe2698ad89747bd7680d38d",
-                "sha256:d01d9188f518f8f608b0f4185da385b851025bad69ad8726494f034e3db35997"
+                "sha256:22ace5a9ef92e1465d23140099f122130b54ffd3e2deb17955f4bcf02af80f3d",
+                "sha256:f2e61686779b0f38822c3111eb774082c52cfa0a623b48461a5b4ff93c5e747d"
             ],
             "markers": "python_version >= '3.11' and python_version < '4.0'",
-            "version": "==0.77.5"
+            "version": "==0.76.0"
         },
         "harambe-sdk": {
             "hashes": [
-                "sha256:89268a3b413261bedbc0c8e13dc34fae980760e06c2c1108365f1c3d0a33ea52",
-                "sha256:89dab22f06d753df4aa190e00d68d1f0e46f5337aecc16623791bcf687a6fe0d"
+                "sha256:cfb8d9edc52580558b155b3b70f100af4b077673f8c43216d5f18f2c2f3cb7d1",
+                "sha256:cfe23becf51e43ad850a5791f85fd5e6fe7862ccb10dd4cb9e447a62a88f22e2"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.11' and python_version < '4.0'",
-            "version": "==0.77.5"
+            "version": "==0.76.0"
         },
         "hyperlink": {
             "hashes": [
@@ -1767,12 +1767,12 @@
         },
         "scrapy": {
             "hashes": [
-                "sha256:9c16a482e1474b501f7b7121a4071ddc5cec4c0c7c0320217ed678d4fb8a3e9e",
-                "sha256:bf17588c10e46a9d70c49a05380b749e3c7fba58204a367a5747ce6da2bd204d"
+                "sha256:4be353d6abbb942a9f7e7614ca8b5f3d9037381176ac8d8859c8cac676e74fa0",
+                "sha256:dfbd565384fc3fffeba121f5a3a2d0899ac1f756d41432ca0879933fbfb3401d"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.9'",
-            "version": "==2.13.3"
+            "markers": "python_version >= '3.8'",
+            "version": "==2.11.2"
         },
         "scrapy-sentry-errors": {
             "hashes": [
@@ -2144,7 +2144,7 @@
             "markers": "python_version >= '3.9'",
             "version": "==1.22.0"
         },
-        "zope-interface": {
+        "zope.interface": {
             "hashes": [
                 "sha256:029ea1db7e855a475bf88d9910baab4e94d007a054810e9007ac037a91c67c6f",
                 "sha256:0beb3e7f7dc153944076fcaf717a935f68d39efa9fce96ec97bafcc0c2ea6cab",
