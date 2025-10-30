@@ -21,55 +21,55 @@ env:
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
 jobs:
-  # crawl:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Set up Python ${{ env.PYTHON_VERSION }}
-  #       uses: actions/setup-python@v5
-  #       with:
-  #         python-version: ${{ env.PYTHON_VERSION }}
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
-  #     - name: Install Pipenv
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install pipenv
+      - name: Install Pipenv
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
 
-  #     - name: Cache Python dependencies
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: .venv
-  #         key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
-  #         restore-keys: |
-  #           ${{ env.PYTHON_VERSION }}-
-  #           pip-
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            ${{ env.PYTHON_VERSION }}-
+            pip-
 
-  #     - name: Check and conditionally remove invalid virtual environment
-  #       run: |
-  #         if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
-  #           echo "Virtual environment exists but Python executable is missing. Rebuilding."
-  #           rm -rf .venv
-  #         elif [ ! -d ".venv" ]; then
-  #           echo "No virtual environment found. Will build new one."
-  #         else
-  #           echo "Virtual environment appears valid. Reusing."
-  #         fi
+      - name: Check and conditionally remove invalid virtual environment
+        run: |
+          if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
+            echo "Virtual environment exists but Python executable is missing. Rebuilding."
+            rm -rf .venv
+          elif [ ! -d ".venv" ]; then
+            echo "No virtual environment found. Will build new one."
+          else
+            echo "Virtual environment appears valid. Reusing."
+          fi
 
-  #     - name: Install dependencies
-  #       run: pipenv sync
-  #       env:
-  #         PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: pipenv sync
+        env:
+          PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
 
-      # - name: Run scrapers
-      #   run: |
-      #     export PYTHONPATH=$(pwd):$PYTHONPATH
-      #     ./.deploy.sh
+      - name: Run scrapers
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          ./.deploy.sh
 
-      # - name: Combine output feeds
-      #   run: |
-      #     export PYTHONPATH=$(pwd):$PYTHONPATH
-      #     pipenv run scrapy combinefeeds -s LOG_ENABLED=False
+      - name: Combine output feeds
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          pipenv run scrapy combinefeeds -s LOG_ENABLED=False
 
   crawl_v2:
     runs-on: ubuntu-latest
@@ -121,14 +121,13 @@ jobs:
 
       - name: Verify v2 scraper output in Azure
         run: |
-          # Install Azure CLI storage extension if needed
-          pip install azure-storage-blob
+          pip install azure-storage-blob --quiet
 
-          # List blobs created today for verification
           python -c "
           from azure.storage.blob import BlobServiceClient
           from datetime import datetime
           import os
+          import sys
 
           account_name = os.getenv('AZURE_ACCOUNT_NAME')
           account_key = os.getenv('AZURE_ACCOUNT_KEY')
@@ -141,47 +140,15 @@ jobs:
           now = datetime.now()
           prefix = f'{now.year}/{now.month:02d}/{now.day:02d}/'
 
-          print(f'Checking for blobs with prefix: {prefix}')
-          print(f'Container: {container}')
-          print(f'Storage Account: {account_name}')
-          print('=' * 80)
-
           blobs = list(container_client.list_blobs(name_starts_with=prefix))
-
-          v2_blobs = [b for b in blobs if 'det_police_fire_retirement_v2' in b.name]
+          v2_blobs = [b for b in blobs if '_v2' in b.name]
 
           if v2_blobs:
-              print(f'✓ Found {len(v2_blobs)} det_police_fire_retirement_v2 blob(s):\n')
+              total_size = sum(b.size for b in v2_blobs)
+              print(f'✅ Azure upload successful: {len(v2_blobs)} v2 blob(s), {total_size:,} bytes total')
               for blob in v2_blobs:
-                  blob_client = container_client.get_blob_client(blob.name)
-                  blob_url = blob_client.url
-
-                  # Generate a SAS URL for easy download (valid for 1 hour)
-                  from azure.storage.blob import generate_blob_sas, BlobSasPermissions
-                  from datetime import timedelta
-
-                  sas_token = generate_blob_sas(
-                      account_name=account_name,
-                      container_name=container,
-                      blob_name=blob.name,
-                      account_key=account_key,
-                      permission=BlobSasPermissions(read=True),
-                      expiry=datetime.utcnow() + timedelta(hours=1)
-                  )
-
-                  download_url = f'{blob_url}?{sas_token}'
-
-                  print(f'  Blob: {blob.name}')
-                  print(f'  Size: {blob.size:,} bytes')
-                  print(f'  Last Modified: {blob.last_modified}')
-                  print(f'  Direct URL: {blob_url}')
-                  print(f'  Download URL (valid 1hr): {download_url}')
-                  print('-' * 40)
-          else:
-              print('⚠ No det_police_fire_retirement_v2 blobs found')
-              print(f'\\nAll blobs found with prefix {prefix}:')
-              for blob in blobs[:10]:  # Show first 10 for debugging
                   print(f'  - {blob.name} ({blob.size:,} bytes)')
-              if len(blobs) > 10:
-                  print(f'  ... and {len(blobs) - 10} more')
+          else:
+              print(f'❌ Azure upload failed: No v2 blobs found for {prefix}')
+              sys.exit(1)  # Fail the job to alert about upload issues
           "
