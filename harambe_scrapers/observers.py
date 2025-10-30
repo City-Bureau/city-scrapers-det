@@ -74,14 +74,13 @@ class DataCollector:
         """Upload to Azure in jsonlines format matching Scrapy pattern."""
         try:
             now = datetime.now()
-            # Use .json extension to match Scrapy
             blob_path = (
                 f"{now.year}/{now.month:02d}/{now.day:02d}/"
                 f"{now.hour:02d}{now.minute:02d}/{self.scraper_name}.json"
             )
             blob_client = self.azure_client.get_blob_client(blob_path)
 
-            # Append to blob (jsonlines format)
+            # Jsonlines format
             json_line = json.dumps(data, ensure_ascii=False) + "\n"
             try:
                 existing = blob_client.download_blob().readall().decode("utf-8")
@@ -91,7 +90,6 @@ class DataCollector:
         except Exception as e:
             print(f"  Azure upload failed: {e}")
 
-    # Required observer interface
     async def on_queue_url(self, url, context, options):
         pass
 

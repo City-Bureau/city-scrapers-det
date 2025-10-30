@@ -16,6 +16,7 @@ pytz = "*"
 [dev-packages]
 freezegun = "*"
 pytest = "*"
+pytest-asyncio = "*"
 "flake8" = "*"
 isort = "*"
 black = "*"

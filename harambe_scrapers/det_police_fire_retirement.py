@@ -23,15 +23,11 @@ AGENCY_NAME = "Detroit Police & Fire Retirement System"
 TIMEZONE = "America/Detroit"
 
 
-# Helper functions for data transformation
 def slugify(text):
     """Convert text to URL slug format"""
     text = str(text).lower().strip()
-    # Remove special characters
     text = re.sub(r"[^\w\s-]", "", text)
-    # Replace whitespace and underscores with hyphens
     text = re.sub(r"[\s_]+", "_", text)
-    # Remove leading/trailing hyphens
     text = re.sub(r"^-+|-+$", "", text)
     return text
 
@@ -41,7 +37,6 @@ def generate_id(name, start_time):
 
     Format: scraper_name/YYYYMMDDhhmm/x/meeting_name_slug
     """
-    # Parse datetime from ISO format
     dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
     date_str = dt.strftime("%Y%m%d%H%M")
     name_slug = slugify(name)
@@ -64,7 +59,6 @@ def determine_status(is_cancelled, start_time):
     if is_cancelled:
         return "canceled"
 
-    # Parse start time and compare with current time
     dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
     now = datetime.now(dt.tzinfo)
 
@@ -82,22 +76,17 @@ async def scrape(
 
     async def change_timezone(date):
         timezone = "America/Detroit"
-        # Convert string to naive datetime object
         naive_datetime = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
-        # Get the timezone object
         tz = pytz.timezone(timezone)
-        # Add timezone to the naive datetime
         localized_datetime = tz.localize(naive_datetime)
-        # Format the localized datetime as ISO 8601 string
         iso_format = localized_datetime.strftime("%Y-%m-%dT%H:%M:%S%z")
-        # Adjusting the offset format to include a colon
+        # Adjust offset format to include colon
         iso_format_with_colon = iso_format[:-2] + ":" + iso_format[-2:]
         return iso_format_with_colon
 
     async def parse_classification(title, description_text):
         title = (title or "").lower()
         description_text = (description_text or "").lower()
-        # Define mappings of keywords to classification categories
         classifications = {
             "advisory": "ADVISORY",
             "committee": "COMMITTEE",
@@ -110,20 +99,17 @@ async def scrape(
             "cbo": "CBO",
             "authority": "Authority",
         }
-        # First check the title for each keyword
         for keyword, classification in classifications.items():
             if keyword in title or keyword in description_text:
                 return classification
         return None
 
-    # Extract the title of the page dynamically
     title_element = await page.query_selector("#post p strong")
     title = ""
     if title_element:
         title_text = await title_element.inner_text()
         title = title_text.split("<br>")[0].strip()  # Extract text before <br>
 
-    # Extract the location dynamically
     location_element = await page.query_selector('#post:has-text("Meeting Location")')
     location_name = ""
     location_address = ""
@@ -140,50 +126,40 @@ async def scrape(
                 location_details[1].strip() if len(location_details) > 1 else ""
             )
 
-    # Wait for the table containing meeting details
     await page.wait_for_selector("table tbody")
-
-    # Extract rows from the table
     rows = await page.query_selector_all("table tbody tr")
 
     meetings = []
 
-    # Skip the first row (header row)
+    # Skip header row
     for row in rows[1:]:
-        # Extract columns from the row
         columns = await row.query_selector_all("td")
 
         if len(columns) < 3:
-            continue  # Skip rows that don't have enough columns
+            continue
 
-        # Check if there's a link to a detail page in the row
         detail_link_element = await row.query_selector("a")
         detail_url = None
         if detail_link_element:
             detail_url = await detail_link_element.get_attribute("href")
-            # Make absolute URL if relative
             if detail_url and not detail_url.startswith("http"):
                 base_url = "/".join(current_url.split("/")[:-1])
                 detail_url = f"{base_url}/{detail_url}"
 
-        # Extract date and status
         date_text = (await columns[0].inner_text()).replace("\n", " ").strip()
         time_text = (await columns[1].inner_text()).replace("\n", " ").strip()
         location_text = await columns[2].inner_text()
 
-        # Normalize AM/PM format
         time_text = time_text.replace("A.M.", "AM").replace("P.M.", "PM")
 
-        # Determine if the meeting is cancelled
         is_cancelled = (
             "CANCELLED" in date_text.upper() or "CANCELLED" in time_text.upper()
         )
 
-        # Parse date and time
         try:
             start_time = None
             if is_cancelled:
-                # Remove "CANCELLED" and set default time to 12:00 AM
+                # Remove CANCELLED and default to 12:00 AM
                 date_text = (
                     date_text.replace("CANCELLED", "").replace("CANELLED", "").strip()
                 )
@@ -197,7 +173,6 @@ async def scrape(
         except ValueError as e:
             raise ValueError(f"Error parsing date/time: {e}")
 
-        # Combine row location with current location name
         combined_location_name = (
             f"{location_name}, {location_text.strip()}"
             if location_name
@@ -206,23 +181,16 @@ async def scrape(
 
         classification = await parse_classification(title, "")
         if start_time:
-            # Convert to ISO format with timezone
             start_time_iso = await change_timezone(start_time.isoformat())
-
-            # Generate IDs
             scraper_id = generate_id(title, start_time_iso)
             ocd_id = generate_ocd_id(scraper_id)
-
-            # Determine status
             status = determine_status(is_cancelled, start_time_iso)
 
-            # Check if all-day event (time is midnight)
+            # All-day if time is midnight
             all_day = start_time.time().hour == 0 and start_time.time().minute == 0
 
-            # Clean up title - remove extra whitespace and newlines
             clean_title = " ".join(title.split())
 
-            # Map classification to proper case
             classification_map = {
                 "BOARD": "Board",
                 "COMMITTEE": "Committee",
@@ -231,7 +199,6 @@ async def scrape(
             }
             proper_classification = classification_map.get(classification, "Board")
 
-            # Build meeting in Azure blob format
             meeting = {
                 "_type": "event",
                 "_id": ocd_id,
@@ -269,32 +236,23 @@ async def scrape(
                 },
             }
 
-            # If detail page URL exists, enqueue it with meeting context
             if detail_url:
                 await sdk.enqueue(detail_url, context=meeting)
             else:
-                # No detail page, save meeting as-is
                 meetings.append(meeting)
 
-    # Save all meetings without detail pages
     for meeting in meetings:
         await sdk.save_data(meeting)
 
 
-# Detail scraper - processes detail pages to extract links/documents
 async def scrape_detail(
     sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
 ) -> None:
     """Scrape detail page to extract links and merge with meeting data from context"""
     page: Page = sdk.page
-
-    # Get the meeting data passed from listing scraper
     meeting = context.copy()
 
-    # Try to extract links from detail page
     links = []
-
-    # Look for links in common patterns
     link_elements = await page.query_selector_all(
         "a[href$='.pdf'], a[href*='agenda'], a[href*='minutes'], a[href*='document']"
     )
@@ -304,24 +262,19 @@ async def scrape_detail(
         title = await link_element.inner_text()
 
         if url and title:
-            # Make absolute URL if relative
             if not url.startswith("http"):
                 base_url = "/".join(current_url.split("/")[:3])
                 url = f"{base_url}/{url.lstrip('/')}"
 
             links.append({"note": title.strip(), "url": url})
 
-    # Update meeting with extracted links
     if links:
         meeting["links"] = links
-        # Also add to documents if PDFs
-        meeting["documents"] = []  # Keep empty for now, backend will process
+        meeting["documents"] = []  # Backend will process
 
-    # Save the complete meeting with links
     await sdk.save_data(meeting)
 
 
-# Main execution
 async def main():
     print("=" * 70)
     print("Detroit Police & Fire Retirement System - Board of Trustees")
@@ -335,15 +288,13 @@ async def main():
 
     observer = DataCollector(scraper_name=SCRAPER_NAME, timezone=TIMEZONE)
 
-    # Router function to handle both listing and detail pages
     async def scrape_router(
         sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
     ) -> None:
-        # If context has meeting data, it's a detail page
+        # Detail page if context has meeting data
         if context and "_type" in context:
             await scrape_detail(sdk, current_url, context, *args, **kwargs)
         else:
-            # Otherwise it's the listing page
             await scrape(sdk, current_url, context, *args, **kwargs)
 
     try:
@@ -360,14 +311,12 @@ async def main():
 
         traceback.print_exc()
 
-    # Save results summary
     print()
     print("=" * 70)
     print(f"COMPLETE: {len(observer.data)} meetings collected")
     print("=" * 70)
 
     if observer.data:
-        # Save local backup file
         output_file = (
             OUTPUT_DIR
             / f"det_police_fire_retirement_{datetime.now():%Y%m%d_%H%M%S}.json"
