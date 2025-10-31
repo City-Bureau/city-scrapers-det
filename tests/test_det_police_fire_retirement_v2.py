@@ -17,14 +17,16 @@ from harambe_scrapers.det_police_fire_retirement import (
     SCRAPER_NAME,
     START_URL,
     TIMEZONE,
+    main,
+    scrape,
+)
+from harambe_scrapers.observers import DataCollector
+from harambe_scrapers.utils import (
     determine_status,
     generate_id,
     generate_ocd_id,
-    main,
-    scrape,
     slugify,
 )
-from harambe_scrapers.observers import DataCollector
 
 # Helper function tests
 
@@ -55,12 +57,14 @@ def test_slugify_edge_cases():
 def test_generate_id():
     """Test ID generation"""
     # Normal meeting
-    result = generate_id("Board Meeting", "2025-01-15T09:00:00-05:00")
+    result = generate_id("Board Meeting", "2025-01-15T09:00:00-05:00", SCRAPER_NAME)
     assert result == f"{SCRAPER_NAME}/202501150900/x/board_meeting"
 
     # Complex name (hyphen in middle is kept)
     result = generate_id(
-        "Board of Trustees - Special Meeting #123", "2025-12-31T23:59:00-05:00"
+        "Board of Trustees - Special Meeting #123",
+        "2025-12-31T23:59:00-05:00",
+        SCRAPER_NAME,
     )
     assert (
         result
@@ -68,7 +72,7 @@ def test_generate_id():
     )
 
     # UTC timezone
-    result = generate_id("Test Meeting", "2025-01-15T14:00:00Z")
+    result = generate_id("Test Meeting", "2025-01-15T14:00:00Z", SCRAPER_NAME)
     assert result == f"{SCRAPER_NAME}/202501151400/x/test_meeting"
 
 
@@ -331,7 +335,7 @@ def test_meeting_data_structure():
     """Verify meeting data structure matches expected format"""
     title = "Board Meeting"
     start_time_iso = "2025-01-15T09:00:00-05:00"
-    scraper_id = generate_id(title, start_time_iso)
+    scraper_id = generate_id(title, start_time_iso, SCRAPER_NAME)
     ocd_id = generate_ocd_id(scraper_id)
 
     meeting = {

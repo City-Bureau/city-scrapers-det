@@ -1,7 +1,5 @@
 import asyncio
-import hashlib
 import json
-import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -12,6 +10,7 @@ from harambe.contrib import playwright_harness
 from playwright.async_api import Page
 
 from harambe_scrapers.observers import DataCollector
+from harambe_scrapers.utils import create_ocd_event
 
 # Configuration
 START_URL = (
@@ -23,49 +22,8 @@ AGENCY_NAME = "Detroit Police & Fire Retirement System"
 TIMEZONE = "America/Detroit"
 
 
-def slugify(text):
-    """Convert text to URL slug format"""
-    text = str(text).lower().strip()
-    text = re.sub(r"[^\w\s-]", "", text)
-    text = re.sub(r"[\s_]+", "_", text)
-    text = re.sub(r"^-+|-+$", "", text)
-    return text
-
-
-def generate_id(name, start_time):
-    """Generate cityscrapers.org/id format.
-
-    Format: scraper_name/YYYYMMDDhhmm/x/meeting_name_slug
-    """
-    dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
-    date_str = dt.strftime("%Y%m%d%H%M")
-    name_slug = slugify(name)
-    return f"{SCRAPER_NAME}/{date_str}/x/{name_slug}"
-
-
-def generate_ocd_id(scraper_id):
-    """Generate OCD event ID using MD5 hash"""
-    hash_obj = hashlib.md5(scraper_id.encode())
-    hash_hex = hash_obj.hexdigest()
-    # Format as UUID-like string: 8-4-4-4-12
-    return (
-        f"ocd-event/{hash_hex[:8]}-{hash_hex[8:12]}-{hash_hex[12:16]}-"
-        f"{hash_hex[16:20]}-{hash_hex[20:32]}"
-    )
-
-
-def determine_status(is_cancelled, start_time):
-    """Determine meeting status based on cancelled flag and start time"""
-    if is_cancelled:
-        return "canceled"
-
-    dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
-    now = datetime.now(dt.tzinfo)
-
-    if dt > now:
-        return "tentative"
-    else:
-        return "passed"
+# Helper functions moved to utils.py
+# Importing create_ocd_event which handles everything
 
 
 # This is the scrape function from rscd.org-78051171/listing.py - REUSED AS-IS
@@ -174,9 +132,6 @@ async def scrape(
         classification = await parse_classification(title, "")
         if start_time:
             start_time_iso = await change_timezone(start_time.isoformat())
-            scraper_id = generate_id(title, start_time_iso)
-            ocd_id = generate_ocd_id(scraper_id)
-            status = determine_status(is_cancelled, start_time_iso)
 
             # All-day if time is midnight
             all_day = start_time.time().hour == 0 and start_time.time().minute == 0
@@ -191,42 +146,22 @@ async def scrape(
             }
             proper_classification = classification_map.get(classification, "Board")
 
-            meeting = {
-                "_type": "event",
-                "_id": ocd_id,
-                "updated_at": datetime.now(pytz.timezone(TIMEZONE)).isoformat(),
-                "name": clean_title,
-                "description": "",
-                "classification": proper_classification,
-                "status": status,
-                "all_day": all_day,
-                "start_time": start_time_iso,
-                "end_time": None,
-                "timezone": TIMEZONE,
-                "location": {
-                    "url": "",
-                    "name": combined_location_name,
-                    "coordinates": None,
-                },
-                "documents": [],
-                "links": [],
-                "sources": [{"url": START_URL, "note": ""}],
-                "participants": [
-                    {
-                        "note": "host",
-                        "name": AGENCY_NAME,
-                        "entity_type": "organization",
-                        "entity_name": AGENCY_NAME,
-                        "entity_id": "",
-                    }
-                ],
-                "extras": {
-                    "cityscrapers.org/id": scraper_id,
-                    "cityscrapers.org/agency": AGENCY_NAME,
-                    "cityscrapers.org/time_notes": "",
-                    "cityscrapers.org/address": location_address,
-                },
-            }
+            # Use shared utility to create OCD event
+            meeting = create_ocd_event(
+                title=clean_title,
+                start_time=start_time_iso,
+                scraper_name=SCRAPER_NAME,
+                agency_name=AGENCY_NAME,
+                timezone=TIMEZONE,
+                description="",
+                classification=proper_classification,
+                location={"name": combined_location_name, "address": location_address},
+                links=[],
+                end_time=None,
+                is_cancelled=is_cancelled,
+                source_url=START_URL,
+                all_day=all_day,
+            )
 
             meetings.append(meeting)
 
