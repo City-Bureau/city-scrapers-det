@@ -80,8 +80,11 @@ class DataCollector:
             )
             blob_client = self.azure_client.get_blob_client(blob_path)
 
+            # Remove __url field if it exists (added by Harambe SDK)
+            clean_data = {k: v for k, v in data.items() if k != "__url"}
+
             # Jsonlines format
-            json_line = json.dumps(data, ensure_ascii=False) + "\n"
+            json_line = json.dumps(clean_data, ensure_ascii=False) + "\n"
             try:
                 existing = blob_client.download_blob().readall().decode("utf-8")
                 blob_client.upload_blob(existing + json_line, overwrite=True)

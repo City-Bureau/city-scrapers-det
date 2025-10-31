@@ -22,7 +22,6 @@ from harambe_scrapers.det_police_fire_retirement import (
     generate_ocd_id,
     main,
     scrape,
-    scrape_detail,
     slugify,
 )
 from harambe_scrapers.observers import DataCollector
@@ -221,8 +220,9 @@ async def test_scrape_listing_page(mock_sdk, mock_page_basic, mock_table_rows):
 
     await scrape(mock_sdk, START_URL, {})
 
-    assert mock_sdk.save_data.call_count == 2
-    assert mock_sdk.enqueue.call_count == 1
+    # Now all meetings are saved, none are enqueued
+    assert mock_sdk.save_data.call_count == 3  # All 3 meetings saved
+    assert mock_sdk.enqueue.call_count == 0  # No enqueuing
 
     first_call = mock_sdk.save_data.call_args_list[0][0][0]
     expected_name = (
@@ -240,11 +240,10 @@ async def test_scrape_listing_page(mock_sdk, mock_page_basic, mock_table_rows):
     assert second_call["status"] == "canceled"
     assert second_call["all_day"] is True
 
-    enqueue_call = mock_sdk.enqueue.call_args_list[0]
-    assert "meeting_detail.php?id=123" in enqueue_call[0][0]
-    context = enqueue_call[1]["context"]
-    assert context["_type"] == "event"
-    assert "2025-03-20" in context["start_time"]
+    # Check third meeting (previously enqueued)
+    third_call = mock_sdk.save_data.call_args_list[2][0][0]
+    assert third_call["_type"] == "event"
+    assert "2025-03-20" in third_call["start_time"]
 
 
 @pytest.mark.asyncio
@@ -266,65 +265,6 @@ async def test_scrape_with_invalid_date(mock_sdk, mock_page_basic):
 
     with pytest.raises(ValueError, match="Error parsing date/time"):
         await scrape(mock_sdk, START_URL, {})
-
-
-@pytest.mark.asyncio
-async def test_scrape_detail_page(mock_sdk):
-    """Test scraping a detail page with links"""
-    page = MagicMock()
-
-    agenda_link = MagicMock()
-    agenda_link.get_attribute = AsyncMock(return_value="/documents/agenda.pdf")
-    agenda_link.inner_text = AsyncMock(return_value="Meeting Agenda")
-
-    minutes_link = MagicMock()
-    minutes_link.get_attribute = AsyncMock(
-        return_value="http://example.com/minutes.pdf"
-    )
-    minutes_link.inner_text = AsyncMock(return_value="Meeting Minutes")
-
-    page.query_selector_all = AsyncMock(return_value=[agenda_link, minutes_link])
-    mock_sdk.page = page
-
-    context = {
-        "_type": "event",
-        "_id": "test-id",
-        "name": "Test Meeting",
-        "links": [],
-        "documents": [],
-    }
-
-    await scrape_detail(mock_sdk, "http://example.com/detail", context)
-
-    assert mock_sdk.save_data.call_count == 1
-
-    saved_meeting = mock_sdk.save_data.call_args[0][0]
-    assert len(saved_meeting["links"]) == 2
-    assert saved_meeting["links"][0]["note"] == "Meeting Agenda"
-    assert saved_meeting["links"][0]["url"] == "http://example.com/documents/agenda.pdf"
-    assert saved_meeting["links"][1]["note"] == "Meeting Minutes"
-    assert saved_meeting["links"][1]["url"] == "http://example.com/minutes.pdf"
-    assert saved_meeting["documents"] == []
-
-
-@pytest.mark.asyncio
-async def test_scrape_detail_page_no_links(mock_sdk):
-    """Test detail page with no links"""
-    page = MagicMock()
-    page.query_selector_all = AsyncMock(return_value=[])
-    mock_sdk.page = page
-
-    context = {
-        "_type": "event",
-        "name": "Test Meeting",
-        "links": [],
-    }
-
-    await scrape_detail(mock_sdk, "http://example.com/detail", context)
-
-    assert mock_sdk.save_data.call_count == 1
-    saved_meeting = mock_sdk.save_data.call_args[0][0]
-    assert saved_meeting["links"] == []
 
 
 # DataCollector tests
@@ -525,15 +465,12 @@ async def test_scrape_with_real_browser_and_html(fixture_html):
         await scrape(sdk, START_URL, {})
 
         assert (
-            sdk.save_data.call_count > 0 or sdk.enqueue.call_count > 0
+            sdk.save_data.call_count > 0
         ), "Should have processed meetings from real HTML"
 
         all_meetings = []
         for call in sdk.save_data.call_args_list:
             all_meetings.append(call[0][0])
-        for call in sdk.enqueue.call_args_list:
-            if "context" in call[1]:
-                all_meetings.append(call[1]["context"])
 
         assert (
             len(all_meetings) >= 10

@@ -138,14 +138,6 @@ async def scrape(
         if len(columns) < 3:
             continue
 
-        detail_link_element = await row.query_selector("a")
-        detail_url = None
-        if detail_link_element:
-            detail_url = await detail_link_element.get_attribute("href")
-            if detail_url and not detail_url.startswith("http"):
-                base_url = "/".join(current_url.split("/")[:-1])
-                detail_url = f"{base_url}/{detail_url}"
-
         date_text = (await columns[0].inner_text()).replace("\n", " ").strip()
         time_text = (await columns[1].inner_text()).replace("\n", " ").strip()
         location_text = await columns[2].inner_text()
@@ -236,43 +228,10 @@ async def scrape(
                 },
             }
 
-            if detail_url:
-                await sdk.enqueue(detail_url, context=meeting)
-            else:
-                meetings.append(meeting)
+            meetings.append(meeting)
 
     for meeting in meetings:
         await sdk.save_data(meeting)
-
-
-async def scrape_detail(
-    sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
-) -> None:
-    """Scrape detail page to extract links and merge with meeting data from context"""
-    page: Page = sdk.page
-    meeting = context.copy()
-
-    links = []
-    link_elements = await page.query_selector_all(
-        "a[href$='.pdf'], a[href*='agenda'], a[href*='minutes'], a[href*='document']"
-    )
-
-    for link_element in link_elements:
-        url = await link_element.get_attribute("href")
-        title = await link_element.inner_text()
-
-        if url and title:
-            if not url.startswith("http"):
-                base_url = "/".join(current_url.split("/")[:3])
-                url = f"{base_url}/{url.lstrip('/')}"
-
-            links.append({"note": title.strip(), "url": url})
-
-    if links:
-        meeting["links"] = links
-        meeting["documents"] = []  # Backend will process
-
-    await sdk.save_data(meeting)
 
 
 async def main():
@@ -288,18 +247,9 @@ async def main():
 
     observer = DataCollector(scraper_name=SCRAPER_NAME, timezone=TIMEZONE)
 
-    async def scrape_router(
-        sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
-    ) -> None:
-        # Detail page if context has meeting data
-        if context and "_type" in context:
-            await scrape_detail(sdk, current_url, context, *args, **kwargs)
-        else:
-            await scrape(sdk, current_url, context, *args, **kwargs)
-
     try:
         await SDK.run(
-            scrape_router,
+            scrape,
             START_URL,
             observer=observer,
             harness=playwright_harness,
@@ -321,8 +271,13 @@ async def main():
             OUTPUT_DIR
             / f"det_police_fire_retirement_{datetime.now():%Y%m%d_%H%M%S}.json"
         )
+        # Write JSONLINES format - one JSON object per line
         with open(output_file, "w") as f:
-            json.dump(observer.data, f, indent=2, ensure_ascii=False)
+            for meeting in observer.data:
+                # Remove __url field if it exists (added by Harambe SDK)
+                if "__url" in meeting:
+                    del meeting["__url"]
+                f.write(json.dumps(meeting, ensure_ascii=False) + "\n")
 
         print(f"✓ Saved local backup to: {output_file}")
 
