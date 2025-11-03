@@ -37,6 +37,8 @@ class DataCollector:
         self.timezone = timezone
         self.data = []
         self.azure_client = self._init_azure()
+        # Store run start time to ensure all meetings go to same blob
+        self.run_start_time = datetime.now()
 
     def _init_azure(self):
         """Initialize Azure client if credentials available."""
@@ -73,10 +75,12 @@ class DataCollector:
     def _upload_to_azure(self, data: dict[str, Any]):
         """Upload to Azure in jsonlines format matching Scrapy pattern."""
         try:
-            now = datetime.now()
+            # Use run start time so all meetings from this run go to same blob
             blob_path = (
-                f"{now.year}/{now.month:02d}/{now.day:02d}/"
-                f"{now.hour:02d}{now.minute:02d}/{self.scraper_name}.json"
+                f"{self.run_start_time.year}/{self.run_start_time.month:02d}/"
+                f"{self.run_start_time.day:02d}/"
+                f"{self.run_start_time.hour:02d}{self.run_start_time.minute:02d}/"
+                f"{self.scraper_name}.json"
             )
             blob_client = self.azure_client.get_blob_client(blob_path)
 
