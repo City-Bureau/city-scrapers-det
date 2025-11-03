@@ -13,15 +13,21 @@ from typing import Any, Dict, Optional
 import pytz
 from playwright.async_api import async_playwright
 
-from harambe_scrapers.det_police_department.category import scrape as category_scrape
-from harambe_scrapers.det_police_department.detail import scrape as detail_scrape
-from harambe_scrapers.det_police_department.listing import scrape as listing_scrape
+from harambe_scrapers.extractor.det_police_department.category import (
+    scrape as category_scrape,
+)
+from harambe_scrapers.extractor.det_police_department.detail import (
+    scrape as detail_scrape,
+)
+from harambe_scrapers.extractor.det_police_department.listing import (
+    scrape as listing_scrape,
+)
 from harambe_scrapers.observers import DataCollector
 from harambe_scrapers.utils import create_ocd_event
 
 # Configuration
 OUTPUT_DIR = Path("harambe_scrapers/output")
-SCRAPER_NAME = "det_police_department"
+SCRAPER_NAME = "det_police_department_v2"
 AGENCY_NAME = "Detroit Police Department"
 TIMEZONE = "America/Detroit"
 
