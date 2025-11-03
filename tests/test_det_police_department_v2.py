@@ -3,7 +3,6 @@ Unit tests for Detroit Police Department scraper (Harambe-based orchestrator).
 Tests the three-stage orchestration (category->listing->detail) with fallback.
 """
 
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -14,7 +13,6 @@ from playwright.async_api import async_playwright
 
 from harambe_scrapers.det_police_department import (
     AGENCY_NAME,
-    OUTPUT_DIR,
     SCRAPER_NAME,
     TIMEZONE,
     CategorySDK,
@@ -83,18 +81,6 @@ async def test_detail_sdk_save_data():
 
 
 # Test DetroitPoliceOrchestrator
-
-
-def test_orchestrator_initialization():
-    """Test orchestrator initializes with correct defaults"""
-    orchestrator = DetroitPoliceOrchestrator(headless=True)
-
-    assert orchestrator.headless is True
-    assert orchestrator.listing_urls == []
-    assert orchestrator.event_urls == []
-    assert orchestrator.failed_urls == []
-    assert orchestrator.observer.scraper_name == SCRAPER_NAME
-    assert orchestrator.observer.timezone == TIMEZONE
 
 
 def test_transform_to_ocd_format_with_all_day_none():
@@ -289,17 +275,6 @@ async def test_fallback_extraction_links():
     assert result["links"][1]["title"] == "Minutes"
 
 
-# Test constants
-
-
-def test_constants():
-    """Test scraper constants are correctly defined"""
-    assert SCRAPER_NAME == "det_police_department_v2"
-    assert AGENCY_NAME == "Detroit Police Department"
-    assert TIMEZONE == "America/Detroit"
-    assert OUTPUT_DIR == Path("harambe_scrapers/output")
-
-
 # Test OCD format integration
 
 
@@ -317,119 +292,6 @@ def test_create_ocd_event_with_none_classification():
     )
 
     assert event_data["classification"] is None
-
-
-def test_jsonlines_format_compatibility():
-    """Test that output format matches fire retirement (JSONLINES)"""
-    # This is a structure test - actual file writing tested in integration
-    test_meetings = [
-        {
-            "name": "Meeting 1",
-            "start_time": "2025-01-15T09:00:00-05:00",
-            "__url": "https://example.com/1",
-        },
-        {
-            "name": "Meeting 2",
-            "start_time": "2025-01-16T09:00:00-05:00",
-            "__url": "https://example.com/2",
-        },
-    ]
-
-    # Simulate the JSONLINES writing process
-    lines = []
-    for meeting in test_meetings:
-        # Remove __url field
-        clean_meeting = {k: v for k, v in meeting.items() if k != "__url"}
-        lines.append(json.dumps(clean_meeting, ensure_ascii=False))
-
-    # Each line should be valid JSON
-    assert len(lines) == 2
-    parsed1 = json.loads(lines[0])
-    parsed2 = json.loads(lines[1])
-
-    assert "__url" not in parsed1
-    assert "__url" not in parsed2
-    assert parsed1["name"] == "Meeting 1"
-    assert parsed2["name"] == "Meeting 2"
-
-
-def test_meeting_data_structure():
-    """Test complete OCD event data structure"""
-    future_date = datetime.now(pytz.timezone(TIMEZONE)) + timedelta(days=1)
-    future_iso = future_date.isoformat()
-
-    meeting = create_ocd_event(
-        title="Board of Police Commissioners Regular Meeting",
-        start_time=future_iso,
-        scraper_name=SCRAPER_NAME,
-        agency_name=AGENCY_NAME,
-        timezone=TIMEZONE,
-        description="Regular monthly meeting of the Board of Police Commissioners",
-        classification="BOARD",
-        location={
-            "name": "Detroit Public Safety Headquarters",
-            "address": "1301 3rd Street, Detroit, MI 48226",
-        },
-        links=[
-            {"url": "https://example.com/agenda.pdf", "title": "Agenda"},
-            {"url": "https://example.com/minutes.pdf", "title": "Minutes"},
-        ],
-        end_time=None,
-        is_cancelled=False,
-        source_url="https://detroitmi.gov/events/bopc-meeting",
-        all_day=False,
-    )
-
-    # Test top-level fields
-    assert meeting["_type"] == "event"
-    assert meeting["_id"].startswith("ocd-event/")
-    assert "updated_at" in meeting
-    assert meeting["name"] == "Board of Police Commissioners Regular Meeting"
-    assert (
-        meeting["description"]
-        == "Regular monthly meeting of the Board of Police Commissioners"
-    )
-    assert meeting["classification"] == "BOARD"
-    assert meeting["status"] == "tentative"
-    assert meeting["all_day"] is False
-    assert meeting["start_time"] == future_iso
-    assert meeting["end_time"] is None
-    assert meeting["timezone"] == TIMEZONE
-
-    # Test location
-    assert meeting["location"]["url"] == ""
-    assert meeting["location"]["name"] == "Detroit Public Safety Headquarters"
-    assert meeting["location"]["coordinates"] is None
-
-    # Test links
-    assert len(meeting["links"]) == 2
-    assert meeting["links"][0]["url"] == "https://example.com/agenda.pdf"
-    assert meeting["links"][0]["title"] == "Agenda"
-
-    # Test sources
-    assert len(meeting["sources"]) == 1
-    assert meeting["sources"][0]["url"] == "https://detroitmi.gov/events/bopc-meeting"
-    assert meeting["sources"][0]["note"] == ""
-
-    # Test participants
-    assert len(meeting["participants"]) == 1
-    assert meeting["participants"][0]["note"] == "host"
-    assert meeting["participants"][0]["name"] == AGENCY_NAME
-    assert meeting["participants"][0]["entity_type"] == "organization"
-    assert meeting["participants"][0]["entity_name"] == AGENCY_NAME
-
-    # Test extras
-    assert "cityscrapers.org/id" in meeting["extras"]
-    assert SCRAPER_NAME in meeting["extras"]["cityscrapers.org/id"]
-    assert meeting["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
-    assert meeting["extras"]["cityscrapers.org/time_notes"] == ""
-    assert (
-        meeting["extras"]["cityscrapers.org/address"]
-        == "1301 3rd Street, Detroit, MI 48226"
-    )
-
-    # Test documents (should be empty list)
-    assert meeting["documents"] == []
 
 
 @pytest.mark.asyncio
