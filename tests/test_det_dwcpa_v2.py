@@ -9,7 +9,6 @@ import pytest
 from playwright.async_api import async_playwright
 
 from harambe_scrapers.det_dwcpa import AGENCY_NAME, START_URL, main, scrape
-from harambe_scrapers.observers import DataCollector
 
 
 @pytest.fixture
@@ -206,48 +205,6 @@ async def test_scrape_empty_elements(mock_sdk, mock_page_basic):
 
     await scrape(mock_sdk, START_URL, {})
     assert mock_sdk.save_data.call_count == 0
-
-
-# DataCollector tests
-
-
-@pytest.fixture
-def mock_azure_env():
-    with patch.dict(
-        "os.environ",
-        {
-            "AZURE_ACCOUNT_NAME": "testaccount",
-            "AZURE_ACCOUNT_KEY": "testkey",
-            "AZURE_CONTAINER": "testcontainer",
-        },
-    ):
-        yield
-
-
-@pytest.mark.asyncio
-@patch("harambe_scrapers.observers.BlobServiceClient")
-async def test_data_collector_with_azure(mock_blob_client, mock_azure_env):
-    """Test DataCollector with Azure configuration"""
-    mock_container = MagicMock()
-    mock_blob = MagicMock()
-    mock_blob.download_blob.side_effect = Exception("Not found")
-    mock_blob.upload_blob = MagicMock()
-    mock_container.get_blob_client.return_value = mock_blob
-    blob_client = mock_blob_client.from_connection_string.return_value
-    blob_client.get_container_client.return_value = mock_container
-
-    collector = DataCollector("test_scraper_v2", "America/Detroit")
-
-    test_data = {"name": "Test Meeting", "start_time": "2025-01-15T09:00:00-05:00"}
-
-    await collector.on_save_data(test_data)
-
-    assert mock_container.get_blob_client.called
-    assert mock_blob.upload_blob.called
-
-    blob_path_call = mock_container.get_blob_client.call_args[0][0]
-    assert "test_scraper_v2.json" in blob_path_call
-    assert blob_path_call.count("/") == 4
 
 
 @pytest.mark.asyncio

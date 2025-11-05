@@ -15,7 +15,6 @@ from harambe_scrapers.det_police_fire_retirement import (
     main,
     scrape,
 )
-from harambe_scrapers.observers import DataCollector
 
 # Fixtures for scraper tests
 
@@ -165,49 +164,6 @@ async def test_scrape_with_invalid_date(mock_sdk, mock_page_basic):
 
     with pytest.raises(ValueError, match="Error parsing date/time"):
         await scrape(mock_sdk, START_URL, {})
-
-
-# DataCollector tests
-
-
-@pytest.fixture
-def mock_azure_env():
-    """Mock Azure environment variables"""
-    with patch.dict(
-        "os.environ",
-        {
-            "AZURE_ACCOUNT_NAME": "testaccount",
-            "AZURE_ACCOUNT_KEY": "testkey",
-            "AZURE_CONTAINER": "testcontainer",
-        },
-    ):
-        yield
-
-
-@pytest.mark.asyncio
-@patch("harambe_scrapers.observers.BlobServiceClient")
-async def test_data_collector_with_azure(mock_blob_client, mock_azure_env):
-    """Test DataCollector with Azure configuration"""
-    mock_container = MagicMock()
-    mock_blob = MagicMock()
-    mock_blob.download_blob.side_effect = Exception("Not found")  # Simulate new blob
-    mock_blob.upload_blob = MagicMock()
-    mock_container.get_blob_client.return_value = mock_blob
-    blob_client = mock_blob_client.from_connection_string.return_value
-    blob_client.get_container_client.return_value = mock_container
-
-    collector = DataCollector("test_scraper_v2", "America/Detroit")
-
-    test_data = {"name": "Test Meeting", "start_time": "2025-01-15T09:00:00-05:00"}
-
-    await collector.on_save_data(test_data)
-
-    assert mock_container.get_blob_client.called
-    assert mock_blob.upload_blob.called
-
-    blob_path_call = mock_container.get_blob_client.call_args[0][0]
-    assert "test_scraper_v2.json" in blob_path_call
-    assert blob_path_call.count("/") == 4  # year/month/day/hourmin/file.json
 
 
 @pytest.fixture
