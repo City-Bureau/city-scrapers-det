@@ -21,55 +21,55 @@ env:
   SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
 jobs:
-  crawl:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  # crawl:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+  #     - name: Set up Python ${{ env.PYTHON_VERSION }}
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install Pipenv
-        run: |
-          python -m pip install --upgrade pip
-          pip install pipenv
+  #     - name: Install Pipenv
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install pipenv
 
-      - name: Cache Python dependencies
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
-          restore-keys: |
-            ${{ env.PYTHON_VERSION }}-
-            pip-
+  #     - name: Cache Python dependencies
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: .venv
+  #         key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
+  #         restore-keys: |
+  #           ${{ env.PYTHON_VERSION }}-
+  #           pip-
 
-      - name: Check and conditionally remove invalid virtual environment
-        run: |
-          if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
-            echo "Virtual environment exists but Python executable is missing. Rebuilding."
-            rm -rf .venv
-          elif [ ! -d ".venv" ]; then
-            echo "No virtual environment found. Will build new one."
-          else
-            echo "Virtual environment appears valid. Reusing."
-          fi
+  #     - name: Check and conditionally remove invalid virtual environment
+  #       run: |
+  #         if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
+  #           echo "Virtual environment exists but Python executable is missing. Rebuilding."
+  #           rm -rf .venv
+  #         elif [ ! -d ".venv" ]; then
+  #           echo "No virtual environment found. Will build new one."
+  #         else
+  #           echo "Virtual environment appears valid. Reusing."
+  #         fi
 
-      - name: Install dependencies
-        run: pipenv sync
-        env:
-          PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+  #     - name: Install dependencies
+  #       run: pipenv sync
+  #       env:
+  #         PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
 
-      - name: Run scrapers
-        run: |
-          export PYTHONPATH=$(pwd):$PYTHONPATH
-          ./.deploy.sh
+  #     - name: Run scrapers
+  #       run: |
+  #         export PYTHONPATH=$(pwd):$PYTHONPATH
+  #         ./.deploy.sh
 
-      - name: Combine output feeds
-        run: |
-          export PYTHONPATH=$(pwd):$PYTHONPATH
-          pipenv run scrapy combinefeeds -s LOG_ENABLED=False
+  #     - name: Combine output feeds
+  #       run: |
+  #         export PYTHONPATH=$(pwd):$PYTHONPATH
+  #         pipenv run scrapy combinefeeds -s LOG_ENABLED=False
 
   crawl_v2:
     runs-on: ubuntu-latest
@@ -114,10 +114,17 @@ jobs:
       - name: Install Playwright browsers
         run: pipenv run playwright install chromium
 
-      - name: Run v2 scrapers
+      - name: Run v2 scrapers (Wayne Commission v2 only for debugging)
         run: |
           export PYTHONPATH=$(pwd):$PYTHONPATH
-          ./.deploy-harambe.sh
+          # Temporarily run only Wayne Commission v2 for debugging
+          echo "Starting Wayne County Commission v2 scraper only (debug mode)..."
+          echo "========================================"
+          pipenv run python harambe_scrapers/wayne_commission.py
+          echo "========================================"
+          echo "Wayne County Commission v2 scraper completed"
+          # Original command (commented out for debugging):
+          # ./.deploy-harambe.sh
 
       - name: Verify v2 scraper output in Azure
         run: |
@@ -141,14 +148,16 @@ jobs:
           prefix = f'{now.year}/{now.month:02d}/{now.day:02d}/'
 
           blobs = list(container_client.list_blobs(name_starts_with=prefix))
-          v2_blobs = [b for b in blobs if '_v2' in b.name]
+          # Temporarily looking for Wayne Commission v2 files only (debug mode)
+          wayne_blobs = [b for b in blobs if 'wayne_commission_v2' in b.name or 'wayne_full_commission_v2' in b.name]
 
-          if v2_blobs:
-              total_size = sum(b.size for b in v2_blobs)
-              print(f'✅ Azure upload successful: {len(v2_blobs)} v2 blob(s), {total_size:,} bytes total')
-              for blob in v2_blobs:
+          if wayne_blobs:
+              total_size = sum(b.size for b in wayne_blobs)
+              print(f'✅ Azure upload successful: {len(wayne_blobs)} Wayne Commission v2 blob(s), {total_size:,} bytes total')
+              for blob in wayne_blobs:
                   print(f'  - {blob.name} ({blob.size:,} bytes)')
           else:
-              print(f'❌ Azure upload failed: No v2 blobs found for {prefix}')
+              print(f'❌ Azure upload failed: No Wayne Commission v2 blobs found for {prefix}')
+              print(f'Note: This workflow is configured to run only Wayne Commission v2 scraper for debugging')
               sys.exit(1)  # Fail the job to alert about upload issues
           "

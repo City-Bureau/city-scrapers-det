@@ -13,3 +13,7 @@ exclude = '''
   | tests/files
 )/
 '''
+
+[tool.isort]
+profile = "black"
+line_length = 88
