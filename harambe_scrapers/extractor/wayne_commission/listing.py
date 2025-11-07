@@ -57,42 +57,17 @@ async def scrape(
 
         return None
 
-    scraper_name = [
-        "Ways & Means",
-        "Audit",
-        "Building Authority",
-        "Committee of the Whole",
-        "Full Commission",
-        "Economic Development",
-        "Government Operations",
-        "Health and Human Services",
-        "Public Safety",
-        "Public Services",
-        "Election Commission",
-        "Local Emergency Planning",
-        "Ethics Board",
-    ]
     scraperId = []
     print("[LISTING] Starting page navigation...")
-    await page.goto(
-        "https://www.waynecountymi.gov/Government/County-Calendar",
-        wait_until="networkidle",
-    )
+    await page.goto("https://www.waynecountymi.gov/Government/County-Calendar")
     print("[LISTING] Page loaded, waiting for calendar filter...")
-    await page.wait_for_selector(".calendar-filter", timeout=30000)
+    await page.wait_for_selector(".calendar-filter")
     print("[LISTING] Calendar filter found, getting meeting types...")
     meeting_types = await page.query_selector_all(".calendar-filter-list-item")
     print(f"[LISTING] Found {len(meeting_types)} meeting types")
     for type in meeting_types:
-        scr_name_element = await type.query_selector(
-            "label .calendar-filter-list-item-text"
-        )
-        scr_name = await scr_name_element.inner_text()
-        for scraper in scraper_name:
-            if scraper in scr_name:
-                ID = await type.get_attribute("data-filter-option-id")
-                scraperId.append(ID)
-                print(f"[LISTING]   Added filter ID for: {scr_name}")
+        ID = await type.get_attribute("data-filter-option-id")
+        scraperId.append(ID)
 
     print(f"[LISTING] Collected {len(scraperId)} scraper IDs")
     if scraperId:
