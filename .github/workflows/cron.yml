@@ -72,6 +72,7 @@ jobs:
           pipenv run scrapy combinefeeds -s LOG_ENABLED=False
 
   crawl_v2:
+    needs: [crawl]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -152,3 +153,8 @@ jobs:
               print(f'❌ Azure upload failed: No v2 scraper blobs found for {prefix}')
               sys.exit(1)  # Fail the job to alert about upload issues
           "
+
+      - name: Merge conventional and Harambe outputs
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          pipenv run python scripts/merge_harambe_to_latest.py
