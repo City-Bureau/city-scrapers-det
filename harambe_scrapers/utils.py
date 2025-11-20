@@ -63,6 +63,7 @@ def create_ocd_event(
     is_cancelled=False,
     source_url="",
     all_day=False,
+    last_scraped_date=None,
 ):
     """
     Create a standardized OCD Event format dictionary.
@@ -74,38 +75,37 @@ def create_ocd_event(
         agency_name: Name of the agency hosting the event
         timezone: Timezone string (e.g., "America/Detroit")
         description: Event description (optional)
-        classification: Event classification (optional, default "COMMITTEE")
+        classification: Event classification (optional)
         location: Location dict with 'name' and 'address' keys (optional)
         links: List of link dicts with 'url' and 'title' keys (optional)
         end_time: ISO format datetime string (optional)
         is_cancelled: Boolean indicating if event is cancelled (optional)
         source_url: URL where the event was found (optional)
+        all_day: Boolean indicating if event is all day (optional)
+        last_scraped_date: ISO datetime when scraped (optional, defaults to now)
 
     Returns:
         Dictionary in OCD Event format
     """
-    # Generate IDs
     scraper_id = generate_id(title, start_time, scraper_name)
     ocd_id = generate_ocd_id(scraper_id)
 
-    # Determine status
     status = determine_status(is_cancelled, start_time)
 
-    # Default location if not provided
     if location is None:
         location = {"name": "", "address": ""}
 
-    # Ensure links is a list
     if links is None:
         links = []
 
-    # Handle classification - don't modify if provided, keep as-is
-    # Different scrapers use different casing conventions
+    if last_scraped_date is None:
+        last_scraped_date = datetime.now().isoformat()
 
     return {
         "_type": "event",
         "_id": ocd_id,
         "updated_at": datetime.now().isoformat(),
+        "last_scraped_date": last_scraped_date,
         "name": title,
         "description": description,
         "classification": classification,
