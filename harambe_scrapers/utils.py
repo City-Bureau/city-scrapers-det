@@ -63,7 +63,6 @@ def create_ocd_event(
     is_cancelled=False,
     source_url="",
     all_day=False,
-    last_scraped_date=None,
 ):
     """
     Create a standardized OCD Event format dictionary.
@@ -82,7 +81,6 @@ def create_ocd_event(
         is_cancelled: Boolean indicating if event is cancelled (optional)
         source_url: URL where the event was found (optional)
         all_day: Boolean indicating if event is all day (optional)
-        last_scraped_date: ISO datetime when scraped (optional, defaults to now)
 
     Returns:
         Dictionary in OCD Event format
@@ -98,14 +96,10 @@ def create_ocd_event(
     if links is None:
         links = []
 
-    if last_scraped_date is None:
-        last_scraped_date = datetime.now().isoformat()
-
     return {
         "_type": "event",
         "_id": ocd_id,
         "updated_at": datetime.now().isoformat(),
-        "last_scraped_date": last_scraped_date,
         "name": title,
         "description": description,
         "classification": classification,

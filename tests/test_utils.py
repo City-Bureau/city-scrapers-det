@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 import pytz
 
 from harambe_scrapers.utils import (
-    create_ocd_event,
     determine_status,
     generate_id,
     generate_ocd_id,
@@ -104,32 +103,3 @@ def test_determine_status():
 
     assert determine_status(False, past_time) == "passed"
     assert determine_status(False, current_time) == "passed"
-
-
-def test_create_ocd_event_last_scraped_date():
-    """Test that last_scraped_date is automatically added"""
-    # Test automatic addition
-    event = create_ocd_event(
-        title="Test Meeting",
-        start_time="2025-01-15T14:00:00-05:00",
-        scraper_name="test_scraper",
-        agency_name="Test Agency",
-        timezone="America/Detroit",
-    )
-
-    # Verify last_scraped_date exists
-    assert "last_scraped_date" in event
-    assert event["last_scraped_date"] is not None
-
-    # Test custom last_scraped_date is preserved
-    custom_date = "2025-01-01T12:00:00.123456"
-    event_custom = create_ocd_event(
-        title="Test Meeting",
-        start_time="2025-01-15T14:00:00-05:00",
-        scraper_name="test_scraper",
-        agency_name="Test Agency",
-        timezone="America/Detroit",
-        last_scraped_date=custom_date,
-    )
-
-    assert event_custom["last_scraped_date"] == custom_date
