@@ -1,5 +1,5 @@
 """
-Unit tests for Wayne County Commission v2 scraper (Harambe-based orchestrator).
+Unit tests for Wayne County Commission scraper (Harambe-based orchestrator).
 Tests the two-stage orchestration (listing->detail).
 """
 

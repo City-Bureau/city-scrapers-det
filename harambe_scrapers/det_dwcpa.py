@@ -13,15 +13,13 @@ from playwright.async_api import Page
 from harambe_scrapers.observers import DataCollector
 from harambe_scrapers.utils import create_ocd_event
 
-# Configuration
 START_URL = "https://portdetroit.com/board-meeting-schedule/"
 OUTPUT_DIR = Path("harambe_scrapers/output")
-SCRAPER_NAME = "det_dwcpa_v2"
+SCRAPER_NAME = "det_dwcpa"
 AGENCY_NAME = "Detroit Wayne County Port Authority"
 TIMEZONE = "America/Detroit"
 
 
-# This is the scrape function from portdetroit.com-24b335a8/listing.py - REUSED AS-IS
 async def scrape(
     sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
 ) -> None:

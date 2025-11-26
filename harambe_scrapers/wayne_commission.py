@@ -1,5 +1,5 @@
 """
-Wayne County Commission v2 scraper using Harambe orchestrator.
+Wayne County Commission scraper using Harambe orchestrator.
 
 This scraper consolidates all Wayne County Commission meetings including:
 - Ways & Means
@@ -38,10 +38,10 @@ SCRAPER_NAME = (
     "wayne_health_human_services,wayne_economic_development,wayne_ethics_board,"
     "wayne_government_operations,wayne_ways_means,wayne_audit,wayne_public_services,"
     "wayne_building_authority,wayne_election_commission,wayne_public_safety,wayne_cow,"
-    "wayne_local_emergency_planning,wayne_full_commission_v2"
+    "wayne_local_emergency_planning,wayne_full_commission"
 )
 # Use shorter name for file output
-OUTPUT_NAME = "wayne_commission_v2"
+OUTPUT_NAME = "wayne_commission"
 TIMEZONE = "America/Detroit"
 START_URL = "https://www.waynecountymi.gov/Government/County-Calendar"
 OUTPUT_DIR = Path("harambe_scrapers/output")

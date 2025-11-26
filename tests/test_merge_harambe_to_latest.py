@@ -4,7 +4,6 @@ Unit tests for scripts/merge_harambe_to_latest.py
 Tests all core functionality including:
 - JSONLINES parsing for download/upload
 - Local file reading with latest selection
-- Azure blob fetching
 - Scraper filtering
 - Dynamic scraper discovery
 """
@@ -116,10 +115,10 @@ class TestReadHarambeFromLocal:
         output_dir.mkdir()
 
         # Create multiple files for same scraper
-        (output_dir / "cle_planning_v2_20251110_100000.json").write_text(
+        (output_dir / "cle_planning_20251110_100000.json").write_text(
             '{"id": "old1", "name": "Old Meeting"}\n'
         )
-        (output_dir / "cle_planning_v2_20251113_120000.json").write_text(
+        (output_dir / "cle_planning_20251113_120000.json").write_text(
             '{"id": "new1", "name": "New Meeting 1"}\n'
             '{"id": "new2", "name": "New Meeting 2"}\n'
         )
@@ -136,10 +135,10 @@ class TestReadHarambeFromLocal:
         output_dir = tmp_path / "output"
         output_dir.mkdir()
 
-        (output_dir / "cle_planning_v2_20251113_120000.json").write_text(
+        (output_dir / "cle_planning_20251113_120000.json").write_text(
             '{"id": "planning1"}\n'
         )
-        (output_dir / "cle_building_v2_20251113_120000.json").write_text(
+        (output_dir / "cle_building_20251113_120000.json").write_text(
             '{"id": "building1"}\n'
         )
 
@@ -170,12 +169,12 @@ class TestFilterOutScrapers:
         """Test removing Harambe scraper meetings."""
         meetings = [
             {"id": "cle_city_council/20251113/1400/meeting"},
-            {"id": "cle_planning_v2/20251113/1400/meeting"},
-            {"id": "cle_building_standards_v2/20251113/1500/meeting"},
+            {"id": "cle_planning/20251113/1400/meeting"},
+            {"id": "cle_building_standards/20251113/1500/meeting"},
             {"id": "cle_landmarks/20251113/1600/meeting"},
         ]
 
-        scrapers_to_remove = ["cle_planning_v2", "cle_building_standards_v2"]
+        scrapers_to_remove = ["cle_planning", "cle_building_standards"]
         result = filter_out_scrapers(meetings, scrapers_to_remove)
 
         assert len(result) == 2
@@ -189,28 +188,28 @@ class TestFilterOutScrapers:
             {"id": "cle_landmarks/20251113/1600/meeting"},
         ]
 
-        result = filter_out_scrapers(meetings, ["cle_planning_v2"])
+        result = filter_out_scrapers(meetings, ["cle_planning"])
 
         assert len(result) == 2
 
     def test_filter_all_matches(self):
         """Test filtering when all meetings match."""
         meetings = [
-            {"id": "cle_planning_v2/20251113/1400/meeting"},
-            {"id": "cle_building_v2/20251113/1500/meeting"},
+            {"id": "cle_planning/20251113/1400/meeting"},
+            {"id": "cle_building/20251113/1500/meeting"},
         ]
 
-        result = filter_out_scrapers(meetings, ["cle_planning_v2", "cle_building_v2"])
+        result = filter_out_scrapers(meetings, ["cle_planning", "cle_building"])
 
         assert len(result) == 0
 
     def test_filter_with_underscore_id_field(self):
         """Test filtering with _id field instead of id."""
         meetings = [
-            {"_id": "cle_planning_v2/20251113/1400/meeting"},
+            {"_id": "cle_planning/20251113/1400/meeting"},
         ]
 
-        result = filter_out_scrapers(meetings, ["cle_planning_v2"])
+        result = filter_out_scrapers(meetings, ["cle_planning"])
         assert len(result) == 0
 
 
@@ -253,19 +252,15 @@ class TestDiscoverHarambeScrapersFromFiles:
         scrapers_dir = tmp_path / "harambe_scrapers"
         scrapers_dir.mkdir()
 
-        (scrapers_dir / "cle_planning.py").write_text(
-            'SCRAPER_NAME = "cle_planning_v2"\n'
-        )
-        (scrapers_dir / "cle_building.py").write_text(
-            "SCRAPER_NAME = 'cle_building_v2'\n"
-        )
+        (scrapers_dir / "cle_planning.py").write_text('SCRAPER_NAME = "cle_planning"\n')
+        (scrapers_dir / "cle_building.py").write_text("SCRAPER_NAME = 'cle_building'\n")
         (scrapers_dir / "__init__.py").write_text("")  # Should be skipped
 
         result = discover_harambe_scrapers_from_files(str(scrapers_dir))
 
         assert len(result) == 2
-        assert "cle_planning_v2" in result
-        assert "cle_building_v2" in result
+        assert "cle_planning" in result
+        assert "cle_building" in result
 
     def test_discover_missing_directory(self, tmp_path):
         """Test handling missing scrapers directory."""
@@ -279,12 +274,34 @@ class TestDiscoverHarambeScrapersFromFiles:
 
         (scrapers_dir / "observers.py").write_text('SCRAPER_NAME = "should_skip"\n')
         (scrapers_dir / "utils.py").write_text('SCRAPER_NAME = "should_skip"\n')
-        (scrapers_dir / "cle_real.py").write_text('SCRAPER_NAME = "cle_real_v2"\n')
+        (scrapers_dir / "cle_real.py").write_text('SCRAPER_NAME = "cle_real"\n')
 
         result = discover_harambe_scrapers_from_files(str(scrapers_dir))
 
         assert len(result) == 1
-        assert "cle_real_v2" in result
+        assert "cle_real" in result
+
+
+def test_discover_handles_comma_separated(tmp_path):
+    """Test discover_harambe_scrapers_from_files handles comma-separated names."""
+    scrapers_dir = tmp_path / "harambe_scrapers"
+    scrapers_dir.mkdir()
+
+    # Regular scraper
+    (scrapers_dir / "det_police.py").write_text('SCRAPER_NAME = "det_police"\n')
+
+    # Wayne commission with comma-separated names
+    (scrapers_dir / "wayne_commission.py").write_text(
+        'SCRAPER_NAME = "wayne_audit,wayne_cow,wayne_ethics_board"\n'
+    )
+
+    result = discover_harambe_scrapers_from_files(str(scrapers_dir))
+
+    assert "det_police" in result
+    assert "wayne_audit" in result
+    assert "wayne_cow" in result
+    assert "wayne_ethics_board" in result
+    assert len(result) == 4  # 1 regular + 3 Wayne committees
 
 
 if __name__ == "__main__":

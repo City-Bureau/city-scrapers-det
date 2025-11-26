@@ -12,21 +12,15 @@ from playwright.async_api import Page
 from harambe_scrapers.observers import DataCollector
 from harambe_scrapers.utils import create_ocd_event
 
-# Configuration
 START_URL = (
     "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
 )
 OUTPUT_DIR = Path("harambe_scrapers/output")
-SCRAPER_NAME = "det_police_fire_retirement_v2"
+SCRAPER_NAME = "det_police_fire_retirement"
 AGENCY_NAME = "Detroit Police & Fire Retirement System"
 TIMEZONE = "America/Detroit"
 
 
-# Helper functions moved to utils.py
-# Importing create_ocd_event which handles everything
-
-
-# This is the scrape function from rscd.org-78051171/listing.py - REUSED AS-IS
 async def scrape(
     sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
 ) -> None:

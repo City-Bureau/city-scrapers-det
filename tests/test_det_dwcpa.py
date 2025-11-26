@@ -1,5 +1,5 @@
 """
-Unit tests for Detroit Wayne County Port Authority v2 scraper (Harambe-based).
+Unit tests for Detroit Wayne County Port Authority scraper (Harambe-based).
 """
 
 from pathlib import Path
@@ -242,6 +242,9 @@ async def test_scrape_with_real_browser_and_html(fixture_html):
         page = await browser.new_page()
 
         await page.set_content(fixture_html)
+
+        # Mock page.goto to prevent navigation away from fixture HTML
+        page.goto = AsyncMock(return_value=None)
 
         sdk = MagicMock()
         sdk.page = page

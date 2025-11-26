@@ -34,7 +34,7 @@ async def test_data_collector_with_azure(mock_blob_client, mock_azure_env):
     blob_client = mock_blob_client.from_connection_string.return_value
     blob_client.get_container_client.return_value = mock_container
 
-    collector = DataCollector("test_scraper_v2", "America/Detroit")
+    collector = DataCollector("test_scraper", "America/Detroit")
 
     test_data = {"name": "Test Meeting", "start_time": "2025-01-15T09:00:00-05:00"}
 
@@ -44,5 +44,5 @@ async def test_data_collector_with_azure(mock_blob_client, mock_azure_env):
     assert mock_blob.upload_blob.called
 
     blob_path_call = mock_container.get_blob_client.call_args[0][0]
-    assert "test_scraper_v2.json" in blob_path_call
+    assert "test_scraper.json" in blob_path_call
     assert blob_path_call.count("/") == 4

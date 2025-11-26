@@ -25,14 +25,12 @@ from harambe_scrapers.extractor.det_police_department.listing import (
 from harambe_scrapers.observers import DataCollector
 from harambe_scrapers.utils import create_ocd_event
 
-# Configuration
 OUTPUT_DIR = Path("harambe_scrapers/output")
-SCRAPER_NAME = "det_police_department_v2"
+SCRAPER_NAME = "det_police_department"
 AGENCY_NAME = "Detroit Police Department"
 TIMEZONE = "America/Detroit"
 
 
-# Mock SDK classes for the scraper stages
 class CategorySDK:
     """Mock SDK for category stage"""
 

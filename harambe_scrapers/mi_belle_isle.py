@@ -15,10 +15,9 @@ from playwright.async_api import Page
 from harambe_scrapers.observers import DataCollector
 from harambe_scrapers.utils import create_ocd_event
 
-# Configuration
 START_URL = "https://www.michigan.gov/dnr/about/boards/belle-isle"
 OUTPUT_DIR = Path("harambe_scrapers/output")
-SCRAPER_NAME = "mi_belle_isle_v2"
+SCRAPER_NAME = "mi_belle_isle"
 AGENCY_NAME = "Michigan Belle Isle Advisory Committee"
 TIMEZONE = "America/Detroit"
 

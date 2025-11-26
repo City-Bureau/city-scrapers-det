@@ -24,7 +24,7 @@ from harambe_scrapers.observers import DataCollector
 from harambe_scrapers.utils import create_ocd_event
 
 OUTPUT_DIR = Path("harambe_scrapers/output")
-SCRAPER_NAME = "det_great_lakes_water_authority_v2"
+SCRAPER_NAME = "det_great_lakes_water_authority"
 AGENCY_NAME = "Great Lakes Water Authority"
 TIMEZONE = "America/Detroit"
 START_URL = "https://www.glwater.org/events/"
