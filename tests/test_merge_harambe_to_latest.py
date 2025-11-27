@@ -287,10 +287,8 @@ def test_discover_handles_comma_separated(tmp_path):
     scrapers_dir = tmp_path / "harambe_scrapers"
     scrapers_dir.mkdir()
 
-    # Regular scraper
     (scrapers_dir / "det_police.py").write_text('SCRAPER_NAME = "det_police"\n')
 
-    # Wayne commission with comma-separated names
     (scrapers_dir / "wayne_commission.py").write_text(
         'SCRAPER_NAME = "wayne_audit,wayne_cow,wayne_ethics_board"\n'
     )
@@ -301,7 +299,24 @@ def test_discover_handles_comma_separated(tmp_path):
     assert "wayne_audit" in result
     assert "wayne_cow" in result
     assert "wayne_ethics_board" in result
-    assert len(result) == 4  # 1 regular + 3 Wayne committees
+    assert len(result) == 4
+
+
+def test_discover_handles_multiline_scraper_name(tmp_path):
+    """Test discovering SCRAPER_NAME with multi-line format"""
+    scrapers_dir = tmp_path / "harambe_scrapers"
+    scrapers_dir.mkdir()
+
+    (scrapers_dir / "wayne_commission.py").write_text(
+        "SCRAPER_NAME = (\n" '    "wayne_audit,wayne_cow,wayne_ethics_board"\n' ")\n"
+    )
+
+    result = discover_harambe_scrapers_from_files(str(scrapers_dir))
+
+    assert "wayne_audit" in result
+    assert "wayne_cow" in result
+    assert "wayne_ethics_board" in result
+    assert len(result) == 3
 
 
 if __name__ == "__main__":

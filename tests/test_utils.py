@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 
 from harambe_scrapers.utils import (
+    create_ocd_event,
     determine_status,
     generate_id,
     generate_ocd_id,
@@ -103,3 +104,56 @@ def test_determine_status():
 
     assert determine_status(False, past_time) == "passed"
     assert determine_status(False, current_time) == "passed"
+
+
+def test_create_ocd_event():
+    """Test create_ocd_event function includes all required fields"""
+    result = create_ocd_event(
+        title="Test Meeting",
+        start_time="2025-01-15T09:00:00-05:00",
+        scraper_name="test_scraper",
+        agency_name="Test Agency",
+        timezone="America/Detroit",
+        description="Test description",
+        classification="BOARD",
+        location={"name": "Test Location", "address": "123 Main St"},
+        links=[{"url": "https://example.com", "title": "Agenda"}],
+        end_time="2025-01-15T11:00:00-05:00",
+        is_cancelled=False,
+        source_url="https://example.com/meeting",
+        all_day=False,
+    )
+
+    assert result["_type"] == "event"
+    assert result["_id"].startswith("ocd-event/")
+    assert "updated_at" in result
+    assert result["name"] == "Test Meeting"
+    assert result["description"] == "Test description"
+    assert result["classification"] == "BOARD"
+    assert result["status"] in ["tentative", "passed", "canceled"]
+    assert result["all_day"] is False
+    assert result["start_time"] == "2025-01-15T09:00:00-05:00"
+    assert result["end_time"] == "2025-01-15T11:00:00-05:00"
+    assert result["timezone"] == "America/Detroit"
+
+    assert "location" in result
+    assert result["location"]["name"] == "Test Location"
+    assert result["location"]["url"] == ""
+    assert result["location"]["coordinates"] is None
+
+    assert len(result["links"]) == 1
+    assert result["links"][0]["url"] == "https://example.com"
+    assert result["links"][0]["title"] == "Agenda"
+
+    assert len(result["participants"]) == 1
+    assert result["participants"][0]["name"] == "Test Agency"
+
+    assert "extras" in result
+    assert "cityscrapers.org/id" in result["extras"]
+    assert result["extras"]["cityscrapers.org/agency"] == "Test Agency"
+    assert result["extras"]["cityscrapers.org/address"] == "123 Main St"
+
+    updated_at = result["updated_at"]
+    assert "-05:00" in updated_at or "-04:00" in updated_at
+    parsed_dt = datetime.fromisoformat(updated_at)
+    assert parsed_dt.tzinfo is not None

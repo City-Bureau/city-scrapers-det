@@ -21,7 +21,6 @@ from harambe_scrapers.det_police_department import (
     ListingSDK,
     main,
 )
-from harambe_scrapers.utils import create_ocd_event
 
 # Test SDK Classes
 
@@ -273,25 +272,6 @@ async def test_fallback_extraction_links():
     assert result["links"][0]["title"] == "Agenda"
     assert result["links"][1]["url"] == "https://detroitmi.gov/sites/minutes.pdf"
     assert result["links"][1]["title"] == "Minutes"
-
-
-# Test OCD format integration
-
-
-def test_create_ocd_event_with_none_classification():
-    """Test OCD event preserves None classification"""
-    event_data = create_ocd_event(
-        title="Test Meeting",
-        start_time="2025-01-15T14:00:00-05:00",
-        scraper_name=SCRAPER_NAME,
-        agency_name=AGENCY_NAME,
-        timezone=TIMEZONE,
-        classification=None,
-        source_url="https://example.com",
-        all_day=False,
-    )
-
-    assert event_data["classification"] is None
 
 
 @pytest.mark.asyncio
