@@ -7,7 +7,7 @@ on:
 
 env:
   CI: true
-  PYTHON_VERSION: 3.11
+  PYTHON_VERSION: 3.12
   PIPENV_VENV_IN_PROJECT: true
   SCRAPY_SETTINGS_MODULE: city_scrapers.settings.prod
   WAYBACK_ENABLED: true
@@ -70,3 +70,57 @@ jobs:
         run: |
           export PYTHONPATH=$(pwd):$PYTHONPATH
           pipenv run scrapy combinefeeds -s LOG_ENABLED=False
+
+  crawl_harambe:
+    needs: [crawl]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Pipenv
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: harambe-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            harambe-${{ env.PYTHON_VERSION }}-
+            harambe-pip-
+
+      - name: Check and conditionally remove invalid virtual environment
+        run: |
+          if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
+            echo "Virtual environment exists but Python executable is missing. Rebuilding."
+            rm -rf .venv
+          elif [ ! -d ".venv" ]; then
+            echo "No virtual environment found. Will build new one."
+          else
+            echo "Virtual environment appears valid. Reusing."
+          fi
+
+      - name: Install dependencies
+        run: pipenv sync
+        env:
+          PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Playwright browsers
+        run: pipenv run playwright install chromium
+
+      - name: Run Harambe scrapers
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          ./.deploy-harambe.sh
+
+      - name: Merge conventional and Harambe outputs
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          pipenv run python scripts/merge_harambe_to_latest.py

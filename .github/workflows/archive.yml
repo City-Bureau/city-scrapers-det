@@ -7,7 +7,7 @@ on:
 
 env:
   CI: true
-  PYTHON_VERSION: 3.11
+  PYTHON_VERSION: 3.12
   PIPENV_VENV_IN_PROJECT: true
   SCRAPY_SETTINGS_MODULE: city_scrapers.settings.archive
   AUTOTHROTTLE_MAX_DELAY: 30.0
@@ -34,10 +34,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .venv
-          key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
+          key: venv-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
           restore-keys: |
-            ${{ env.PYTHON_VERSION }}-
-            pip-
+            venv-${{ env.PYTHON_VERSION }}-
+            venv-
 
       - name: Check and conditionally remove invalid virtual environment
         run: |
