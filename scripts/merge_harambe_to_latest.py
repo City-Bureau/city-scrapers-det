@@ -1,6 +1,5 @@
 import json
 import os
-import re
 from pathlib import Path
 from typing import Dict, List
 
@@ -17,7 +16,6 @@ except ImportError:
 DEFAULT_CONTAINER = "meetings-feed-det"
 OUTPUT_BLOB = "latest.json"
 LOCAL_OUTPUT_DIR = "harambe_scrapers/output"
-HARAMBE_SCRAPERS_DIR = "harambe_scrapers"
 LATEST_JSON_NAME = "latest.json"
 
 
@@ -153,18 +151,33 @@ def filter_out_scrapers(meetings: List[Dict], scraper_names: List[str]) -> List[
     """
     filtered = []
     removed_count = 0
+    removed_by_scraper = {}
 
     for meeting in meetings:
-        meeting_id = meeting.get("id") or meeting.get("_id", "")
+        # Get meeting ID from multiple possible fields
+        if "extras" in meeting:
+            meeting_id = meeting["extras"].get("cityscrapers.org/id", "")
+        else:
+            meeting_id = meeting.get("id") or meeting.get("_id", "")
+
+        # Extract scraper name from ID (format: scraper_name/date/x/title)
+        meeting_scraper = meeting_id.split("/")[0] if "/" in meeting_id else meeting_id
+
+        # Check if this is a Harambe scraper meeting
         is_harambe = any(scraper_name in meeting_id for scraper_name in scraper_names)
 
         if not is_harambe:
             filtered.append(meeting)
         else:
             removed_count += 1
+            if meeting_scraper not in removed_by_scraper:
+                removed_by_scraper[meeting_scraper] = 0
+            removed_by_scraper[meeting_scraper] += 1
 
     if removed_count > 0:
-        print(f"  Removed {removed_count} old Harambe meetings")
+        print(f"  Removed {removed_count} old Harambe meetings:")
+        for scraper, count in sorted(removed_by_scraper.items()):
+            print(f"    - {scraper}: {count} meetings")
 
     return filtered
 
@@ -210,63 +223,6 @@ def upload_to_azure(
     print(f"\n✓ Uploaded to {blob_name} ({len(data)} meetings)")
 
 
-def discover_harambe_scrapers_from_files(
-    scrapers_dir: str = HARAMBE_SCRAPERS_DIR,
-) -> List[str]:
-    """
-    Discover Harambe scrapers by reading SCRAPER_NAME from Python files.
-    This provides a fallback when Azure auto-detection fails.
-
-    Args:
-        scrapers_dir: Directory containing Harambe scraper Python files
-
-    Returns:
-        List of discovered scraper names from SCRAPER_NAME constants
-    """
-    scrapers = []
-    scrapers_path = Path(scrapers_dir)
-
-    if not scrapers_path.exists():
-        print(f"  ⚠ Harambe scrapers directory not found: {scrapers_dir}")
-        return []
-
-    for py_file in scrapers_path.glob("*.py"):
-        if py_file.name in ["__init__.py", "observers.py", "utils.py"]:
-            continue
-
-        try:
-            with open(py_file, "r") as f:
-                content = f.read()
-                # Handle both single-line and multi-line SCRAPER_NAME
-                # First try simple single-line pattern
-                match = re.search(r'SCRAPER_NAME\s*=\s*["\']([^"\']+)["\']', content)
-                if match:
-                    scraper_name = match.group(1)
-                    # Handle comma-separated names (like wayne_commission)
-                    if "," in scraper_name:
-                        scrapers.extend(scraper_name.split(","))
-                    else:
-                        scrapers.append(scraper_name)
-                else:
-                    # Try multi-line pattern with parentheses
-                    match = re.search(
-                        r'SCRAPER_NAME\s*=\s*\(\s*["\']([^"\']+)["\']',
-                        content,
-                        re.DOTALL,
-                    )
-                    if match:
-                        scraper_name = match.group(1)
-                        # Handle comma-separated names
-                        if "," in scraper_name:
-                            scrapers.extend(scraper_name.split(","))
-                        else:
-                            scrapers.append(scraper_name)
-        except Exception as e:
-            print(f"  ⚠ Error reading {py_file.name}: {e}")
-
-    return scrapers
-
-
 def main():
     print("=" * 70)
     print("Merging Harambe Scraper Outputs with Production latest.json")
@@ -282,8 +238,30 @@ def main():
     print(f"  ⚠ Will update production {output_blob}")
     print()
 
-    harambe_scrapers = discover_harambe_scrapers_from_files(HARAMBE_SCRAPERS_DIR)
+    harambe_scrapers = [
+        "det_dwcpa",
+        "det_great_lakes_water_authority",
+        "det_police_department",
+        "det_police_fire_retirement",
+        "mi_belle_isle",
+        "wayne_health_human_services",
+        "wayne_economic_development",
+        "wayne_ethics_board",
+        "wayne_government_operations",
+        "wayne_ways_means",
+        "wayne_audit",
+        "wayne_public_services",
+        "wayne_building_authority",
+        "wayne_election_commission",
+        "wayne_public_safety",
+        "wayne_cow",
+        "wayne_local_emergency_planning",
+        "wayne_full_commission",
+    ]
+
     print(f"Harambe scrapers to process: {len(harambe_scrapers)} scrapers")
+    for scraper in sorted(harambe_scrapers):
+        print(f"  - {scraper}")
 
     print()
 
@@ -296,6 +274,24 @@ def main():
 
     print("\nCleaning old Harambe data...")
     cleaned_meetings = filter_out_scrapers(existing_meetings, harambe_scrapers)
+
+    # Count meetings by scraper in cleaned data
+    scraper_counts = {}
+    for meeting in cleaned_meetings:
+        if "extras" in meeting:
+            meeting_id = meeting["extras"].get("cityscrapers.org/id", "")
+        else:
+            meeting_id = meeting.get("id") or meeting.get("_id", "")
+
+        meeting_scraper = meeting_id.split("/")[0] if "/" in meeting_id else "unknown"
+        if meeting_scraper not in scraper_counts:
+            scraper_counts[meeting_scraper] = 0
+        scraper_counts[meeting_scraper] += 1
+
+    if scraper_counts:
+        print("\nConventional scrapers preserved after filtering:")
+        for scraper, count in sorted(scraper_counts.items()):
+            print(f"  - {scraper}: {count} meetings")
 
     harambe_meetings = read_harambe_from_local(LOCAL_OUTPUT_DIR)
 
