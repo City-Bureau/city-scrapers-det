@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 import random
+from urllib.parse import unquote
 
 import aiohttp
 from azure.storage.blob import BlobServiceClient
@@ -213,8 +214,13 @@ def main():
     for meeting in harambe_meetings:
         all_urls.extend(get_urls_to_archive(meeting))
 
-    # Deduplicate
-    all_urls = list(dict.fromkeys(all_urls))
+    # Deduplicate (normalize URLs to catch encoding differences like space vs %20)
+    seen = {}
+    for url in all_urls:
+        normalized = unquote(url)
+        if normalized not in seen:
+            seen[normalized] = url
+    all_urls = list(seen.values())
 
     print(f"Found {len(all_urls)} unique URLs to archive", flush=True)
 
