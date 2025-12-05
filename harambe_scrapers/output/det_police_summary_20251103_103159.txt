@@ -1,0 +1,8 @@
+Detroit Police Department - Scraping Summary
+==================================================
+
+Run Date: 20251103_103159
+Total Meetings: 5
+
+Title: Board of Police Commissioners - January 1 - 7, 2024 - New Year's Recess
+Date: 2024-01-01T15:00:00-05:00

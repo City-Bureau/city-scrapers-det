@@ -1,0 +1,9 @@
+{
+  "scraper_name": "det_police_department",
+  "run_timestamp": "20251103_103159",
+  "listing_pages_found": 25,
+  "events_found": 20,
+  "meetings_scraped": 5,
+  "failed_urls": 0,
+  "failed_url_list": []
+}

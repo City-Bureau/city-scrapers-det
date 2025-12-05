@@ -1,0 +1,25 @@
+Detroit Police Department - Scraping Summary
+==================================================
+
+Total meetings: 4
+
+• Board of Police Commissioners - January 1 - 7, 2024 - New Year's Recess
+  Date: 2024-01-01T12:00:00ZT15:00:00-05:00
+  Status: canceled
+  Location: 
+
+• NOTICE OF PUBLIC OUTREACH - E Grand bike lanes, Hastings east to bridge meeting
+  Date: 2024-11-20T12:00:00ZT15:00:00-05:00
+  Status: passed
+  Location: 
+
+• Board of Police Commissioners - 11-28-2024 - Thanksgiving Recess
+  Date: 2024-11-28T12:00:00ZT15:00:00-05:00
+  Status: canceled
+  Location: 
+
+• Bopc Personnel & Training Committee Meeting January 13, 2025
+  Date: 2025-01-13T12:00:00ZT15:00:00-05:00
+  Status: passed
+  Location: 
+

@@ -1,0 +1,1010 @@
+[
+  {
+    "_type": "event",
+    "_id": "ocd-event/485511dc-3f0b-cbe6-ec3f-80ea333d455b",
+    "updated_at": "2025-10-29T00:11:59.452606-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "canceled",
+    "all_day": true,
+    "start_time": "2025-01-02T00:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202501020000/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/0f2135df-0f59-d882-6002-e3cf0f12181d",
+    "updated_at": "2025-10-29T00:11:59.460479-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-01-16T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202501160900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/0a1c9b1f-8df4-6634-1cd2-cd8b9a5fad25",
+    "updated_at": "2025-10-29T00:11:59.468018-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-02-06T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202502060900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/2178befb-569f-39e0-f58d-3c80a33c87b3",
+    "updated_at": "2025-10-29T00:11:59.475504-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-02-20T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202502200900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/f8e7a230-b26c-648e-442f-a3cffa525507",
+    "updated_at": "2025-10-29T00:11:59.485096-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-03-06T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202503060900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/125059a3-ed82-0968-1fd8-c1b5e3a4eac8",
+    "updated_at": "2025-10-29T00:11:59.492665-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-03-20T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202503200900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/9746feba-3034-0aa7-440d-26b928465185",
+    "updated_at": "2025-10-29T00:11:59.500516-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-04-03T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202504030900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/2b0b7847-ecc7-2004-32f9-7e31d26535b0",
+    "updated_at": "2025-10-29T00:11:59.508660-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-04-17T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202504170900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/3f2c1e8d-6b54-92b5-2307-5c35acbecedf",
+    "updated_at": "2025-10-29T00:11:59.516795-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-05-01T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202505010900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/78c9e230-993b-6ea0-08f0-318c61711c68",
+    "updated_at": "2025-10-29T00:11:59.524353-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-05-15T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202505150900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/8293cc13-fb9a-bd96-2f0d-137682dbca39",
+    "updated_at": "2025-10-29T00:11:59.532296-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-06-05T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202506050900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/21452482-a65c-8b1b-7674-a778ee2c7055",
+    "updated_at": "2025-10-29T00:11:59.539610-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "canceled",
+    "all_day": true,
+    "start_time": "2025-06-19T00:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202506190000/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/2827dfe4-1ab8-d338-9112-230ff8c7bf33",
+    "updated_at": "2025-10-29T00:11:59.547640-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "canceled",
+    "all_day": true,
+    "start_time": "2025-07-03T00:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202507030000/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/e0afe583-b342-c4ac-a698-70c9083cbfac",
+    "updated_at": "2025-10-29T00:11:59.566794-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-07-17T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202507170900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/b1559488-c5f6-0b92-2c49-a4b1d55d7a28",
+    "updated_at": "2025-10-29T00:11:59.574403-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-08-07T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202508070900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/5d16878c-d001-8562-6e14-28429c0a808f",
+    "updated_at": "2025-10-29T00:11:59.582040-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-08-21T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202508210900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/e995803c-b8a7-f032-2b98-f39642b75a76",
+    "updated_at": "2025-10-29T00:11:59.590336-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-09-04T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202509040900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/b19f8405-9016-5da2-6b60-ef2f7863e324",
+    "updated_at": "2025-10-29T00:11:59.598091-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-09-18T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202509180900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/a0cefbeb-f754-a319-c9dd-7a8a7aa8a2d0",
+    "updated_at": "2025-10-29T00:11:59.605360-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-10-02T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202510020900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/eb4b26a3-a9c4-2969-42b7-dfebf2128cdb",
+    "updated_at": "2025-10-29T00:11:59.614173-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2025-10-16T09:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202510160900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/ce867c12-644b-91e8-1aef-17dfa2cef34b",
+    "updated_at": "2025-10-29T00:11:59.620959-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "tentative",
+    "all_day": false,
+    "start_time": "2025-11-06T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202511060900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/dec27ed0-9847-8ca5-d5de-92af6f21de41",
+    "updated_at": "2025-10-29T00:11:59.627858-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "tentative",
+    "all_day": false,
+    "start_time": "2025-11-20T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202511200900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/6ea317d3-47c4-117f-e9d8-e989e2e757e5",
+    "updated_at": "2025-10-29T00:11:59.635790-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "tentative",
+    "all_day": false,
+    "start_time": "2025-12-04T09:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202512040900/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  },
+  {
+    "_type": "event",
+    "_id": "ocd-event/eed29770-43d7-cf39-fca7-9f1dbb20e388",
+    "updated_at": "2025-10-29T00:11:59.642999-04:00",
+    "name": "BOARD OF TRUSTEES OF THE POLICE AND FIRE RETIREMENT SYSTEM 2025 MEETING SCHEDULE",
+    "description": "",
+    "classification": "Board",
+    "status": "canceled",
+    "all_day": true,
+    "start_time": "2025-12-18T00:00:00-05:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "RETIREMENT SYSTEMS, CONFERENCE ROOM",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police & Fire Retirement System",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police & Fire Retirement System",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_fire_retirement/202512180000/x/board_of_trustees_of_the_police_and_fire_retirement_system_2025_meeting_schedule",
+      "cityscrapers.org/agency": "Detroit Police & Fire Retirement System",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": "500 Woodward Ave., Suite 3000 Detroit, MI 48226"
+    },
+    "__url": "https://www.rscd.org/member_resources/board_of_trustees/upcoming_meetings.php"
+  }
+]

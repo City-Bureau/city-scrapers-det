@@ -1,0 +1,43 @@
+[
+  {
+    "_type": "event",
+    "_id": "ocd-event/be6679d0-243d-ad9c-078a-c975d7cb95e6",
+    "updated_at": "2025-11-03T14:29:10.698144",
+    "name": "All Districts Update - 4-22-2024",
+    "description": "Please Join the Department of  Neighborhoods for a virtual meeting where  you will receive information on relevant topics that you can share with your neighbors and friends\n\nEvery Monday @ 5 pm\n\n \n\nSmall Businesses\n\nBib Daddies Big and Tal\n\nWonder Years Child Development Center\n\n \n\n1.  Join the meeting via conference call:\n\n1 (312) 626-6799\n\n1 (346) 248-7799\n\nThen enter Meeting ID: 363 140 9738#\n\n \n\n2.  Join the meeting via Zoom video:\n\nhttps://cityofdetroit.zoom.us/j/3631409738\n\nMeeting ID: 363 140 9738\n\n \n\nFor more information, contact your District Manager or Deputy District Manager or call (313) 224-4415 ",
+    "classification": null,
+    "status": "passed",
+    "all_day": false,
+    "start_time": "2024-04-22T17:00:00-04:00",
+    "end_time": null,
+    "timezone": "America/Detroit",
+    "location": {
+      "url": "",
+      "name": "Please Join the Department of  Neighborhoods for a virtual meeting where  you will receive information on relevant topics that you can share with your neighbors and friends",
+      "coordinates": null
+    },
+    "documents": [],
+    "links": [],
+    "sources": [
+      {
+        "url": "https://detroitmi.gov/events/all-districts-update-4-22-2024",
+        "note": ""
+      }
+    ],
+    "participants": [
+      {
+        "note": "host",
+        "name": "Detroit Police Department",
+        "entity_type": "organization",
+        "entity_name": "Detroit Police Department",
+        "entity_id": ""
+      }
+    ],
+    "extras": {
+      "cityscrapers.org/id": "det_police_department/202404221700/x/all_districts_update_-_4-22-2024",
+      "cityscrapers.org/agency": "Detroit Police Department",
+      "cityscrapers.org/time_notes": "",
+      "cityscrapers.org/address": null
+    }
+  }
+]
