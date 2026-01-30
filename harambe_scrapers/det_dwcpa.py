@@ -80,10 +80,10 @@ async def scrape(
     )
 
     # Extract year dynamically
-    year_element = await page.query_selector("div h2:has-text('Meeting Schedule')")
+    year_element = await page.query_selector("h2.h3:has-text('Meeting Schedule')")
     year_text = await year_element.inner_text() if year_element else ""
-    year_match = re.search("\\d{4}", year_text)
-    year = year_match.group() if year_match else ""
+    year_match = re.search(r"\d{4}", year_text)
+    year = year_match.group() if year_match else str(datetime.now().year)
 
     # Extract location dynamically
     location_element = await page.query_selector("div:has-text('Meeting Schedule') em")
