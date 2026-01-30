@@ -39,7 +39,7 @@ def mock_page_basic():
     async def query_selector_mock(selector):
         if ".heading-text.el-text h2.h1 span" in selector:
             return title_element
-        elif "div h2:has-text('Meeting Schedule')" in selector:
+        elif "h2.h3:has-text('Meeting Schedule')" in selector:
             return year_element
         elif "div:has-text('Meeting Schedule') em" in selector:
             return location_element
@@ -115,7 +115,7 @@ async def test_scrape_with_time_parsing(mock_sdk, mock_page_basic):
     async def query_selector_mock(selector):
         if ".heading-text.el-text h2.h1 span" in selector:
             return title_element
-        elif "div h2:has-text('Meeting Schedule')" in selector:
+        elif "h2.h3:has-text('Meeting Schedule')" in selector:
             return year_element
         elif "div:has-text('Meeting Schedule') em" in selector:
             return location_element
@@ -156,7 +156,7 @@ async def test_scrape_default_time(mock_sdk, mock_page_basic):
     async def query_selector_mock(selector):
         if ".heading-text.el-text h2.h1 span" in selector:
             return title_element
-        elif "div h2:has-text('Meeting Schedule')" in selector:
+        elif "h2.h3:has-text('Meeting Schedule')" in selector:
             return year_element
         elif "div:has-text('Meeting Schedule') em" in selector:
             return location_element
