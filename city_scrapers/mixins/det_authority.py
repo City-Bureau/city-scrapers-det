@@ -1,10 +1,13 @@
 import json
+import logging
 import re
 from collections import defaultdict
 from datetime import datetime, time
 
 from city_scrapers_core.constants import BOARD
 from city_scrapers_core.items import Meeting
+
+logger = logging.getLogger(__name__)
 
 
 class DetAuthorityMixin:
@@ -29,7 +32,8 @@ class DetAuthorityMixin:
     def _next_meetings(self, response):
         """Parse upcoming meetings"""
         page_text = " ".join(response.css(".et_pb_text_inner *::text").extract())
-        self._validate_location(page_text)
+        if not self._validate_location(page_text):
+            return
 
         events = [
             i for i in response.css("script").extract() if '"@type":"Event"' in i
@@ -109,7 +113,9 @@ class DetAuthorityMixin:
     def _validate_location(self, text):
         """Check that the location hasn't changed"""
         if "500 Griswold" not in text:
-            raise ValueError("Meeting location has changed")
+            logger.warning("Meeting location has changed")
+            return False
+        return True
 
     def _parse_next_links(self, start, response):
         """Parse links for upcoming meetings"""
