@@ -32,7 +32,7 @@ class DetAuthorityMixin:
     def _next_meetings(self, response):
         """Parse upcoming meetings"""
         page_text = " ".join(response.css(".et_pb_text_inner *::text").extract())
-        if not self._validate_location(page_text):
+        if self._validate_location(page_text) is False:
             return
 
         events = [
