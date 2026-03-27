@@ -61,7 +61,7 @@ def test_transform_to_ocd_format_with_all_fields():
     assert result["all_day"] is False
     assert result["location"]["name"] == "Conference Room"
     assert len(result["links"]) == 1
-    assert result["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+    assert result["extras"]["cityscrapers/agency"] == AGENCY_NAME
 
 
 def test_transform_to_ocd_format_with_cancelled_meeting():

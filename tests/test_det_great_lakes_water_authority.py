@@ -112,7 +112,7 @@ def test_transform_to_ocd_format_with_all_fields():
     assert result["all_day"] is False
     assert result["location"]["name"] == "Conference Room"
     assert len(result["links"]) == 1
-    assert result["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+    assert result["extras"]["cityscrapers/agency"] == AGENCY_NAME
 
 
 def test_transform_to_ocd_format_with_minimal_fields():
@@ -352,7 +352,7 @@ async def test_orchestrator_with_real_html_fixture(fixture_html):
             assert ocd_event["_type"] == "event"
             assert ocd_event["name"] == event_data["title"]
             assert ocd_event["classification"] == event_data["classification"]
-            assert ocd_event["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+            assert ocd_event["extras"]["cityscrapers/agency"] == AGENCY_NAME
             assert ocd_event["sources"][0]["url"] == event_data["url"]
 
         await browser.close()

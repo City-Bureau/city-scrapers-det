@@ -86,7 +86,7 @@ async def test_scrape_with_real_browser_and_html(fixture_html):
         )
         assert first_meeting["classification"] == "ADVISORY"
         assert first_meeting["timezone"] == "America/Detroit"
-        assert first_meeting["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+        assert first_meeting["extras"]["cityscrapers/agency"] == AGENCY_NAME
         assert "2018-01-18" in first_meeting["start_time"]
         assert "09:00:00" in first_meeting["start_time"]
         assert first_meeting["location"]["name"] == "Flynn Pavilion"

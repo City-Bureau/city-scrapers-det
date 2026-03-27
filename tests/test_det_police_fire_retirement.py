@@ -125,9 +125,9 @@ async def test_scrape_listing_page(mock_sdk, mock_page_basic, mock_table_rows):
     assert first_call["name"] == expected_name
     assert first_call["classification"] == "Board"
     assert "City Hall" in first_call["location"]["name"]
-    assert first_call["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+    assert first_call["extras"]["cityscrapers/agency"] == AGENCY_NAME
     expected_address = "123 Main St, Detroit, MI 48201"
-    assert first_call["extras"]["cityscrapers.org/address"] == expected_address
+    assert first_call["extras"]["cityscrapers/address"] == expected_address
 
     second_call = mock_sdk.save_data.call_args_list[1][0][0]
     assert second_call["status"] == "canceled"
@@ -209,7 +209,7 @@ async def test_scrape_with_real_browser_and_html(fixture_html):
         )
         assert "2019" in first_meeting["start_time"]
         assert first_meeting["location"]["name"]
-        assert first_meeting["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+        assert first_meeting["extras"]["cityscrapers/agency"] == AGENCY_NAME
 
         # Verify specific meetings from fixture
         jan10_meetings = [m for m in all_meetings if "2019-01-10" in m["start_time"]]
