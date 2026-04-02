@@ -149,9 +149,9 @@ def test_create_ocd_event():
     assert result["participants"][0]["name"] == "Test Agency"
 
     assert "extras" in result
-    assert "cityscrapers.org/id" in result["extras"]
-    assert result["extras"]["cityscrapers.org/agency"] == "Test Agency"
-    assert result["extras"]["cityscrapers.org/address"] == "123 Main St"
+    assert "cityscrapers/id" in result["extras"]
+    assert result["extras"]["cityscrapers/agency"] == "Test Agency"
+    assert result["extras"]["cityscrapers/address"] == "123 Main St"
 
     updated_at = result["updated_at"]
     assert "-05:00" in updated_at or "-04:00" in updated_at

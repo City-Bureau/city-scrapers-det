@@ -85,7 +85,7 @@ async def test_scrape_listing_page(mock_sdk, mock_page_basic, mock_meeting_eleme
     assert first_call["name"] == "Board of Directors Meetings"
     assert first_call["classification"] == "Board"
     assert "2025-01-16" in first_call["start_time"]
-    assert first_call["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+    assert first_call["extras"]["cityscrapers/agency"] == AGENCY_NAME
 
     second_call = mock_sdk.save_data.call_args_list[1][0][0]
     assert "2025-02-21" in second_call["start_time"]
@@ -193,7 +193,7 @@ async def test_scrape_location_parsing(
     assert "Port Detroit Conference Room" in call["location"]["name"]
     assert (
         "130 E. Atwater Street, Detroit, MI 48226"
-        in call["extras"]["cityscrapers.org/address"]
+        in call["extras"]["cityscrapers/address"]
     )
 
 
@@ -261,8 +261,8 @@ async def test_scrape_with_real_browser_and_html(fixture_html):
         assert first_meeting["name"] == "Board Meeting"
         assert first_meeting["classification"] == "Board"
         assert first_meeting["timezone"] == "America/Detroit"
-        assert "130 E. Atwater" in first_meeting["extras"]["cityscrapers.org/address"]
-        assert first_meeting["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
+        assert "130 E. Atwater" in first_meeting["extras"]["cityscrapers/address"]
+        assert first_meeting["extras"]["cityscrapers/agency"] == AGENCY_NAME
         assert "2025-01-17" in first_meeting["start_time"]
         assert "09:00:00" in first_meeting["start_time"]
 

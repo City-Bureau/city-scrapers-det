@@ -462,6 +462,6 @@ async def test_fallback_extraction_with_real_html(detail_fixture_html):
         assert ocd_event["_type"] == "event"
         assert ocd_event["_id"].startswith("ocd-event/")
         assert "Board of Police Commissioners" in ocd_event["name"]
-        assert ocd_event["extras"]["cityscrapers.org/agency"] == AGENCY_NAME
-        assert SCRAPER_NAME in ocd_event["extras"]["cityscrapers.org/id"]
+        assert ocd_event["extras"]["cityscrapers/agency"] == AGENCY_NAME
+        assert SCRAPER_NAME in ocd_event["extras"]["cityscrapers/id"]
         assert ocd_event["sources"][0]["url"] == orchestrator.current_url
