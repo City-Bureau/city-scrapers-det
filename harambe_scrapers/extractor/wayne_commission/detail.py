@@ -1,215 +1,262 @@
+"""Detail stage for the Wayne County Commission scraper.
+
+Meeting detail pages on waynecountymi.gov are server-rendered, so this
+stage fetches them with plain HTTP and parses the HTML with parsel —
+no browser needed. Two page layouts are handled:
+
+1. The standard meeting layout (`.minutes-details-list`, `.meeting-time`,
+   `.meeting-address`, `.meeting-document`)
+2. A general content layout (`.small-text` date line with a side box)
+"""
+
 import asyncio
 import re
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
-from harambe import SDK
-from harambe.contrib import playwright_harness
-from playwright.async_api import Page, TimeoutError
+from parsel import Selector
+
+from harambe_scrapers.extractor.wayne_commission.common import (
+    BASE_URL,
+    REQUEST_TIMEOUT,
+    create_session,
+)
+from harambe_scrapers.utils import localize_iso_datetime
+
+TIMEZONE = "America/Detroit"
+
+# Zoom URLs often appear as plain text (not anchors) in the meeting
+# description or location paragraphs; the scheme is sometimes omitted
+ZOOM_URL_RE = re.compile(r"(?:https?://)?[\w.-]*zoom\.us/[^\s\"'<>\\)]+", re.IGNORECASE)
+
+# Meetings are sometimes cancelled only via the description text while the
+# calendar API's IsCancelled flag stays false. Requires "meeting ...
+# cancelled" order or a bare "Cancelled Meeting" description so that text
+# like "the cancelled meeting from June has been rescheduled" doesn't
+# flag the current meeting.
+CANCELLED_TEXT_RE = re.compile(
+    r"\bmeeting\s+(has\s+been\s+|is\s+|was\s+)?cancell?ed\b"
+    r"|^\s*cancell?ed\s+meeting\.?\s*$",
+    re.IGNORECASE,
+)
+
+# Time ranges are usually "10:00 AM - 11:00 AM" but tolerate en/em dashes
+TIME_RANGE_SEPARATOR_RE = re.compile(r"\s+[-–—]\s+")
+
+# Containers that hold meeting-specific content on both page layouts
+MEETING_CONTENT_CSS = (
+    ".meeting-container ::text, .meeting-address ::text, "
+    ".body-content ::text, .side-box-section ::text"
+)
+
+
+def change_timezone(date: str) -> str:
+    """Localize a naive ISO datetime string to America/Detroit."""
+    return localize_iso_datetime(date, TIMEZONE)
+
+
+def parse_classification(title: Optional[str]) -> Optional[str]:
+    title = (title or "").lower()
+
+    classifications = {
+        "committee": "COMMITTEE",
+        "board": "BOARD",
+        "commission": "COMMISION",
+        "public meeting": "PUBLIC",
+        "policy meeting": "POLICY",
+        "community": "COMMUNITY",
+        "annual": "ANNUAL",
+        "cbo": "CBO",
+        "advisory": "ADVISORY",
+        "council": "COUNCIL",
+    }
+
+    for keyword, classification in classifications.items():
+        if keyword in title:
+            return classification
+
+    return None
+
+
+def _text(selector: Selector, css: str) -> Optional[str]:
+    """Joined, whitespace-normalized text of the first element matching css."""
+    matches = selector.css(css)
+    if not matches:
+        return None
+    joined = "".join(matches[0].css("::text").getall())
+    return " ".join(joined.replace("\xa0", " ").split())
+
+
+def _absolute_url(url: str) -> str:
+    if "http" not in url:
+        return BASE_URL + url
+    return url
+
+
+def _parse_links(selector: Selector) -> list[dict]:
+    """Collect document and related-information links (excluding video)."""
+    links = []
+    for document in selector.css(".meeting-document"):
+        title = " ".join(
+            "".join(document.css(".meeting-document-title ::text").getall()).split()
+        )
+        url = document.css("a::attr(href)").get()
+        if not url:
+            continue
+        url = _absolute_url(url)
+        if "youtu" not in url:
+            links.append({"title": title or None, "url": url})
+
+    related = selector.css(
+        ".related-information-section a, .related-information-list a"
+    )
+    for link in related:
+        title = " ".join("".join(link.css("::text").getall()).split())
+        url = link.attrib.get("href")
+        if not url:
+            continue
+        url = _absolute_url(url)
+        if "youtu" not in url:
+            links.append({"title": title, "url": url})
+
+    return links
+
+
+def _add_zoom_links(selector: Selector, links: list[dict]) -> list[dict]:
+    """Add Zoom URLs that appear as plain text in the meeting content."""
+    existing = {link["url"].rstrip(".") for link in links}
+    content_text = " ".join(selector.css(MEETING_CONTENT_CSS).getall())
+    for match in ZOOM_URL_RE.findall(content_text):
+        url = match.rstrip(".,;")
+        if not url.lower().startswith("http"):
+            url = "https://" + url
+        if url not in existing:
+            existing.add(url)
+            links.append({"title": "Zoom Meeting Link", "url": url})
+    return links
+
+
+def _parse_meeting_layout(selector: Selector) -> dict:
+    """Parse the standard meeting page layout."""
+    meeting_date = _text(
+        selector, "ul.content-details-list.minutes-details-list span.minutes-date"
+    )
+    meeting_type = _text(
+        selector,
+        "ul.content-details-list.minutes-details-list "
+        "li:nth-child(2) span.field-value",
+    )
+    description = _text(selector, "div.meeting-container > p") or ""
+
+    time_text = (
+        (_text(selector, "div.meeting-time") or "")
+        .replace("Time", "")
+        .replace("Add to Calendar", "")
+        .strip()
+    )
+    # Some pages publish only a start time (no " - <end time>" range)
+    start_datetime, end_datetime = None, None
+    if meeting_date and time_text:
+        time_parts = TIME_RANGE_SEPARATOR_RE.split(time_text, maxsplit=1)
+        start_time = time_parts[0]
+        end_time = time_parts[1] if len(time_parts) > 1 else ""
+        try:
+            start_datetime = datetime.strptime(
+                f"{meeting_date} {start_time.strip()}", "%B %d, %Y %I:%M %p"
+            )
+        except ValueError:
+            print(f"    ✗ Could not parse meeting time: {meeting_date} {time_text}")
+        if start_datetime and end_time.strip():
+            try:
+                end_datetime = datetime.strptime(
+                    f"{meeting_date} {end_time.strip()}", "%B %d, %Y %I:%M %p"
+                )
+            except ValueError:
+                pass
+
+    location_text = _text(selector, "div.meeting-address > p:last-of-type") or ""
+    location_text = location_text.replace("View Map", "").strip()
+    location_parts = location_text.split(",", 1)
+    location_name = location_parts[0].strip()
+    location_address = location_parts[1].strip() if len(location_parts) > 1 else ""
+
+    return {
+        "description": description,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "location_name": location_name,
+        "location_address": location_address,
+        "links": _parse_links(selector),
+        "classification": parse_classification(meeting_type),
+    }
+
+
+def _parse_general_layout(selector: Selector, main_title: str, url: str) -> dict:
+    """Parse the fallback general content layout (.small-text date line)."""
+    small_text = "".join(selector.css(".small-text ::text").getall())
+
+    date_match = re.search(r"\b\w+ \d{1,2}, \d{4}, \d{1,2}:\d{2} [AP]M\b", small_text)
+    if date_match:
+        start_datetime = datetime.strptime(date_match.group(0), "%B %d, %Y, %I:%M %p")
+    else:
+        # Distinguish "page structure changed" from "no date on this page"
+        # so a markup regression doesn't silently drop meetings
+        print(f"    ⚠ No date found in .small-text layout: {url}")
+        start_datetime = None
+
+    location_name, location_address = None, None
+    location_el = selector.css(".side-box-section p:nth-child(5)")
+    if not location_el:
+        print(f"    ⚠ No location element in .small-text layout: {url}")
+    if location_el:
+        location_lines = [
+            line.strip()
+            for line in "".join(location_el[0].css("::text").getall())
+            .replace("\xa0", " ")
+            .split("\n")
+            if line.strip()
+        ]
+        if location_lines:
+            location_name = location_lines[0]
+            location_address = ", ".join(location_lines[1:]).strip()
+
+    description = _text(selector, ".col-m-8 .body-content") or ""
+
+    return {
+        "description": description,
+        "start_datetime": start_datetime,
+        "end_datetime": None,
+        "location_name": location_name,
+        "location_address": location_address,
+        "links": _parse_links(selector),
+        "classification": parse_classification(main_title),
+    }
 
 
 async def scrape(
-    sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
+    sdk: Any, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
 ) -> None:
-    page: Page = sdk.page
+    session = kwargs.get("session") or create_session()
 
-    import pytz
+    response = session.get(
+        current_url, headers={"Accept": "text/html"}, timeout=REQUEST_TIMEOUT
+    )
+    response.raise_for_status()
+    selector = Selector(text=response.text)
 
-    async def change_timezone(date):
-        timezone = "America/Detroit"
+    main_title = _text(selector, "h1.oc-page-title")
 
-        # Convert string to naive datetime object
-        naive_datetime = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
+    if selector.css("ul.content-details-list.minutes-details-list span.minutes-date"):
+        parsed = _parse_meeting_layout(selector)
+    elif selector.css(".small-text"):
+        parsed = _parse_general_layout(selector, main_title, current_url)
+    else:
+        print(f"    ✗ Unrecognized page layout: {current_url}")
+        return
 
-        # Get the timezone object
-        tz = pytz.timezone(timezone)
+    start_datetime = parsed["start_datetime"]
+    end_datetime = parsed["end_datetime"]
 
-        # Add timezone to the naive datetime
-        localized_datetime = tz.localize(naive_datetime)
-
-        # Format the localized datetime as ISO 8601 string
-        iso_format = localized_datetime.strftime("%Y-%m-%dT%H:%M:%S%z")
-        # Adjusting the offset format to include a colon
-        iso_format_with_colon = iso_format[:-2] + ":" + iso_format[-2:]
-        return iso_format_with_colon
-
-    def parse_classification(title):
-        title = (title or "").lower()
-
-        # Define mappings of keywords to classification categories
-        classifications = {
-            "committee": "COMMITTEE",
-            "board": "BOARD",
-            "commission": "COMMISION",
-            "public meeting": "PUBLIC",
-            "policy meeting": "POLICY",
-            "community": "COMMUNITY",
-            "annual": "ANNUAL",
-            "cbo": "CBO",
-            "advisory": "ADVISORY",
-            "council": "COUNCIL",
-        }
-
-        # First check the title for each keyword
-        for keyword, classification in classifications.items():
-            if keyword in title:
-                return classification
-
-        return None
-
-    # Wait for the main content to load
-    await page.wait_for_selector("div.main-inner-container")
-
-    # Extract title
-    main_title_element = await page.query_selector("h1.oc-page-title")
-    main_title = await main_title_element.inner_text()
-
-    try:
-        await page.wait_for_selector(
-            "ul.content-details-list.minutes-details-list span.minutes-date"
-        )
-        # Extract meeting date
-        date_element = await page.query_selector(
-            "ul.content-details-list.minutes-details-list span.minutes-date"
-        )
-        meeting_date = await date_element.inner_text()
-
-        # Extract meeting type
-        type_selector = (
-            "ul.content-details-list.minutes-details-list "
-            "li:nth-child(2) span.field-value"
-        )
-        type_element = await page.query_selector(type_selector)
-        meeting_type = await type_element.inner_text()
-
-        # Extract description
-        description_element = await page.query_selector("div.meeting-container > p")
-        description = await description_element.inner_text()
-
-        # Extract start and end time
-        time_element = await page.query_selector("div.meeting-time")
-        time_text = (
-            (await time_element.inner_text())
-            .replace("Time", "")
-            .replace("Add to Calendar", "")
-            .replace("\n", "")
-            .strip()
-        )
-        start_time, end_time = time_text.split(" - ")
-
-        # Combine meeting date with times and convert to datetime objects
-        start_datetime = datetime.strptime(
-            f"{meeting_date} {start_time}", "%B %d, %Y %I:%M %p"
-        )
-        end_datetime = datetime.strptime(
-            f"{meeting_date} {end_time}", "%B %d, %Y %I:%M %p"
-        )
-
-        # Extract location details
-        location_element = await page.query_selector(
-            "div.meeting-address > p:last-of-type"
-        )
-        location_text = await location_element.inner_text()
-        location_parts = location_text.split(",", 1)
-        location_name = location_parts[0].strip()
-        location_address = location_parts[1].strip() if len(location_parts) > 1 else ""
-
-        # Extract links
-        links = []
-        meeting_documents = await page.query_selector_all(".meeting-document")
-        for document in meeting_documents:
-            title_el = await document.query_selector(".meeting-document-title")
-            title = await title_el.inner_text() if title_el else None
-            link = await document.query_selector("a")
-            if not link:
-                continue
-            url = await link.get_attribute("href")
-            if "http" not in url:
-                url = "https://www.waynecountymi.gov" + url
-            if "youtu" not in url:
-                links.append({"title": title, "url": url})
-
-        related_links = await page.query_selector_all(
-            ".related-information-section a, .related-information-list a"
-        )
-        for link in related_links:
-            title = await link.inner_text()
-            url = await link.get_attribute("href")
-            if "http" not in url:
-                url = "https://www.waynecountymi.gov" + url
-            if "youtu" not in url:
-                links.append({"title": title, "url": url})
-
-        classification = parse_classification(meeting_type)
-
-    except TimeoutError:
-        try:
-            await page.wait_for_selector(".small-text")
-            small_text_element = await page.query_selector(".small-text")
-            small_text = await small_text_element.inner_text()
-
-            # Extract date using regex
-            date_match = re.search(
-                "\\b\\w+ \\d{1,2}, \\d{4}, \\d{1,2}:\\d{2} [AP]M\\b", small_text
-            )
-            if date_match:
-                meeting_date = date_match.group(0)
-                start_datetime = datetime.strptime(meeting_date, "%B %d, %Y, %I:%M %p")
-                end_datetime = None
-            else:
-                start_datetime = None
-                end_datetime = None
-
-            # Extract location
-            location_element = await page.query_selector(
-                ".side-box-section p:nth-child(5)"
-            )
-            if location_element:
-                location_text = await location_element.inner_text()
-                location_parts = location_text.split("\n")
-                location_name = location_parts[0].strip()
-                location_address = ", ".join(location_parts[1:]).strip()
-            else:
-                location_name, location_address = (None, None)
-
-            # Extract description
-            description_element = await page.query_selector(".col-m-8 .body-content")
-            description = await description_element.inner_text()
-
-            # Extract links
-            links = []
-            related_links = await page.query_selector_all(
-                ".related-information-section a, .related-information-list a"
-            )
-            for link in related_links:
-                title = await link.inner_text()
-                url = await link.get_attribute("href")
-                if "http" not in url:
-                    url = "https://www.waynecountymi.gov" + url
-                if "youtu" not in url:
-                    links.append({"title": title, "url": url})
-
-            meeting_documents = await page.query_selector_all(".meeting-document")
-            for document in meeting_documents:
-                title_el = await document.query_selector(".meeting-document-title")
-                title = await title_el.inner_text() if title_el else None
-                link = await document.query_selector("a")
-                if not link:
-                    continue
-                url = await link.get_attribute("href")
-                if "http" not in url:
-                    url = "https://www.waynecountymi.gov" + url
-                if "youtu" not in url:
-                    links.append({"title": title, "url": url})
-
-            classification = parse_classification(main_title)
-        except TimeoutError:
-            return
-        except AttributeError:
-            raise AttributeError(
-                "AttributeError: Some of the required fields couldn't be "
-                "extracted, you might wanna incorporate this page's structure"
-            )
     is_all_day_event = (
         True
         if start_datetime
@@ -218,24 +265,30 @@ async def scrape(
         else None
     )
 
-    is_cancelled = True if context["isCancelled"] == "True" else None
+    links = _add_zoom_links(selector, parsed["links"])
+
+    is_cancelled = True if context.get("isCancelled") == "True" else None
+    # The county sometimes cancels a meeting only in the description text
+    # without flagging it in the calendar API
+    if not is_cancelled and CANCELLED_TEXT_RE.search(parsed["description"] or ""):
+        is_cancelled = True
 
     if start_datetime:
-        # Save data
         await sdk.save_data(
             {
                 "title": main_title,
-                "description": description,
-                "classification": classification,
-                "start_time": await change_timezone(start_datetime.isoformat()),
+                "description": parsed["description"],
+                "classification": parsed["classification"],
+                "start_time": change_timezone(start_datetime.isoformat()),
                 "end_time": (
-                    await change_timezone(end_datetime.isoformat())
-                    if end_datetime
-                    else None
+                    change_timezone(end_datetime.isoformat()) if end_datetime else None
                 ),
                 "location": (
-                    {"name": location_name, "address": location_address}
-                    if location_name or location_address
+                    {
+                        "name": parsed["location_name"],
+                        "address": parsed["location_address"],
+                    }
+                    if parsed["location_name"] or parsed["location_address"]
                     else None
                 ),
                 "links": links,
@@ -247,119 +300,19 @@ async def scrape(
 
 
 if __name__ == "__main__":
+    # Minimal manual run against a single detail page
+    class _PrintSDK:
+        async def save_data(self, data):
+            import json
+
+            print(json.dumps(data, indent=2))
+
     asyncio.run(
-        SDK.run(
-            scrape,
+        scrape(
+            _PrintSDK(),
             "https://www.waynecountymi.gov/Government/Elected-Officials/"
             "Commission/Committees/Full-Commission/Full-Commission-Meetings/"
-            "Full-Commission-February-1-2024",
-            headless=False,
-            harness=playwright_harness,
-            schema={
-                "links": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "url": {
-                                "type": "string",
-                                "description": (
-                                    "The URL link to the document or "
-                                    "resource related to the meeting."
-                                ),
-                            },
-                            "title": {
-                                "type": "string",
-                                "description": (
-                                    "The title or label for the link, providing "
-                                    "context for what the document or resource is."
-                                ),
-                            },
-                        },
-                        "description": (
-                            "List of dictionaries with title and href for "
-                            "relevant links (eg. agenda, minutes). Empty list "
-                            "if no relevant links are available."
-                        ),
-                    },
-                    "description": (
-                        "A list of links related to the meeting, such as "
-                        "references to meeting agendas, minutes, or other documents."
-                    ),
-                },
-                "title": {
-                    "type": "string",
-                    "description": (
-                        "Title of the meeting (e.g., 'Regular council meeting')."
-                    ),
-                },
-                "end_time": {
-                    "type": "datetime",
-                    "description": (
-                        "The scheduled end time of the meeting. Often unavailable."
-                    ),
-                },
-                "location": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "description": (
-                                "The name of the venue where the meeting will "
-                                "take place."
-                            ),
-                        },
-                        "address": {
-                            "type": "string",
-                            "description": (
-                                "The full address of the meeting venue. Sometimes, "
-                                "it will include an online meeting link if the "
-                                "physical location is not provided."
-                            ),
-                        },
-                    },
-                    "description": (
-                        "Details about the meeting's location, including the "
-                        "name and address of the venue."
-                    ),
-                },
-                "start_time": {
-                    "type": "datetime",
-                    "description": "The scheduled start time of the meeting.",
-                },
-                "time_notes": {
-                    "type": "string",
-                    "description": (
-                        "If needed, a note about the meeting time. Empty string "
-                        "otherwise. Typically empty string."
-                    ),
-                },
-                "description": {
-                    "type": "string",
-                    "description": (
-                        "Specific meeting description; empty string if unavailable."
-                    ),
-                },
-                "is_cancelled": {
-                    "type": "boolean",
-                    "description": (
-                        "If there are any fields in the site that shows that "
-                        "the meeting has been cancelled True."
-                    ),
-                },
-                "classification": {
-                    "type": "string",
-                    "expression": "UPPER(classification)",
-                    "description": (
-                        "The classification of the meeting, such as "
-                        "'Regular Business Meeting', 'Norcross Development Authority', "
-                        "'City Council Work Session' etc."
-                    ),
-                },
-                "is_all_day_event": {
-                    "type": "boolean",
-                    "description": "Boolean for all-day events. Typically False.",
-                },
-            },
+            "2025/Full-Commission-January-8-2026",
+            {"isCancelled": "False"},
         )
     )

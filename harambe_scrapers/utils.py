@@ -10,6 +10,17 @@ from datetime import datetime
 import pytz
 
 
+def localize_iso_datetime(date, timezone="America/Detroit"):
+    """Localize a naive ISO datetime string ("%Y-%m-%dT%H:%M:%S") to the
+    given timezone, returning an ISO 8601 string with a colon in the offset.
+
+    Shared replacement for the per-scraper change_timezone helpers.
+    """
+    naive_datetime = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
+    tz = pytz.timezone(timezone)
+    return tz.localize(naive_datetime).isoformat()
+
+
 def slugify(text):
     """Convert text to URL slug format"""
     text = str(text).lower().strip()
