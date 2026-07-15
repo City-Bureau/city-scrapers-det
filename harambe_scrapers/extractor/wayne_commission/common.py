@@ -7,6 +7,8 @@ honestly-identified HTTP clients are allowed, so we identify ourselves
 as a scraper and use the same JSON endpoints the calendar widget uses.
 """
 
+import re
+
 import requests
 
 BASE_URL = "https://www.waynecountymi.gov"
@@ -35,3 +37,49 @@ def create_session() -> requests.Session:
         }
     )
     return session
+
+
+# The Documenters platform matches meetings to agencies by the exact
+# scraper name prefix of extras["cityscrapers/id"]. Agency "Wayne County
+# Commission" registers these individual names, keyed here by normalized
+# county-calendar label. Meetings stamped with anything else (including
+# the old comma-joined 13-name string) are silently skipped at import.
+REGISTERED_CALENDAR_SCRAPER_NAMES = {
+    "full commission meeting": "wayne_full_commission",
+    "full commission": "wayne_full_commission",
+    "committee of the whole": "wayne_cow",
+    "audit committee": "wayne_audit",
+    "economic development committee": "wayne_economic_development",
+    "government operations committee": "wayne_government_operations",
+    "health and human services committee": "wayne_health_human_services",
+    ("public safety, judiciary and homeland security committee"): "wayne_public_safety",
+    "public services committee": "wayne_public_services",
+    "ways and means committee": "wayne_ways_means",
+    "election commission": "wayne_election_commission",
+    "building authority": "wayne_building_authority",
+    "ethics board": "wayne_ethics_board",
+    "local emergency planning committee": "wayne_local_emergency_planning",
+    "local emergency planning": "wayne_local_emergency_planning",
+    # The county also has a departmental "Economic Development" calendar
+    # distinct from the commission committee; keep it from colliding with
+    # the registered committee name.
+    "economic development": "wayne_economic_development_events",
+}
+
+# Calendars with no registered agency get a stable derived name; the
+# platform skips them harmlessly until an agency registers that name.
+FALLBACK_SCRAPER_NAME = "wayne_commission"
+
+
+def _normalize_calendar_label(label: str) -> str:
+    label = (label or "").replace("&", "and").replace("’", "'").lower()
+    return " ".join(label.split())
+
+
+def scraper_name_for_calendar(label: str) -> str:
+    """Map a county-calendar label to a per-body scraper name."""
+    normalized = _normalize_calendar_label(label)
+    if normalized in REGISTERED_CALENDAR_SCRAPER_NAMES:
+        return REGISTERED_CALENDAR_SCRAPER_NAMES[normalized]
+    derived = re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")
+    return f"wayne_{derived}" if derived else FALLBACK_SCRAPER_NAME

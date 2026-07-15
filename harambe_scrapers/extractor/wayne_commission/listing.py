@@ -25,11 +25,13 @@ from harambe_scrapers.extractor.wayne_commission.common import (
     CALENDAR_PAGE_URL,
     DEFAULT_CALENDAR_ENTITY_ID,
     DEFAULT_CALENDAR_ENTITY_TYPE,
+    FALLBACK_SCRAPER_NAME,
     GET_CALENDAR_ITEMS_URL,
     GET_CALENDARS_URL,
     GET_CONTENT_INFO_URL,
     REQUEST_TIMEOUT,
     create_session,
+    scraper_name_for_calendar,
 )
 
 # Delay between per-item contentinfo requests to stay polite
@@ -127,9 +129,19 @@ async def scrape(
 
     calendars = get_calendars(session, entity_id, entity_type)
     calendar_ids = [c["Id"] for c in calendars if c.get("Id")]
+    # Each meeting must carry the scraper name of its own body — the
+    # Documenters platform matches meetings to agencies by that exact name
+    calendar_scraper_names = {
+        c["Id"]: scraper_name_for_calendar(c.get("Label"))
+        for c in calendars
+        if c.get("Id")
+    }
     print(f"[LISTING] Found {len(calendar_ids)} calendars:")
     for calendar in calendars:
-        print(f"[LISTING]   - {calendar.get('Label')}")
+        print(
+            f"[LISTING]   - {calendar.get('Label')} -> "
+            f"{calendar_scraper_names.get(calendar.get('Id'))}"
+        )
 
     if not calendar_ids:
         raise RuntimeError("No calendars found for the county calendar widget")
@@ -173,9 +185,15 @@ async def scrape(
                 continue
             seen_urls.add(meeting_link)
             is_cancelled = info.get("IsCancelled") is not False
+            scraper_name = calendar_scraper_names.get(
+                item.get("CalendarId"), FALLBACK_SCRAPER_NAME
+            )
             await sdk.enqueue(
                 meeting_link,
-                context={"isCancelled": f"{is_cancelled}"},
+                context={
+                    "isCancelled": f"{is_cancelled}",
+                    "scraperName": scraper_name,
+                },
             )
             enqueued += 1
             if enqueued % 20 == 0:

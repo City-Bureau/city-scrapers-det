@@ -27,7 +27,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from harambe_scrapers.extractor.wayne_commission.common import create_session
+from harambe_scrapers.extractor.wayne_commission.common import (
+    FALLBACK_SCRAPER_NAME,
+    create_session,
+)
 from harambe_scrapers.extractor.wayne_commission.detail import scrape as detail_scrape
 from harambe_scrapers.extractor.wayne_commission.listing import scrape as listing_scrape
 from harambe_scrapers.observers import DataCollector
@@ -35,14 +38,12 @@ from harambe_scrapers.utils import create_ocd_event
 
 # Constants
 AGENCY_NAME = "Wayne County Commission"
-SCRAPER_NAME = (
-    "wayne_health_human_services,wayne_economic_development,wayne_ethics_board,"
-    "wayne_government_operations,wayne_ways_means,wayne_audit,wayne_public_services,"
-    "wayne_building_authority,wayne_election_commission,wayne_public_safety,wayne_cow,"
-    "wayne_local_emergency_planning,wayne_full_commission"
-)
-# Use shorter name for file output
-OUTPUT_NAME = "wayne_commission"
+# Meetings are attributed per body (wayne_full_commission, wayne_ways_means,
+# etc.) via the county calendar they belong to — the Documenters platform
+# matches meetings to agencies by that exact scraper name. See
+# extractor/wayne_commission/common.py for the calendar mapping.
+# Used for file naming and as the fallback attribution
+OUTPUT_NAME = FALLBACK_SCRAPER_NAME
 TIMEZONE = "America/Detroit"
 START_URL = "https://www.waynecountymi.gov/Government/County-Calendar"
 OUTPUT_DIR = Path("harambe_scrapers/output")
@@ -79,7 +80,7 @@ class WayneCommissionOrchestrator:
     def __init__(self, limit_meetings: int = None):
         self.limit_meetings = limit_meetings  # Optional limit for testing
         self.observer = DataCollector(
-            scraper_name=SCRAPER_NAME,
+            scraper_name=OUTPUT_NAME,
             timezone=TIMEZONE,
         )
         self.session = create_session()
@@ -112,7 +113,7 @@ class WayneCommissionOrchestrator:
             print(f"    ✗ Error extracting {url}: {e}")
             return None
 
-    def transform_to_ocd_format(self, raw_data: dict) -> dict:
+    def transform_to_ocd_format(self, raw_data: dict, scraper_name: str = None) -> dict:
         """Transform raw data to OCD format."""
         # Handle all_day_event field
         all_day = raw_data.get("is_all_day_event")
@@ -124,7 +125,7 @@ class WayneCommissionOrchestrator:
         return create_ocd_event(
             title=raw_data.get("title") or "Wayne County Commission Meeting",
             start_time=raw_data["start_time"],
-            scraper_name=SCRAPER_NAME,
+            scraper_name=scraper_name or FALLBACK_SCRAPER_NAME,
             agency_name=AGENCY_NAME,
             timezone=TIMEZONE,
             description=raw_data.get("description") or "",
@@ -167,7 +168,10 @@ class WayneCommissionOrchestrator:
             await asyncio.sleep(DETAIL_REQUEST_DELAY_SECONDS)
 
             if raw_data and raw_data.get("start_time"):
-                ocd_event = self.transform_to_ocd_format(raw_data)
+                ocd_event = self.transform_to_ocd_format(
+                    raw_data,
+                    scraper_name=detail_info.get("context", {}).get("scraperName"),
+                )
                 await self.observer.on_save_data(ocd_event)
                 # Extract date from start_time for display
                 start_date = raw_data["start_time"][:10]  # Get YYYY-MM-DD
