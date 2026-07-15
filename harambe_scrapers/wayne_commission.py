@@ -176,6 +176,15 @@ class WayneCommissionOrchestrator:
             else:
                 print("    ✗ Skipped (missing start_time or data)")
 
+        # URLs were found but nothing parsed — the detail-page markup has
+        # likely changed. Fail loudly so the cron doesn't report a
+        # "successful" run that quietly produced no meetings.
+        if urls_to_process and not self.observer.data:
+            raise RuntimeError(
+                f"Detail stage produced 0 meetings from "
+                f"{len(urls_to_process)} URLs — treating as a scraper failure"
+            )
+
         print("\n" + "=" * 70)
         print(f"Scraping Complete: {len(self.observer.data)} meetings")
         print("=" * 70)

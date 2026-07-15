@@ -14,7 +14,6 @@ import re
 from datetime import datetime
 from typing import Any, Optional
 
-import pytz
 from parsel import Selector
 
 from harambe_scrapers.extractor.wayne_commission.common import (
@@ -22,19 +21,27 @@ from harambe_scrapers.extractor.wayne_commission.common import (
     REQUEST_TIMEOUT,
     create_session,
 )
+from harambe_scrapers.utils import localize_iso_datetime
 
 TIMEZONE = "America/Detroit"
 
 # Zoom URLs often appear as plain text (not anchors) in the meeting
-# description or location paragraphs
-ZOOM_URL_RE = re.compile(r"https?://[\w.-]*zoom\.us/[^\s\"'<>\\)]+", re.IGNORECASE)
+# description or location paragraphs; the scheme is sometimes omitted
+ZOOM_URL_RE = re.compile(r"(?:https?://)?[\w.-]*zoom\.us/[^\s\"'<>\\)]+", re.IGNORECASE)
 
 # Meetings are sometimes cancelled only via the description text while the
-# calendar API's IsCancelled flag stays false
+# calendar API's IsCancelled flag stays false. Requires "meeting ...
+# cancelled" order or a bare "Cancelled Meeting" description so that text
+# like "the cancelled meeting from June has been rescheduled" doesn't
+# flag the current meeting.
 CANCELLED_TEXT_RE = re.compile(
-    r"\b(meeting\s+(has\s+been\s+)?cancell?ed|cancell?ed\s+meeting)\b",
+    r"\bmeeting\s+(has\s+been\s+|is\s+|was\s+)?cancell?ed\b"
+    r"|^\s*cancell?ed\s+meeting\.?\s*$",
     re.IGNORECASE,
 )
+
+# Time ranges are usually "10:00 AM - 11:00 AM" but tolerate en/em dashes
+TIME_RANGE_SEPARATOR_RE = re.compile(r"\s+[-–—]\s+")
 
 # Containers that hold meeting-specific content on both page layouts
 MEETING_CONTENT_CSS = (
@@ -45,9 +52,7 @@ MEETING_CONTENT_CSS = (
 
 def change_timezone(date: str) -> str:
     """Localize a naive ISO datetime string to America/Detroit."""
-    naive_datetime = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
-    tz = pytz.timezone(TIMEZONE)
-    return tz.localize(naive_datetime).isoformat()
+    return localize_iso_datetime(date, TIMEZONE)
 
 
 def parse_classification(title: Optional[str]) -> Optional[str]:
@@ -123,6 +128,8 @@ def _add_zoom_links(selector: Selector, links: list[dict]) -> list[dict]:
     content_text = " ".join(selector.css(MEETING_CONTENT_CSS).getall())
     for match in ZOOM_URL_RE.findall(content_text):
         url = match.rstrip(".,;")
+        if not url.lower().startswith("http"):
+            url = "https://" + url
         if url not in existing:
             existing.add(url)
             links.append({"title": "Zoom Meeting Link", "url": url})
@@ -150,7 +157,9 @@ def _parse_meeting_layout(selector: Selector) -> dict:
     # Some pages publish only a start time (no " - <end time>" range)
     start_datetime, end_datetime = None, None
     if meeting_date and time_text:
-        start_time, _, end_time = time_text.partition(" - ")
+        time_parts = TIME_RANGE_SEPARATOR_RE.split(time_text, maxsplit=1)
+        start_time = time_parts[0]
+        end_time = time_parts[1] if len(time_parts) > 1 else ""
         try:
             start_datetime = datetime.strptime(
                 f"{meeting_date} {start_time.strip()}", "%B %d, %Y %I:%M %p"
@@ -182,7 +191,7 @@ def _parse_meeting_layout(selector: Selector) -> dict:
     }
 
 
-def _parse_general_layout(selector: Selector, main_title: str) -> dict:
+def _parse_general_layout(selector: Selector, main_title: str, url: str) -> dict:
     """Parse the fallback general content layout (.small-text date line)."""
     small_text = "".join(selector.css(".small-text ::text").getall())
 
@@ -190,10 +199,15 @@ def _parse_general_layout(selector: Selector, main_title: str) -> dict:
     if date_match:
         start_datetime = datetime.strptime(date_match.group(0), "%B %d, %Y, %I:%M %p")
     else:
+        # Distinguish "page structure changed" from "no date on this page"
+        # so a markup regression doesn't silently drop meetings
+        print(f"    ⚠ No date found in .small-text layout: {url}")
         start_datetime = None
 
     location_name, location_address = None, None
     location_el = selector.css(".side-box-section p:nth-child(5)")
+    if not location_el:
+        print(f"    ⚠ No location element in .small-text layout: {url}")
     if location_el:
         location_lines = [
             line.strip()
@@ -235,7 +249,7 @@ async def scrape(
     if selector.css("ul.content-details-list.minutes-details-list span.minutes-date"):
         parsed = _parse_meeting_layout(selector)
     elif selector.css(".small-text"):
-        parsed = _parse_general_layout(selector, main_title)
+        parsed = _parse_general_layout(selector, main_title, current_url)
     else:
         print(f"    ✗ Unrecognized page layout: {current_url}")
         return

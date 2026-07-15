@@ -114,7 +114,7 @@ async def test_run_listing_stage():
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_with_limit():
+async def test_orchestrator_with_limit(tmp_path):
     """Test that the orchestrator respects the limit_meetings parameter"""
     orchestrator = WayneCommissionOrchestrator(limit_meetings=3)
 
@@ -132,12 +132,30 @@ async def test_orchestrator_with_limit():
                 "start_time": datetime.now().isoformat(),
             }
 
-            with patch.object(orchestrator.observer, "on_save_data") as mock_save:
-                mock_save.return_value = None
-
+            with patch("harambe_scrapers.wayne_commission.OUTPUT_DIR", tmp_path):
                 await orchestrator.run()
 
                 assert mock_detail.call_count == 3
+                assert len(orchestrator.observer.data) == 3
+
+
+@pytest.mark.asyncio
+async def test_orchestrator_raises_when_no_meetings_parse():
+    """URLs found but zero meetings parsed should fail loudly, not succeed"""
+    orchestrator = WayneCommissionOrchestrator()
+
+    orchestrator.detail_urls = [
+        {"url": "https://test.com", "context": {"isCancelled": "False"}}
+    ]
+
+    with patch.object(orchestrator, "run_listing_stage") as mock_listing:
+        mock_listing.return_value = None
+
+        with patch.object(orchestrator, "run_detail_stage") as mock_detail:
+            mock_detail.return_value = None  # every page fails to parse
+
+            with pytest.raises(RuntimeError, match="0 meetings"):
+                await orchestrator.run()
 
 
 @pytest.mark.asyncio
@@ -424,3 +442,258 @@ async def test_detail_scraper_start_time_only():
     assert "2026-01-14T09:30:00" in sdk.data["start_time"]
     assert sdk.data["end_time"] is None
     assert sdk.data["title"] == "Seniors and Veterans Affairs Committee"
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_survives_one_year_failure():
+    """A failed year fetch should be skipped, not abort the whole scrape"""
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    item = {
+        "CalendarId": "cal-1",
+        "Id": "item-1",
+        "MainContentId": "item-1",
+        "Name": "Meeting",
+        "DateTime": "1/8/2026 10:00:00 AM",
+    }
+    items_response = {"success": True, "data": [{"Items": [item]}]}
+
+    session = MagicMock()
+
+    def fake_get(url, **kwargs):
+        if "County-Calendar" in url:
+            return make_response(text="<html></html>")
+        if "getcalendars" in url:
+            return make_response(
+                json_data={"success": True, "data": [{"Id": "cal-1", "Label": "X"}]}
+            )
+        if "contentinfo" in url:
+            return make_response(
+                json_data={
+                    "success": True,
+                    "data": {"Link": "https://example.com/m1", "IsCancelled": False},
+                }
+            )
+        raise AssertionError(f"Unexpected GET {url}")
+
+    # First year's fetch blows up; the other two succeed
+    post_responses = iter(
+        [
+            ConnectionError("transient failure"),
+            items_response,
+            {"success": True, "data": []},
+        ]
+    )
+
+    def fake_post(url, **kwargs):
+        result = next(post_responses)
+        if isinstance(result, Exception):
+            raise result
+        return make_response(json_data=result)
+
+    session.get.side_effect = fake_get
+    session.post.side_effect = fake_post
+
+    detail_urls = []
+    with patch(
+        "harambe_scrapers.extractor.wayne_commission.listing."
+        "ITEM_REQUEST_DELAY_SECONDS",
+        0,
+    ):
+        await listing_scrape(
+            ListingSDK(detail_urls), "https://test.com", {}, session=session
+        )
+
+    assert session.post.call_count == 3
+    assert len(detail_urls) == 1
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_raises_on_zero_meetings():
+    """An empty scrape should fail loudly instead of reporting success"""
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    session = MagicMock()
+
+    def fake_get(url, **kwargs):
+        if "County-Calendar" in url:
+            return make_response(text="<html></html>")
+        if "getcalendars" in url:
+            return make_response(
+                json_data={"success": True, "data": [{"Id": "cal-1", "Label": "X"}]}
+            )
+        raise AssertionError(f"Unexpected GET {url}")
+
+    session.get.side_effect = fake_get
+    session.post.return_value = make_response(json_data={"success": True, "data": []})
+
+    with pytest.raises(RuntimeError, match="0 meeting URLs"):
+        await listing_scrape(ListingSDK([]), "https://test.com", {}, session=session)
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_dedupes_before_contentinfo_fetch():
+    """Duplicate calendar items shouldn't cost an extra contentinfo request"""
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    item = {
+        "CalendarId": "cal-1",
+        "Id": "item-1",
+        "MainContentId": "item-1",
+        "Name": "Meeting",
+        "DateTime": "1/8/2026 10:00:00 AM",
+    }
+    items_response = {"success": True, "data": [{"Items": [item, dict(item)]}]}
+    empty_response = {"success": True, "data": []}
+
+    session = MagicMock()
+    contentinfo_calls = []
+
+    def fake_get(url, **kwargs):
+        if "County-Calendar" in url:
+            return make_response(text="<html></html>")
+        if "getcalendars" in url:
+            return make_response(
+                json_data={"success": True, "data": [{"Id": "cal-1", "Label": "X"}]}
+            )
+        if "contentinfo" in url:
+            contentinfo_calls.append(kwargs.get("params"))
+            return make_response(
+                json_data={
+                    "success": True,
+                    "data": {"Link": "https://example.com/m1", "IsCancelled": False},
+                }
+            )
+        raise AssertionError(f"Unexpected GET {url}")
+
+    post_responses = iter([empty_response, items_response, empty_response])
+    session.get.side_effect = fake_get
+    session.post.side_effect = lambda url, **kwargs: make_response(
+        json_data=next(post_responses)
+    )
+
+    detail_urls = []
+    with patch(
+        "harambe_scrapers.extractor.wayne_commission.listing."
+        "ITEM_REQUEST_DELAY_SECONDS",
+        0,
+    ):
+        await listing_scrape(
+            ListingSDK(detail_urls), "https://test.com", {}, session=session
+        )
+
+    assert len(contentinfo_calls) == 1
+    assert len(detail_urls) == 1
+
+
+def _detail_fixture_html(description, meeting_time="Time 9:00 AM - 10:00 AM"):
+    return f"""
+    <html><body>
+    <h1 class="oc-page-title">Test Committee - July 20, 2026</h1>
+    <ul class="content-details-list minutes-details-list">
+      <li><span class="minutes-date">July 20, 2026</span></li>
+      <li><span class="field-value">Test Committee</span></li>
+    </ul>
+    <div class="meeting-container"><p>{description}</p></div>
+    <div class="meeting-time">{meeting_time}</div>
+    <div class="meeting-address"><p>Guardian Building, 500 Griswold</p></div>
+    </body></html>
+    """
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_cancellation_text_no_false_positive():
+    """A reference to a different cancelled meeting shouldn't flag this one"""
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    session = MagicMock()
+    session.get.return_value = make_response(
+        text=_detail_fixture_html(
+            "The cancelled meeting from June has been rescheduled to July 20."
+        )
+    )
+
+    sdk = DetailSDK()
+    await detail_scrape(
+        sdk, "https://test.com", {"isCancelled": "False"}, session=session
+    )
+
+    assert sdk.data is not None
+    assert sdk.data["is_cancelled"] is None
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_bare_cancelled_meeting_description():
+    """A description that is just 'Cancelled Meeting' should flag cancellation"""
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    session = MagicMock()
+    session.get.return_value = make_response(
+        text=_detail_fixture_html("Cancelled Meeting")
+    )
+
+    sdk = DetailSDK()
+    await detail_scrape(
+        sdk, "https://test.com", {"isCancelled": "False"}, session=session
+    )
+
+    assert sdk.data is not None
+    assert sdk.data["is_cancelled"] is True
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_en_dash_time_range():
+    """Time ranges separated by an en dash should still parse"""
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    session = MagicMock()
+    session.get.return_value = make_response(
+        text=_detail_fixture_html(
+            "Standard Meeting", meeting_time="Time 9:00 AM – 10:30 AM"
+        )
+    )
+
+    sdk = DetailSDK()
+    await detail_scrape(
+        sdk, "https://test.com", {"isCancelled": "False"}, session=session
+    )
+
+    assert sdk.data is not None
+    assert "2026-07-20T09:00:00" in sdk.data["start_time"]
+    assert "2026-07-20T10:30:00" in sdk.data["end_time"]
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_protocol_less_zoom_link():
+    """A zoom.us reference without a scheme should still become a link"""
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    session = MagicMock()
+    session.get.return_value = make_response(
+        text=_detail_fixture_html("Join at zoom.us/j/999888777.")
+    )
+
+    sdk = DetailSDK()
+    await detail_scrape(
+        sdk, "https://test.com", {"isCancelled": "False"}, session=session
+    )
+
+    assert sdk.data is not None
+    zoom_links = [link for link in sdk.data["links"] if "zoom.us" in link["url"]]
+    assert zoom_links == [
+        {"title": "Zoom Meeting Link", "url": "https://zoom.us/j/999888777"}
+    ]

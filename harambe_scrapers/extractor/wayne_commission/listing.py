@@ -137,18 +137,36 @@ async def scrape(
     # Previous year through next year, so late-year scrapes still pick up
     # meetings already booked for January onward.
     current_year = datetime.datetime.now().year
+    years = range(current_year - 1, current_year + 2)
+    seen_items = set()
     seen_urls = set()
     enqueued = 0
-    for year in range(current_year - 1, current_year + 2):
-        items = get_calendar_items(
-            session, calendar_ids, f"{year}-01-01", f"{year}-12-31"
-        )
+    failed_years = 0
+    failed_items = 0
+    for year in years:
+        # A transient failure for one year shouldn't abort the whole scrape
+        try:
+            items = get_calendar_items(
+                session, calendar_ids, f"{year}-01-01", f"{year}-12-31"
+            )
+        except Exception as e:
+            print(f"[LISTING] ✗ Failed to fetch calendar items for {year}: {e}")
+            failed_years += 1
+            continue
         print(f"[LISTING] Year {year}: {len(items)} calendar items")
 
         for item in items:
+            # A multi-day item appears once per date group; dedup before
+            # spending a contentinfo request on it
+            item_key = (item.get("CalendarId"), item.get("Id"))
+            if item_key in seen_items:
+                continue
+            seen_items.add(item_key)
+
             info = get_content_info(session, item)
             await asyncio.sleep(ITEM_REQUEST_DELAY_SECONDS)
             if not info:
+                failed_items += 1
                 continue
             meeting_link = info.get("Link")
             if not meeting_link or meeting_link in seen_urls:
@@ -162,6 +180,21 @@ async def scrape(
             enqueued += 1
             if enqueued % 20 == 0:
                 print(f"[LISTING]   ✓ Enqueued {enqueued} meeting URLs so far...")
+
+    if failed_years:
+        print(f"[LISTING] ⚠ {failed_years}/{len(years)} year fetches failed")
+    if failed_items:
+        print(f"[LISTING] ⚠ {failed_items} contentinfo lookups failed")
+
+    # The county always has meetings booked, so an empty result means
+    # something systemic broke (e.g. bot protection rules changed). Fail
+    # loudly rather than let the cron report a "successful" empty run.
+    if enqueued == 0:
+        raise RuntimeError(
+            "Listing stage enqueued 0 meeting URLs "
+            f"({failed_years} year fetches and {failed_items} contentinfo "
+            "lookups failed) — treating an empty calendar as a scraper failure"
+        )
 
     print(f"[LISTING] Scrape complete! Total URLs enqueued: {enqueued}")
 
