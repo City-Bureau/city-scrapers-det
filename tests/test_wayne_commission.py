@@ -387,3 +387,40 @@ async def test_detail_scraper_plain_text_zoom_and_cancellation():
     ]
     # Cancelled in description text even though the API flag said otherwise
     assert sdk.data["is_cancelled"] is True
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_start_time_only():
+    """Pages that publish only a start time should still produce a meeting"""
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    html_content = """
+    <html><body>
+    <h1 class="oc-page-title">Seniors and Veterans Affairs Committee</h1>
+    <ul class="content-details-list minutes-details-list">
+      <li><span class="minutes-date">January 14, 2026</span></li>
+      <li><span class="field-value">Seniors and Veterans Affairs Committee</span></li>
+    </ul>
+    <div class="meeting-container"><p>Standard Meeting</p></div>
+    <div class="meeting-time">Time09:30 AM</div>
+    <div class="meeting-address">
+      <p>Commission Chambers, Mezzanine, Guardian Building, 500 Griswold,
+      Detroit, MI, 48226</p>
+    </div>
+    </body></html>
+    """
+
+    session = MagicMock()
+    session.get.return_value = make_response(text=html_content)
+
+    sdk = DetailSDK()
+    await detail_scrape(
+        sdk, "https://test.com", {"isCancelled": "False"}, session=session
+    )
+
+    assert sdk.data is not None
+    assert "2026-01-14T09:30:00" in sdk.data["start_time"]
+    assert sdk.data["end_time"] is None
+    assert sdk.data["title"] == "Seniors and Veterans Affairs Committee"

@@ -147,18 +147,23 @@ def _parse_meeting_layout(selector: Selector) -> dict:
         .replace("Add to Calendar", "")
         .strip()
     )
+    # Some pages publish only a start time (no " - <end time>" range)
     start_datetime, end_datetime = None, None
-    if meeting_date and " - " in time_text:
-        start_time, end_time = time_text.split(" - ", 1)
+    if meeting_date and time_text:
+        start_time, _, end_time = time_text.partition(" - ")
         try:
             start_datetime = datetime.strptime(
                 f"{meeting_date} {start_time.strip()}", "%B %d, %Y %I:%M %p"
             )
-            end_datetime = datetime.strptime(
-                f"{meeting_date} {end_time.strip()}", "%B %d, %Y %I:%M %p"
-            )
         except ValueError:
             print(f"    ✗ Could not parse meeting time: {meeting_date} {time_text}")
+        if start_datetime and end_time.strip():
+            try:
+                end_datetime = datetime.strptime(
+                    f"{meeting_date} {end_time.strip()}", "%B %d, %Y %I:%M %p"
+                )
+            except ValueError:
+                pass
 
     location_text = _text(selector, "div.meeting-address > p:last-of-type") or ""
     location_text = location_text.replace("View Map", "").strip()
