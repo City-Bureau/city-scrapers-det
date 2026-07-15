@@ -23,7 +23,6 @@ headers, so both stages run over plain HTTP with an honest User-Agent
 
 import asyncio
 import json
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -165,7 +164,7 @@ class WayneCommissionOrchestrator:
             print(f"    URL: {detail_info['url']}")
 
             raw_data = await self.run_detail_stage(detail_info)
-            time.sleep(DETAIL_REQUEST_DELAY_SECONDS)
+            await asyncio.sleep(DETAIL_REQUEST_DELAY_SECONDS)
 
             if raw_data and raw_data.get("start_time"):
                 ocd_event = self.transform_to_ocd_format(raw_data)

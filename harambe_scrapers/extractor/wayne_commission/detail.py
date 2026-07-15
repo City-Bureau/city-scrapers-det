@@ -47,10 +47,7 @@ def change_timezone(date: str) -> str:
     """Localize a naive ISO datetime string to America/Detroit."""
     naive_datetime = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
     tz = pytz.timezone(TIMEZONE)
-    localized_datetime = tz.localize(naive_datetime)
-    iso_format = localized_datetime.strftime("%Y-%m-%dT%H:%M:%S%z")
-    # Adjust the offset format to include a colon
-    return iso_format[:-2] + ":" + iso_format[-2:]
+    return tz.localize(naive_datetime).isoformat()
 
 
 def parse_classification(title: Optional[str]) -> Optional[str]:
@@ -150,14 +147,18 @@ def _parse_meeting_layout(selector: Selector) -> dict:
         .replace("Add to Calendar", "")
         .strip()
     )
-    start_time, end_time = time_text.split(" - ")
-
-    start_datetime = datetime.strptime(
-        f"{meeting_date} {start_time.strip()}", "%B %d, %Y %I:%M %p"
-    )
-    end_datetime = datetime.strptime(
-        f"{meeting_date} {end_time.strip()}", "%B %d, %Y %I:%M %p"
-    )
+    start_datetime, end_datetime = None, None
+    if meeting_date and " - " in time_text:
+        start_time, end_time = time_text.split(" - ", 1)
+        try:
+            start_datetime = datetime.strptime(
+                f"{meeting_date} {start_time.strip()}", "%B %d, %Y %I:%M %p"
+            )
+            end_datetime = datetime.strptime(
+                f"{meeting_date} {end_time.strip()}", "%B %d, %Y %I:%M %p"
+            )
+        except ValueError:
+            print(f"    ✗ Could not parse meeting time: {meeting_date} {time_text}")
 
     location_text = _text(selector, "div.meeting-address > p:last-of-type") or ""
     location_text = location_text.replace("View Map", "").strip()

@@ -19,7 +19,6 @@ ourselves honestly instead (see common.py).
 import asyncio
 import datetime
 import re
-import time
 from typing import Any
 
 from harambe_scrapers.extractor.wayne_commission.common import (
@@ -47,7 +46,8 @@ def get_calendar_entity(session) -> tuple[str, str]:
         )
         response.raise_for_status()
         match = re.search(
-            r"data-entity-id='([0-9a-fA-F-]+)'\s+data-entity-type=(\w+)",
+            r"data-entity-id=[\"']?([0-9a-fA-F-]+)[\"']?\s+"
+            r"data-entity-type=[\"']?(\w+)[\"']?",
             response.text,
         )
         if match:
@@ -90,8 +90,8 @@ def get_calendar_items(
     if not body.get("success"):
         raise RuntimeError(f"getcalendaritems returned success=false: {body}")
     items = []
-    for group in body.get("data", []):
-        items.extend(group.get("Items", []))
+    for group in body.get("data") or []:
+        items.extend(group.get("Items") or [])
     return items
 
 
@@ -147,7 +147,7 @@ async def scrape(
 
         for item in items:
             info = get_content_info(session, item)
-            time.sleep(ITEM_REQUEST_DELAY_SECONDS)
+            await asyncio.sleep(ITEM_REQUEST_DELAY_SECONDS)
             if not info:
                 continue
             meeting_link = info.get("Link")
