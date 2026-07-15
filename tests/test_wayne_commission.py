@@ -347,3 +347,43 @@ async def test_detail_scraper_cancelled_context():
 
     assert sdk.data is not None
     assert sdk.data["is_cancelled"] is True
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_plain_text_zoom_and_cancellation():
+    """Zoom URLs in plain text become links; cancellation text sets the flag"""
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    html_content = """
+    <html><body>
+    <h1 class="oc-page-title">Ethics Board Meeting - July 15, 2026</h1>
+    <ul class="content-details-list minutes-details-list">
+      <li><span class="minutes-date">July 15, 2026</span></li>
+      <li><span class="field-value">Ethics Board</span></li>
+    </ul>
+    <div class="meeting-container"><p>Meeting has been canceled.</p></div>
+    <div class="meeting-time">Time 9:00 AM - 10:00 AM</div>
+    <div class="meeting-address">
+      <p>7th Floor Meeting Room, Guardian Building, or join at
+      https://zoom.us/j/2234975895.</p>
+    </div>
+    </body></html>
+    """
+
+    session = MagicMock()
+    session.get.return_value = make_response(text=html_content)
+
+    sdk = DetailSDK()
+    await detail_scrape(
+        sdk, "https://test.com", {"isCancelled": "False"}, session=session
+    )
+
+    assert sdk.data is not None
+    zoom_links = [link for link in sdk.data["links"] if "zoom.us" in link["url"]]
+    assert zoom_links == [
+        {"title": "Zoom Meeting Link", "url": "https://zoom.us/j/2234975895"}
+    ]
+    # Cancelled in description text even though the API flag said otherwise
+    assert sdk.data["is_cancelled"] is True

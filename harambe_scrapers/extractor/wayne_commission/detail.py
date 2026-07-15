@@ -25,6 +25,23 @@ from harambe_scrapers.extractor.wayne_commission.common import (
 
 TIMEZONE = "America/Detroit"
 
+# Zoom URLs often appear as plain text (not anchors) in the meeting
+# description or location paragraphs
+ZOOM_URL_RE = re.compile(r"https?://[\w.-]*zoom\.us/[^\s\"'<>\\)]+", re.IGNORECASE)
+
+# Meetings are sometimes cancelled only via the description text while the
+# calendar API's IsCancelled flag stays false
+CANCELLED_TEXT_RE = re.compile(
+    r"\b(meeting\s+(has\s+been\s+)?cancell?ed|cancell?ed\s+meeting)\b",
+    re.IGNORECASE,
+)
+
+# Containers that hold meeting-specific content on both page layouts
+MEETING_CONTENT_CSS = (
+    ".meeting-container ::text, .meeting-address ::text, "
+    ".body-content ::text, .side-box-section ::text"
+)
+
 
 def change_timezone(date: str) -> str:
     """Localize a naive ISO datetime string to America/Detroit."""
@@ -100,6 +117,18 @@ def _parse_links(selector: Selector) -> list[dict]:
         if "youtu" not in url:
             links.append({"title": title, "url": url})
 
+    return links
+
+
+def _add_zoom_links(selector: Selector, links: list[dict]) -> list[dict]:
+    """Add Zoom URLs that appear as plain text in the meeting content."""
+    existing = {link["url"].rstrip(".") for link in links}
+    content_text = " ".join(selector.css(MEETING_CONTENT_CSS).getall())
+    for match in ZOOM_URL_RE.findall(content_text):
+        url = match.rstrip(".,;")
+        if url not in existing:
+            existing.add(url)
+            links.append({"title": "Zoom Meeting Link", "url": url})
     return links
 
 
@@ -216,7 +245,13 @@ async def scrape(
         else None
     )
 
+    links = _add_zoom_links(selector, parsed["links"])
+
     is_cancelled = True if context.get("isCancelled") == "True" else None
+    # The county sometimes cancels a meeting only in the description text
+    # without flagging it in the calendar API
+    if not is_cancelled and CANCELLED_TEXT_RE.search(parsed["description"] or ""):
+        is_cancelled = True
 
     if start_datetime:
         await sdk.save_data(
@@ -236,7 +271,7 @@ async def scrape(
                     if parsed["location_name"] or parsed["location_address"]
                     else None
                 ),
-                "links": parsed["links"],
+                "links": links,
                 "time_notes": "",
                 "is_cancelled": is_cancelled,
                 "is_all_day_event": is_all_day_event,
