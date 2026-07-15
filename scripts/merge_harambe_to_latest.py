@@ -251,6 +251,21 @@ def main():
         "wayne_cow",
         "wayne_local_emergency_planning",
         "wayne_full_commission",
+        # Derived names for county calendars without a registered agency
+        # (see extractor/wayne_commission/common.py); listed here so old
+        # entries are cleaned from latest.json on every merge
+        "wayne_economic_development_events",
+        "wayne_seniors_and_veterans_services_committee",
+        "wayne_special_committees",
+        "wayne_art_institute_authority",
+        "wayne_board_of_canvassers",
+        "wayne_brownfield_redevelopment_authority",
+        "wayne_commission_youth_council",
+        "wayne_wc_women_s_commission_meetings",
+        "wayne_wc_zoological_authority_meetings",
+        "wayne_parks_and_recreation_events",
+        "wayne_environmental_services",
+        "wayne_commission",
     ]
 
     print(f"Harambe scrapers to process: {len(harambe_scrapers)} scrapers")

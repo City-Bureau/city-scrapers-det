@@ -697,3 +697,136 @@ async def test_detail_scraper_protocol_less_zoom_link():
     assert zoom_links == [
         {"title": "Zoom Meeting Link", "url": "https://zoom.us/j/999888777"}
     ]
+
+
+def test_scraper_name_for_calendar_mapping():
+    """Calendar labels must map to the platform's registered scraper names"""
+    from harambe_scrapers.extractor.wayne_commission.common import (
+        scraper_name_for_calendar,
+    )
+
+    # The 13 registered names on the Wayne County Commission agency
+    assert scraper_name_for_calendar("Full Commission Meeting") == (
+        "wayne_full_commission"
+    )
+    assert scraper_name_for_calendar("Committee of the Whole") == "wayne_cow"
+    assert scraper_name_for_calendar("Audit Committee") == "wayne_audit"
+    assert scraper_name_for_calendar("Economic Development Committee") == (
+        "wayne_economic_development"
+    )
+    assert scraper_name_for_calendar("Government Operations Committee") == (
+        "wayne_government_operations"
+    )
+    assert scraper_name_for_calendar("Health and Human Services Committee") == (
+        "wayne_health_human_services"
+    )
+    assert scraper_name_for_calendar(
+        "Public Safety, Judiciary & Homeland Security Committee"
+    ) == ("wayne_public_safety")
+    assert scraper_name_for_calendar("Public Services Committee") == (
+        "wayne_public_services"
+    )
+    assert scraper_name_for_calendar("Ways & Means Committee") == "wayne_ways_means"
+    assert scraper_name_for_calendar("Election Commission") == (
+        "wayne_election_commission"
+    )
+    assert scraper_name_for_calendar("Building Authority") == (
+        "wayne_building_authority"
+    )
+    assert scraper_name_for_calendar("Ethics Board") == "wayne_ethics_board"
+    assert scraper_name_for_calendar("Local Emergency Planning Committee") == (
+        "wayne_local_emergency_planning"
+    )
+
+    # The departmental Economic Development calendar must NOT collide with
+    # the registered committee name
+    assert scraper_name_for_calendar("Economic Development ") == (
+        "wayne_economic_development_events"
+    )
+
+    # Unregistered calendars get a stable derived name
+    assert scraper_name_for_calendar("Seniors & Veterans Services Committee") == (
+        "wayne_seniors_and_veterans_services_committee"
+    )
+    assert scraper_name_for_calendar("Parks & Recreation Events") == (
+        "wayne_parks_and_recreation_events"
+    )
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_attributes_scraper_name():
+    """Enqueued meetings must carry their calendar's individual scraper name"""
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    item = {
+        "CalendarId": "cal-ways-means",
+        "Id": "item-1",
+        "MainContentId": "item-1",
+        "Name": "Ways & Means - August 5, 2026",
+        "DateTime": "8/5/2026 12:30:00 PM",
+    }
+    items_response = {"success": True, "data": [{"Items": [item]}]}
+    empty_response = {"success": True, "data": []}
+
+    session = MagicMock()
+
+    def fake_get(url, **kwargs):
+        if "County-Calendar" in url:
+            return make_response(text="<html></html>")
+        if "getcalendars" in url:
+            return make_response(
+                json_data={
+                    "success": True,
+                    "data": [
+                        {"Id": "cal-ways-means", "Label": "Ways & Means Committee"}
+                    ],
+                }
+            )
+        if "contentinfo" in url:
+            return make_response(
+                json_data={
+                    "success": True,
+                    "data": {"Link": "https://example.com/wm", "IsCancelled": False},
+                }
+            )
+        raise AssertionError(f"Unexpected GET {url}")
+
+    post_responses = iter([empty_response, items_response, empty_response])
+    session.get.side_effect = fake_get
+    session.post.side_effect = lambda url, **kwargs: make_response(
+        json_data=next(post_responses)
+    )
+
+    detail_urls = []
+    with patch(
+        "harambe_scrapers.extractor.wayne_commission.listing."
+        "ITEM_REQUEST_DELAY_SECONDS",
+        0,
+    ):
+        await listing_scrape(
+            ListingSDK(detail_urls), "https://test.com", {}, session=session
+        )
+
+    assert detail_urls[0]["context"]["scraperName"] == "wayne_ways_means"
+
+
+def test_transform_uses_per_meeting_scraper_name():
+    """The OCD id must be prefixed with the meeting's own scraper name"""
+    orchestrator = WayneCommissionOrchestrator()
+    orchestrator.current_url = "https://www.waynecountymi.gov/test"
+
+    raw_data = {
+        "title": "Ways & Means Committee - August 5, 2026",
+        "start_time": get_future_datetime(days_ahead=30).isoformat(),
+    }
+
+    result = orchestrator.transform_to_ocd_format(
+        raw_data, scraper_name="wayne_ways_means"
+    )
+    assert result["extras"]["cityscrapers/id"].startswith("wayne_ways_means/")
+
+    # Without a name it falls back to the unregistered default
+    result = orchestrator.transform_to_ocd_format(raw_data)
+    assert result["extras"]["cityscrapers/id"].startswith("wayne_commission/")
