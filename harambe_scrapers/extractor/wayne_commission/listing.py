@@ -8,6 +8,72 @@ from harambe import SDK
 from harambe.contrib import playwright_harness
 from playwright.async_api import Page
 
+CALENDAR_URL = "https://www.waynecountymi.gov/Government/County-Calendar"
+
+# Fallback user-agent, only used if the live page cannot report its own.
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+)
+
+
+async def _session_from_page(page: Page) -> tuple[str, str]:
+    """Extract a live ``Cookie`` header and user-agent from the Playwright page.
+
+    The calendar page must already be loaded so the Oracle backend has issued a
+    fresh ``ASP.NET_SessionId``. We reuse that live session (and the browser's
+    real user-agent) for the ``requests`` calls to the ocapi endpoints instead
+    of shipping a hardcoded cookie that goes stale the moment the session dies.
+    """
+    cookie_pairs = []
+    try:
+        cookies = await page.context.cookies()
+        for cookie in cookies:
+            name = cookie.get("name")
+            value = cookie.get("value")
+            if name and value is not None:
+                cookie_pairs.append(f"{name}={value}")
+    except Exception as e:  # pragma: no cover - defensive
+        print(f"[LISTING] Warning: could not read cookies from page: {e}")
+
+    cookie_header = "; ".join(cookie_pairs)
+
+    if "ASP.NET_SessionId" not in cookie_header:
+        print(
+            "[LISTING] Warning: no ASP.NET_SessionId cookie found on the live "
+            "page session. The calendar API may reject the request."
+        )
+
+    try:
+        user_agent = await page.evaluate("() => navigator.userAgent")
+    except Exception:  # pragma: no cover - defensive
+        user_agent = None
+
+    return cookie_header, user_agent or DEFAULT_USER_AGENT
+
+
+def _build_headers(
+    cookie_header: str, user_agent: str, json_body: bool
+) -> dict[str, str]:
+    """Build request headers for the ocapi calls using a live session.
+
+    Frozen Oracle APM trace headers (``x-b3-*``, ``x-oracle-apm-ba-version``)
+    are intentionally omitted -- they were request-specific trace ids captured
+    once and are not required by the endpoint.
+    """
+    headers = {
+        "accept": "application/json, text/javascript, */*; q=0.01",
+        "origin": "https://www.waynecountymi.gov",
+        "referer": CALENDAR_URL,
+        "user-agent": user_agent,
+        "x-requested-with": "XMLHttpRequest",
+    }
+    if json_body:
+        headers["content-type"] = "application/json; charset=UTF-8"
+    if cookie_header:
+        headers["Cookie"] = cookie_header
+    return headers
+
 
 async def scrape(
     sdk: SDK, current_url: str, context: dict[str, Any], *args: Any, **kwargs: Any
@@ -59,7 +125,7 @@ async def scrape(
 
     scraperId = []
     print("[LISTING] Starting page navigation...")
-    await page.goto("https://www.waynecountymi.gov/Government/County-Calendar")
+    await page.goto(CALENDAR_URL)
     print("[LISTING] Page loaded, waiting for calendar filter...")
     await page.wait_for_selector(".calendar-filter")
     print("[LISTING] Calendar filter found, getting meeting types...")
@@ -67,178 +133,155 @@ async def scrape(
     print(f"[LISTING] Found {len(meeting_types)} meeting types")
     for type in meeting_types:
         ID = await type.get_attribute("data-filter-option-id")
-        scraperId.append(ID)
+        if ID:
+            scraperId.append(ID)
 
     print(f"[LISTING] Collected {len(scraperId)} scraper IDs")
-    if scraperId:
-        # Get the current year
-        current_year = datetime.datetime.now().year
-        print(
-            f"[LISTING] Starting API calls for years {current_year - 1} "
-            f"to {current_year}"
+
+    # Fail loudly if the calendar page structure changed and no meeting-type
+    # filters were found. Continuing would silently produce zero meetings.
+    if not scraperId:
+        raise RuntimeError(
+            "[LISTING] No meeting-type filters found on the calendar page. "
+            "The '.calendar-filter-list-item' markup may have changed, or the "
+            "page failed to load. Aborting so the failure is visible instead "
+            "of silently scraping nothing."
         )
 
-        # Loop from one year less than the current year to the current year
-        for year in range(current_year - 1, current_year + 1):
-            print(f"[LISTING] Processing year {year}...")
-            url = "https://www.waynecountymi.gov/ocapi/calendars/getcalendaritems"
+    # Pull a *live* session from the Playwright page instead of shipping a
+    # hardcoded ASP.NET_SessionId that goes stale. The page has already loaded
+    # the calendar above, so the Oracle backend has issued us a valid session.
+    cookie_header, user_agent = await _session_from_page(page)
+    print(
+        f"[LISTING] Using live session cookie "
+        f"({'present' if 'ASP.NET_SessionId' in cookie_header else 'MISSING'})"
+    )
 
-            payload = (
-                f'{{"LanguageCode":"en-US","Ids":{scraperId},'
-                f'"StartDate":"{year}-01-01","EndDate":"{year}-12-31"}}'
+    # Get the current year
+    current_year = datetime.datetime.now().year
+    print(
+        f"[LISTING] Starting API calls for years {current_year - 1} "
+        f"to {current_year}"
+    )
+
+    total_enqueued = 0
+
+    # Loop from one year less than the current year to the current year
+    for year in range(current_year - 1, current_year + 1):
+        print(f"[LISTING] Processing year {year}...")
+        url = "https://www.waynecountymi.gov/ocapi/calendars/getcalendaritems"
+
+        payload = (
+            f'{{"LanguageCode":"en-US","Ids":{scraperId},'
+            f'"StartDate":"{year}-01-01","EndDate":"{year}-12-31"}}'
+        )
+
+        headers = _build_headers(cookie_header, user_agent, json_body=True)
+
+        print(f"[LISTING] Making API POST to {url}")
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(f"[LISTING] API Response status: {response.status_code}")
+        if response.status_code == 200:
+            data = response.json()
+            data_items = data.get("data", [])
+            print(f"[LISTING] Found {len(data_items)} calendar groups for year {year}")
+            total_meetings = 0
+            meetings_processed = 0
+            for idx, meeting in enumerate(data_items):
+                meeting_items = meeting.get("Items", [])
+                total_meetings += len(meeting_items)
+                if len(meeting_items) > 0:  # Only print if there are items
+                    print(
+                        f"[LISTING] Processing calendar group {idx + 1}/"
+                        f"{len(data_items)}, with {len(meeting_items)} items"
+                    )
+                for item_idx, item in enumerate(meeting_items):
+                    calendarId = item["CalendarId"]
+                    contentId = item["Id"]
+                    mainContentId = item["MainContentId"]
+                    itemDate = item["DateTime"]
+                    # Note: itemDate is used for display/logging purposes
+
+                    # Get the current date and time
+                    now = datetime.datetime.now()
+
+                    # Format the date and time in the desired format
+                    formatted_date_time = now.strftime("%m/%d/%Y%%20%I:%M:%S%%20%p")
+
+                    url = (
+                        f"https://www.waynecountymi.gov/ocapi/get/contentinfo?"
+                        f"calendarId={calendarId}&contentId={contentId}&"
+                        f"language=en-US&currentDateTime={formatted_date_time}&"
+                        f"mainContentId={mainContentId}"
+                    )
+
+                    # Print progress every 5 items or on first/last item
+                    if (
+                        item_idx == 0
+                        or item_idx % 5 == 0
+                        or item_idx == len(meeting_items) - 1
+                    ):
+                        print(
+                            f"[LISTING]   Processing item {item_idx + 1}/"
+                            f"{len(meeting_items)} - Date: {itemDate}"
+                        )
+
+                    headers = _build_headers(cookie_header, user_agent, json_body=False)
+
+                    response = requests.request("GET", url, headers=headers)
+                    if response.status_code == 200:
+                        meeting_data = response.json()
+                        meeting = meeting_data.get("data", {})
+                        meeting_link = meeting.get("Link")
+                        if meeting_link:
+                            is_cancelled = (
+                                False if meeting.get("IsCancelled") is False else True
+                            )
+
+                            await sdk.enqueue(
+                                meeting_link,
+                                context={"isCancelled": f"{is_cancelled}"},
+                            )
+                            meetings_processed += 1
+                            total_enqueued += 1
+                            if meetings_processed % 20 == 0:
+                                print(
+                                    f"[LISTING]   ✓ Enqueued {meetings_processed} "
+                                    f"meeting URLs so far..."
+                                )
+                    else:
+                        print(
+                            f"[LISTING]   Warning: Got status "
+                            f"{response.status_code} for meeting content API call"
+                        )
+            print(
+                f"[LISTING] Total meetings processed for year {year}: "
+                f"{total_meetings}, URLs enqueued: {meetings_processed}"
+            )
+        else:
+            # A non-200 from the calendar API means the session/headers were
+            # rejected or the endpoint moved. Surface it loudly rather than
+            # skipping the whole year silently.
+            print(
+                f"[LISTING] ERROR: calendar API returned status "
+                f"{response.status_code} for year {year}. "
+                f"Response body (truncated): {response.text[:500]}"
             )
 
-            headers = {
-                "accept": "application/json, text/javascript, */*; q=0.01",
-                "accept-language": (
-                    "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,"
-                    "en-US;q=0.5,ar;q=0.4,ur;q=0.3,es-MX;q=0.2"
-                ),
-                "content-type": "application/json; charset=UTF-8",
-                "origin": "https://www.waynecountymi.gov",
-                "priority": "u=1, i",
-                "referer": "https://www.waynecountymi.gov/Government/County-Calendar",
-                "sec-ch-ua": (
-                    '"Not)A;Brand";v="8", "Chromium";v="138", '
-                    '"Microsoft Edge";v="138"'
-                ),
-                "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": '"Windows"',
-                "sec-fetch-dest": "empty",
-                "sec-fetch-mode": "cors",
-                "sec-fetch-site": "same-origin",
-                "user-agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                    "(KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
-                ),
-                "x-b3-sampled": "1",
-                "x-b3-spanid": "8637d509111f36c5",
-                "x-b3-traceid": "b1fb5355028f0b97b4d23cd37b51d7ee",
-                "x-oracle-apm-ba-version": "1.1.131",
-                "x-requested-with": "XMLHttpRequest",
-                "Cookie": "ASP.NET_SessionId=h4ooyutzz33houczonxywo0h",
-            }
-
-            print(f"[LISTING] Making API POST to {url}")
-            response = requests.request("POST", url, headers=headers, data=payload)
-            print(f"[LISTING] API Response status: {response.status_code}")
-            if response.status_code == 200:
-                data = response.json()
-                data_items = data.get("data", [])
-                print(
-                    f"[LISTING] Found {len(data_items)} calendar groups for year {year}"
-                )
-                total_meetings = 0
-                meetings_processed = 0
-                for idx, meeting in enumerate(data_items):
-                    meeting_items = meeting.get("Items", [])
-                    total_meetings += len(meeting_items)
-                    if len(meeting_items) > 0:  # Only print if there are items
-                        print(
-                            f"[LISTING] Processing calendar group {idx + 1}/"
-                            f"{len(data_items)}, with {len(meeting_items)} items"
-                        )
-                    for item_idx, item in enumerate(meeting_items):
-                        calendarId = item["CalendarId"]
-                        contentId = item["Id"]
-                        mainContentId = item["MainContentId"]
-                        itemDate = item["DateTime"]
-                        # Note: itemDate is used for display/logging purposes
-
-                        # Get the current date and time
-                        now = datetime.datetime.now()
-
-                        # Format the date and time in the desired format
-                        formatted_date_time = now.strftime("%m/%d/%Y%%20%I:%M:%S%%20%p")
-
-                        url = (
-                            f"https://www.waynecountymi.gov/ocapi/get/contentinfo?"
-                            f"calendarId={calendarId}&contentId={contentId}&"
-                            f"language=en-US&currentDateTime={formatted_date_time}&"
-                            f"mainContentId={mainContentId}"
-                        )
-
-                        # Print progress every 5 items or on first/last item
-                        if (
-                            item_idx == 0
-                            or item_idx % 5 == 0
-                            or item_idx == len(meeting_items) - 1
-                        ):
-                            print(
-                                f"[LISTING]   Processing item {item_idx + 1}/"
-                                f"{len(meeting_items)} - Date: {itemDate}"
-                            )
-
-                        payload = {}
-                        headers = {
-                            "accept": "application/json, text/javascript, */*; q=0.01",
-                            "accept-language": (
-                                "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,"
-                                "en-US;q=0.5,ar;q=0.4,ur;q=0.3,es-MX;q=0.2"
-                            ),
-                            "priority": "u=1, i",
-                            "referer": (
-                                "https://www.waynecountymi.gov/Government/"
-                                "County-Calendar"
-                            ),
-                            "sec-ch-ua": (
-                                '"Not)A;Brand";v="8", "Chromium";v="138", '
-                                '"Microsoft Edge";v="138"'
-                            ),
-                            "sec-ch-ua-mobile": "?0",
-                            "sec-ch-ua-platform": '"Windows"',
-                            "sec-fetch-dest": "empty",
-                            "sec-fetch-mode": "cors",
-                            "sec-fetch-site": "same-origin",
-                            "user-agent": (
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                "Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0"
-                            ),
-                            "x-b3-sampled": "1",
-                            "x-b3-spanid": "b976fbfea423163d",
-                            "x-b3-traceid": "be91badf5d062cf9732c40defae7b6b0",
-                            "x-oracle-apm-ba-version": "1.1.131",
-                            "x-requested-with": "XMLHttpRequest",
-                            "Cookie": "ASP.NET_SessionId=h4ooyutzz33houczonxywo0h",
-                        }
-
-                        response = requests.request(
-                            "GET", url, headers=headers, data=payload
-                        )
-                        if response.status_code == 200:
-                            meeting_data = response.json()
-                            meeting = meeting_data.get("data", {})
-                            meeting_link = meeting.get("Link")
-                            if meeting_link:
-                                is_cancelled = (
-                                    False
-                                    if meeting.get("IsCancelled") is False
-                                    else True
-                                )
-
-                                await sdk.enqueue(
-                                    meeting_link,
-                                    context={"isCancelled": f"{is_cancelled}"},
-                                )
-                                meetings_processed += 1
-                                if meetings_processed % 20 == 0:
-                                    print(
-                                        f"[LISTING]   ✓ Enqueued {meetings_processed} "
-                                        f"meeting URLs so far..."
-                                    )
-                        else:
-                            print(
-                                f"[LISTING]   Warning: Got status "
-                                f"{response.status_code} for meeting API call"
-                            )
-                print(
-                    f"[LISTING] Total meetings processed for year {year}: "
-                    f"{total_meetings}, URLs enqueued: {meetings_processed}"
-                )
-
-    urls_count = len(sdk.detail_urls) if hasattr(sdk, "detail_urls") else "unknown"
+    urls_count = len(sdk.detail_urls) if hasattr(sdk, "detail_urls") else total_enqueued
     print(f"[LISTING] Scrape complete! Total URLs enqueued: {urls_count}")
+
+    # Fail loudly if the whole run produced nothing. This is almost always a
+    # broken session, changed API contract, or blocked request -- not a genuine
+    # "no meetings scheduled" result -- and a silent empty output quietly
+    # degrades county-wide coverage until someone notices.
+    if total_enqueued == 0:
+        raise RuntimeError(
+            "[LISTING] Enqueued 0 meetings across all years. The calendar API "
+            "returned no usable meeting links -- likely a rejected session, a "
+            "changed API contract, or a blocked request. Aborting so the "
+            "failure is visible instead of silently producing an empty feed."
+        )
 
 
 if __name__ == "__main__":

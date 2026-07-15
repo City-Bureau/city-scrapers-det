@@ -60,33 +60,36 @@ async def scrape(
     # Wait for the main content to load
     await page.wait_for_selector("div.main-inner-container")
 
-    # Extract title
+    # Extract title (guard against a missing/changed heading rather than
+    # blowing up with an opaque AttributeError)
     main_title_element = await page.query_selector("h1.oc-page-title")
-    main_title = await main_title_element.inner_text()
+    main_title = (await main_title_element.inner_text()) if main_title_element else None
 
     try:
         await page.wait_for_selector(
             "ul.content-details-list.minutes-details-list span.minutes-date"
         )
-        # Extract meeting date
+        # Extract meeting date (essential -- drives start_time)
         date_element = await page.query_selector(
             "ul.content-details-list.minutes-details-list span.minutes-date"
         )
         meeting_date = await date_element.inner_text()
 
-        # Extract meeting type
+        # Extract meeting type (optional -- only used for classification)
         type_selector = (
             "ul.content-details-list.minutes-details-list "
             "li:nth-child(2) span.field-value"
         )
         type_element = await page.query_selector(type_selector)
-        meeting_type = await type_element.inner_text()
+        meeting_type = await type_element.inner_text() if type_element else None
 
-        # Extract description
+        # Extract description (optional)
         description_element = await page.query_selector("div.meeting-container > p")
-        description = await description_element.inner_text()
+        description = (
+            await description_element.inner_text() if description_element else ""
+        )
 
-        # Extract start and end time
+        # Extract start and end time (essential)
         time_element = await page.query_selector("div.meeting-time")
         time_text = (
             (await time_element.inner_text())
@@ -105,14 +108,19 @@ async def scrape(
             f"{meeting_date} {end_time}", "%B %d, %Y %I:%M %p"
         )
 
-        # Extract location details
+        # Extract location details (optional)
         location_element = await page.query_selector(
             "div.meeting-address > p:last-of-type"
         )
-        location_text = await location_element.inner_text()
-        location_parts = location_text.split(",", 1)
-        location_name = location_parts[0].strip()
-        location_address = location_parts[1].strip() if len(location_parts) > 1 else ""
+        if location_element:
+            location_text = await location_element.inner_text()
+            location_parts = location_text.split(",", 1)
+            location_name = location_parts[0].strip()
+            location_address = (
+                location_parts[1].strip() if len(location_parts) > 1 else ""
+            )
+        else:
+            location_name, location_address = (None, None)
 
         # Extract links
         links = []
@@ -172,9 +180,11 @@ async def scrape(
             else:
                 location_name, location_address = (None, None)
 
-            # Extract description
+            # Extract description (optional)
             description_element = await page.query_selector(".col-m-8 .body-content")
-            description = await description_element.inner_text()
+            description = (
+                await description_element.inner_text() if description_element else ""
+            )
 
             # Extract links
             links = []
@@ -204,7 +214,16 @@ async def scrape(
 
             classification = parse_classification(main_title)
         except TimeoutError:
-            return
+            # Neither the standard meeting layout nor the fallback layout
+            # matched. Raise loudly instead of silently returning -- a bare
+            # `return` here means a broken/changed page is dropped without a
+            # trace, which is exactly how county-wide coverage degrades
+            # unnoticed. The orchestrator logs this per-URL so it stays visible.
+            raise RuntimeError(
+                f"Could not extract meeting details from {current_url}: "
+                "neither the standard nor the fallback DOM layout matched. "
+                "The page structure likely changed."
+            )
         except AttributeError:
             raise AttributeError(
                 "AttributeError: Some of the required fields couldn't be "
@@ -218,7 +237,7 @@ async def scrape(
         else None
     )
 
-    is_cancelled = True if context["isCancelled"] == "True" else None
+    is_cancelled = True if context.get("isCancelled") == "True" else None
 
     if start_datetime:
         # Save data
