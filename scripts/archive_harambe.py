@@ -8,6 +8,7 @@ from urllib.parse import quote, unquote, urlparse
 
 import aiohttp
 from azure.storage.blob import BlobServiceClient
+from merge_harambe_to_latest import HARAMBE_SCRAPERS
 
 CITY = "det"
 CONTAINER = f"meetings-feed-{CITY}"
@@ -16,42 +17,6 @@ MAX_LINKS = 3
 MAX_CONCURRENT = 2
 REQUEST_DELAY = 4
 TIMEOUT = 10
-
-HARAMBE_SCRAPERS = [
-    "det_dwcpa",
-    "det_great_lakes_water_authority",
-    "det_police_department",
-    "det_police_fire_retirement",
-    "mi_belle_isle",
-    "wayne_health_human_services",
-    "wayne_economic_development",
-    "wayne_ethics_board",
-    "wayne_government_operations",
-    "wayne_ways_means",
-    "wayne_audit",
-    "wayne_public_services",
-    "wayne_building_authority",
-    "wayne_election_commission",
-    "wayne_public_safety",
-    "wayne_cow",
-    "wayne_local_emergency_planning",
-    "wayne_full_commission",
-    # Derived names for county calendars without a registered agency, plus
-    # the fallback name (see extractor/wayne_commission/common.py); keep in
-    # sync with scripts/merge_harambe_to_latest.py
-    "wayne_economic_development_events",
-    "wayne_seniors_and_veterans_services_committee",
-    "wayne_special_committees",
-    "wayne_art_institute_authority",
-    "wayne_board_of_canvassers",
-    "wayne_brownfield_redevelopment_authority",
-    "wayne_commission_youth_council",
-    "wayne_wc_women_s_commission_meetings",
-    "wayne_wc_zoological_authority_meetings",
-    "wayne_parks_and_recreation_events",
-    "wayne_environmental_services",
-    "wayne_commission",
-]
 
 
 def download_latest_json(container=CONTAINER):

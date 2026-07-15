@@ -18,6 +18,44 @@ UPCOMING_BLOB = "upcoming.json"
 LOCAL_OUTPUT_DIR = "harambe_scrapers/output"
 START_TIME_KEY = "start_time"
 
+# Every scraper name the harambe pipeline can emit; old entries under these
+# names are cleaned from latest.json on every merge. Also imported by
+# archive_harambe.py so archiving covers the same set.
+HARAMBE_SCRAPERS = [
+    "det_dwcpa",
+    "det_great_lakes_water_authority",
+    "det_police_department",
+    "det_police_fire_retirement",
+    "mi_belle_isle",
+    "wayne_health_human_services",
+    "wayne_economic_development",
+    "wayne_ethics_board",
+    "wayne_government_operations",
+    "wayne_ways_means",
+    "wayne_audit",
+    "wayne_public_services",
+    "wayne_building_authority",
+    "wayne_election_commission",
+    "wayne_public_safety",
+    "wayne_cow",
+    "wayne_local_emergency_planning",
+    "wayne_full_commission",
+    # Derived names for county calendars without a registered agency
+    # (see extractor/wayne_commission/common.py)
+    "wayne_economic_development_events",
+    "wayne_seniors_and_veterans_services_committee",
+    "wayne_special_committees",
+    "wayne_art_institute_authority",
+    "wayne_board_of_canvassers",
+    "wayne_brownfield_redevelopment_authority",
+    "wayne_commission_youth_council",
+    "wayne_wc_women_s_commission_meetings",
+    "wayne_wc_zoological_authority_meetings",
+    "wayne_parks_and_recreation_events",
+    "wayne_environmental_services",
+    "wayne_commission",
+]
+
 
 def get_azure_container_client(container_name: str = DEFAULT_CONTAINER):
     """Get Azure container client."""
@@ -232,41 +270,7 @@ def main():
     print("  Will update: latest.json, upcoming.json, and per-scraper files")
     print()
 
-    harambe_scrapers = [
-        "det_dwcpa",
-        "det_great_lakes_water_authority",
-        "det_police_department",
-        "det_police_fire_retirement",
-        "mi_belle_isle",
-        "wayne_health_human_services",
-        "wayne_economic_development",
-        "wayne_ethics_board",
-        "wayne_government_operations",
-        "wayne_ways_means",
-        "wayne_audit",
-        "wayne_public_services",
-        "wayne_building_authority",
-        "wayne_election_commission",
-        "wayne_public_safety",
-        "wayne_cow",
-        "wayne_local_emergency_planning",
-        "wayne_full_commission",
-        # Derived names for county calendars without a registered agency
-        # (see extractor/wayne_commission/common.py); listed here so old
-        # entries are cleaned from latest.json on every merge
-        "wayne_economic_development_events",
-        "wayne_seniors_and_veterans_services_committee",
-        "wayne_special_committees",
-        "wayne_art_institute_authority",
-        "wayne_board_of_canvassers",
-        "wayne_brownfield_redevelopment_authority",
-        "wayne_commission_youth_council",
-        "wayne_wc_women_s_commission_meetings",
-        "wayne_wc_zoological_authority_meetings",
-        "wayne_parks_and_recreation_events",
-        "wayne_environmental_services",
-        "wayne_commission",
-    ]
+    harambe_scrapers = HARAMBE_SCRAPERS
 
     print(f"Harambe scrapers to process: {len(harambe_scrapers)} scrapers")
     print()
