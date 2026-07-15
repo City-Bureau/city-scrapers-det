@@ -149,26 +149,31 @@ async def test_orchestrator_with_limit():
                     assert mock_detail.call_count == 3
 
 
-@pytest.mark.asyncio
-async def test_listing_scraper_with_mock_api():
-    """Test listing scraper correctly filters meeting types and calls API"""
+def _build_listing_page(monkeypatch=None):
+    """Build a mock Playwright page that mimics the calendar listing page.
+
+    The page reports a live ASP.NET_SessionId cookie and a real user-agent so
+    the listing scraper can build its request headers from a live session.
+    """
     from bs4 import BeautifulSoup
 
-    from harambe_scrapers.extractor.wayne_commission.listing import (
-        scrape as listing_scrape,
-    )
-
-    # Load the listing HTML fixture
     fixture_path = Path(__file__).parent / "files" / "wayne_commission_listing.html"
     with open(fixture_path, "r", encoding="utf-8") as f:
         html_content = f.read()
 
     soup = BeautifulSoup(html_content, "html.parser")
 
-    detail_urls = []
     mock_page = MagicMock()
     mock_page.goto = AsyncMock()
     mock_page.wait_for_selector = AsyncMock()
+
+    # Live session: cookies + user-agent come from the browser context.
+    mock_context = MagicMock()
+    mock_context.cookies = AsyncMock(
+        return_value=[{"name": "ASP.NET_SessionId", "value": "live-session-xyz"}]
+    )
+    mock_page.context = mock_context
+    mock_page.evaluate = AsyncMock(return_value="TestBrowser/1.0")
 
     # Create mock elements for each filter item
     mock_elements = []
@@ -187,25 +192,134 @@ async def test_listing_scraper_with_mock_api():
         mock_elements.append(mock_elem)
 
     mock_page.query_selector_all = AsyncMock(return_value=mock_elements)
+    return mock_page
+
+
+def _make_response(payload, status_code=200):
+    resp = MagicMock()
+    resp.status_code = status_code
+    resp.json.return_value = payload
+    resp.text = str(payload)
+    return resp
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_uses_live_session_and_enqueues():
+    """Listing scraper builds headers from a live session and enqueues meetings.
+
+    Verifies the fix for the stale-cookie bug: the request must carry the
+    live ASP.NET_SessionId pulled from the page (not the old hardcoded one)
+    and must NOT carry the frozen Oracle APM trace headers.
+    """
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    detail_urls = []
+    mock_page = _build_listing_page()
+    sdk = ListingSDK(mock_page, detail_urls)
+
+    def request_side_effect(method, url, **kwargs):
+        if "getcalendaritems" in url:
+            return _make_response(
+                {
+                    "data": [
+                        {
+                            "Items": [
+                                {
+                                    "CalendarId": 1,
+                                    "Id": 2,
+                                    "MainContentId": 3,
+                                    "DateTime": "2026-05-01",
+                                }
+                            ]
+                        }
+                    ]
+                }
+            )
+        return _make_response(
+            {
+                "data": {
+                    "Link": "https://www.waynecountymi.gov/meeting-x",
+                    "IsCancelled": False,
+                }
+            }
+        )
+
+    req_patch = "harambe_scrapers.extractor.wayne_commission.listing.requests.request"
+    with patch(req_patch) as mock_request:
+        mock_request.side_effect = request_side_effect
+
+        await listing_scrape(sdk, "https://test.com", {})
+
+        # Meetings were enqueued (one per year → both years processed)
+        assert len(detail_urls) == 2
+        assert detail_urls[0]["url"] == "https://www.waynecountymi.gov/meeting-x"
+
+        # The calendar API was called once per year with the fixture IDs
+        calendar_calls = [
+            c for c in mock_request.call_args_list if "getcalendaritems" in c[0][1]
+        ]
+        assert len(calendar_calls) == 2
+        payload = calendar_calls[0][1]["data"]
+        assert "1001" in payload or "1002" in payload
+
+        # Headers must use the LIVE session cookie, not the old hardcoded one,
+        # and must have dropped the frozen APM trace headers.
+        headers = calendar_calls[0][1]["headers"]
+        assert headers["Cookie"] == "ASP.NET_SessionId=live-session-xyz"
+        assert "h4ooyutzz33houczonxywo0h" not in headers["Cookie"]
+        assert headers["user-agent"] == "TestBrowser/1.0"
+        assert "x-b3-traceid" not in headers
+        assert "x-b3-spanid" not in headers
+        assert "x-oracle-apm-ba-version" not in headers
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_raises_on_zero_results():
+    """A run that enqueues nothing must fail loudly instead of silently."""
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    detail_urls = []
+    mock_page = _build_listing_page()
+    sdk = ListingSDK(mock_page, detail_urls)
+
+    req_patch = "harambe_scrapers.extractor.wayne_commission.listing.requests.request"
+    with patch(req_patch) as mock_request:
+        # Calendar API responds but returns no meetings for every year.
+        mock_request.return_value = _make_response({"data": []})
+
+        with pytest.raises(RuntimeError, match="Enqueued 0 meetings"):
+            await listing_scrape(sdk, "https://test.com", {})
+
+        # It still attempted both years before giving up.
+        assert mock_request.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_listing_scraper_raises_when_no_filters_found():
+    """No meeting-type filters (changed markup) must fail loudly."""
+    from harambe_scrapers.extractor.wayne_commission.listing import (
+        scrape as listing_scrape,
+    )
+
+    detail_urls = []
+    mock_page = MagicMock()
+    mock_page.goto = AsyncMock()
+    mock_page.wait_for_selector = AsyncMock()
+    mock_page.query_selector_all = AsyncMock(return_value=[])
 
     sdk = ListingSDK(mock_page, detail_urls)
 
     req_patch = "harambe_scrapers.extractor.wayne_commission.listing.requests.request"
     with patch(req_patch) as mock_request:
-        mock_request.return_value.status_code = 200
-        mock_request.return_value.json.return_value = {"data": []}
+        with pytest.raises(RuntimeError, match="No meeting-type filters"):
+            await listing_scrape(sdk, "https://test.com", {})
 
-        await listing_scrape(sdk, "https://test.com", {})
-
-        # Verify API was called for both years (current and previous)
-        assert mock_request.called
-        assert mock_request.call_count == 2
-
-        # Verify the scraper identified the correct meeting types from the HTML
-        call_args = mock_request.call_args_list[0][1]["data"]
-        # The payload should contain the IDs for the expected meeting types
-        # Full Commission or Ways & Means
-        assert "1001" in call_args or "1002" in call_args
+        # Aborts before making any API calls.
+        assert mock_request.call_count == 0
 
 
 @pytest.mark.asyncio
@@ -308,3 +422,40 @@ async def test_detail_scraper_with_html_fixture():
             assert link["url"].startswith("https://www.waynecountymi.gov")
 
     assert sdk.data["is_cancelled"] is None  # False context means None in the code
+
+
+@pytest.mark.asyncio
+async def test_detail_scraper_raises_when_no_layout_matches():
+    """Detail scraper must raise (not silently return) when the DOM changed.
+
+    Previously a TimeoutError on both the standard and fallback layouts caused
+    a bare `return`, silently dropping the meeting. It should now surface the
+    failure so a broken page is visible in the logs.
+    """
+    from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+
+    from harambe_scrapers.extractor.wayne_commission.detail import (
+        scrape as detail_scrape,
+    )
+
+    mock_page = MagicMock()
+
+    async def wait_for_selector(selector, *args, **kwargs):
+        # The outer container loads fine, but neither the standard
+        # (minutes-date) nor the fallback (.small-text) layout is present.
+        if selector == "div.main-inner-container":
+            return None
+        raise PlaywrightTimeoutError("timeout")
+
+    mock_page.wait_for_selector = AsyncMock(side_effect=wait_for_selector)
+
+    title_elem = MagicMock()
+    title_elem.inner_text = AsyncMock(return_value="Some Meeting")
+    mock_page.query_selector = AsyncMock(return_value=title_elem)
+
+    sdk = DetailSDK(mock_page)
+
+    with pytest.raises(RuntimeError, match="Could not extract meeting details"):
+        await detail_scrape(sdk, "https://test.com/broken", {"isCancelled": "False"})
+
+    assert sdk.data is None
