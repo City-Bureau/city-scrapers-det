@@ -4,17 +4,23 @@ Unit tests for scripts/merge_harambe_to_latest.py
 
 import json
 import os
+import re
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
 import pytest
 
 from scripts.merge_harambe_to_latest import (
+    STATUS_FAILING,
+    STATUS_RUNNING,
+    build_status_svg,
     download_blob_from_azure,
     filter_out_scrapers,
     filter_upcoming_meetings,
     read_harambe_from_local,
+    scraper_name_from_meeting,
     upload_to_azure,
+    write_status_badges,
 )
 
 
@@ -116,3 +122,95 @@ def test_upload_to_azure(mock_blob_service):
 
     assert len(lines) == 2
     assert json.loads(lines[0])["id"] == "m1"
+
+
+def _meeting(scraper_name):
+    return {"extras": {"cityscrapers/id": f"{scraper_name}/202607161000/x/foo"}}
+
+
+def test_scraper_name_from_meeting_uses_id_prefix():
+    """Name is the id prefix — no substring collision between a base name and a
+    longer derived one (wayne_economic_development vs ..._events)."""
+    assert scraper_name_from_meeting(_meeting("wayne_audit")) == "wayne_audit"
+    assert (
+        scraper_name_from_meeting(_meeting("wayne_economic_development_events"))
+        == "wayne_economic_development_events"
+    )
+    assert scraper_name_from_meeting({"extras": {}}) == ""
+
+
+def test_build_status_svg_first_text_is_status_word():
+    """Documenters parses the FIRST <text> element — it must be the status word."""
+    svg = build_status_svg(STATUS_RUNNING, "2026-07-17")
+    first_text = re.search(r"<text[^>]*>([^<]+)</text>", svg).group(1)
+    assert first_text == "running"
+    assert "#44cc11" in svg and "2026-07-17" in svg
+    assert "#cb2431" in build_status_svg(STATUS_FAILING, "2026-07-17")
+
+
+@patch("scripts.merge_harambe_to_latest.BlobServiceClient")
+def test_write_status_badges_marks_all_running(mock_blob_service):
+    """A successful merge marks every scraper running — a body with 0 meetings
+    is empty, not broken (EMPTY_RUN_STATUS)."""
+    mock_container = Mock()
+    mock_blob_service.from_connection_string.return_value.get_container_client.return_value = (  # noqa: E501
+        mock_container
+    )
+    blobs = {}
+    mock_container.get_blob_client.side_effect = lambda n: blobs.setdefault(n, Mock())
+
+    meetings = [_meeting("wayne_audit"), _meeting("wayne_audit")]
+    names = ["wayne_audit", "wayne_local_emergency_planning"]
+
+    with patch.dict(
+        os.environ, {"AZURE_ACCOUNT_NAME": "test", "AZURE_ACCOUNT_KEY": "test"}
+    ):
+        write_status_badges(meetings, names, container_name="city-scrapers-status")
+
+    audit_svg = blobs["wayne_audit.svg"].upload_blob.call_args[0][0]
+    lepc_svg = blobs["wayne_local_emergency_planning.svg"].upload_blob.call_args[0][0]
+    assert "running" in audit_svg and "#44cc11" in audit_svg
+    # 0 meetings but still running (empty != failed)
+    assert "running" in lepc_svg and "#44cc11" in lepc_svg
+
+
+@patch("scripts.merge_harambe_to_latest.BlobServiceClient")
+def test_write_status_badges_skipped_without_container(mock_blob_service):
+    """No container arg and no env var -> no-op, Azure never touched, no crash."""
+    with patch.dict(os.environ, {}, clear=True):
+        write_status_badges([_meeting("wayne_audit")], ["wayne_audit"])
+    mock_blob_service.from_connection_string.assert_not_called()
+
+
+@patch("scripts.merge_harambe_to_latest.BlobServiceClient")
+def test_write_status_badges_isolates_per_name_failure(mock_blob_service):
+    """One badge write raising doesn't abort the loop (or the merge job) — the
+    remaining scrapers still get published."""
+    mock_container = Mock()
+    mock_blob_service.from_connection_string.return_value.get_container_client.return_value = (  # noqa: E501
+        mock_container
+    )
+    blobs = {}
+
+    def get_blob_client(name):
+        client = blobs.setdefault(name, Mock())
+        if name == "wayne_audit.svg":
+            client.upload_blob.side_effect = RuntimeError("boom")
+        return client
+
+    mock_container.get_blob_client.side_effect = get_blob_client
+    names = ["wayne_audit", "wayne_public_services"]
+
+    with patch.dict(
+        os.environ, {"AZURE_ACCOUNT_NAME": "test", "AZURE_ACCOUNT_KEY": "test"}
+    ):
+        write_status_badges([], names, container_name="city-scrapers-status")
+
+    blobs["wayne_public_services.svg"].upload_blob.assert_called_once()
+
+
+@patch("scripts.merge_harambe_to_latest.get_azure_container_client")
+def test_write_status_badges_swallows_init_failure(mock_get_client):
+    """A failure acquiring the status container must not break the merge."""
+    mock_get_client.side_effect = ValueError("no creds")
+    write_status_badges([_meeting("wayne_audit")], ["wayne_audit"], container_name="c")
