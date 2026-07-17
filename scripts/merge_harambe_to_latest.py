@@ -337,15 +337,20 @@ def write_status_badges(
         print(f"  {STATUS_CONTAINER_ENV} not set — skipping status badges")
         return
 
-    counts = Counter(scraper_name_from_meeting(m) for m in meetings)
-    date_str = datetime.now(ZoneInfo(STATUS_BADGE_TZ)).strftime("%Y-%m-%d")
-    container_client = get_azure_container_client(container_name)
+    try:
+        counts = Counter(scraper_name_from_meeting(m) for m in meetings)
+        date_str = datetime.now(ZoneInfo(STATUS_BADGE_TZ)).strftime("%Y-%m-%d")
+        container_client = get_azure_container_client(container_name)
+    except Exception as e:
+        print(f"  Skipping status badges — could not init status container: {e}")
+        return
 
     written = 0
     empty = []
     for name in scraper_names:
-        status = STATUS_RUNNING if counts.get(name, 0) else EMPTY_RUN_STATUS
-        if not counts.get(name, 0):
+        has = counts.get(name, 0)
+        status = STATUS_RUNNING if has else EMPTY_RUN_STATUS
+        if not has:
             empty.append(name)
         try:
             container_client.get_blob_client(f"{name}.svg").upload_blob(

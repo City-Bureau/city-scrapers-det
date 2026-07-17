@@ -174,7 +174,43 @@ def test_write_status_badges_marks_all_running(mock_blob_service):
     assert "running" in lepc_svg and "#44cc11" in lepc_svg
 
 
-def test_write_status_badges_skipped_without_container():
-    """No container arg and no env var -> no-op, no Azure access, no crash."""
+@patch("scripts.merge_harambe_to_latest.BlobServiceClient")
+def test_write_status_badges_skipped_without_container(mock_blob_service):
+    """No container arg and no env var -> no-op, Azure never touched, no crash."""
     with patch.dict(os.environ, {}, clear=True):
         write_status_badges([_meeting("wayne_audit")], ["wayne_audit"])
+    mock_blob_service.from_connection_string.assert_not_called()
+
+
+@patch("scripts.merge_harambe_to_latest.BlobServiceClient")
+def test_write_status_badges_isolates_per_name_failure(mock_blob_service):
+    """One badge write raising doesn't abort the loop (or the merge job) — the
+    remaining scrapers still get published."""
+    mock_container = Mock()
+    mock_blob_service.from_connection_string.return_value.get_container_client.return_value = (  # noqa: E501
+        mock_container
+    )
+    blobs = {}
+
+    def get_blob_client(name):
+        client = blobs.setdefault(name, Mock())
+        if name == "wayne_audit.svg":
+            client.upload_blob.side_effect = RuntimeError("boom")
+        return client
+
+    mock_container.get_blob_client.side_effect = get_blob_client
+    names = ["wayne_audit", "wayne_public_services"]
+
+    with patch.dict(
+        os.environ, {"AZURE_ACCOUNT_NAME": "test", "AZURE_ACCOUNT_KEY": "test"}
+    ):
+        write_status_badges([], names, container_name="city-scrapers-status")
+
+    blobs["wayne_public_services.svg"].upload_blob.assert_called_once()
+
+
+@patch("scripts.merge_harambe_to_latest.get_azure_container_client")
+def test_write_status_badges_swallows_init_failure(mock_get_client):
+    """A failure acquiring the status container must not break the merge."""
+    mock_get_client.side_effect = ValueError("no creds")
+    write_status_badges([_meeting("wayne_audit")], ["wayne_audit"], container_name="c")
