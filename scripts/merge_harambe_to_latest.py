@@ -1,11 +1,13 @@
 import json
 import os
+from collections import Counter
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
+from zoneinfo import ZoneInfo
 
 try:
-    from azure.storage.blob import BlobServiceClient
+    from azure.storage.blob import BlobServiceClient, ContentSettings
 
     AZURE_AVAILABLE = True
 except ImportError:
@@ -55,6 +57,49 @@ HARAMBE_SCRAPERS = [
     "wayne_environmental_services",
     "wayne_commission",
 ]
+
+# Status-badge publishing. The harambe pipeline replaced the conventional Scrapy
+# spiders for these scrapers but never re-implemented Scrapy's StatusExtension,
+# so their city-scrapers-status/<name>.svg badges went stale. The Documenters
+# report page and Airtable status sync read these badges, so we republish them
+# here. Format mirrors city_scrapers_core.extensions.status: Documenters parses
+# the FIRST <text> element as the status word.
+STATUS_CONTAINER_ENV = "AZURE_STATUS_CONTAINER"
+STATUS_BADGE_TZ = "America/Detroit"
+STATUS_RUNNING = "running"
+STATUS_FAILING = "failing"
+STATUS_COLORS = {STATUS_RUNNING: "#44cc11", STATUS_FAILING: "#cb2431"}
+# Status for a scraper that produced 0 meetings in an otherwise-successful run.
+# The merge only runs after a successful scrape (the listing stage raises on a
+# systemically empty calendar), so 0 meetings means the body is simply empty,
+# not broken — mark it "running". Genuine breakage fails the job (badges are
+# left untouched) and "gone dark" is owned by Documenters' days_broken health
+# detection. Flip to STATUS_FAILING for city_scrapers_core's 0-items-is-failing
+# rule (noisier: empty bodies then read failing).
+EMPTY_RUN_STATUS = STATUS_RUNNING
+
+STATUS_BADGE_SVG = """
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="144" height="20">
+    <linearGradient id="b" x2="0" y2="100%">
+        <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
+        <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+    <clipPath id="a">
+        <rect width="144" height="20" rx="3" fill="#fff"/>
+    </clipPath>
+    <g clip-path="url(#a)">
+        <path fill="#555" d="M0 0h67v20H0z"/>
+        <path fill="{color}" d="M67 0h77v20H67z"/>
+        <path fill="url(#b)" d="M0 0h144v20H0z"/>
+    </g>
+    <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="110">
+        <text x="345" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)">{status}</text>
+        <text x="345" y="140" transform="scale(.1)">{status}</text>
+        <text x="1045" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)">{date}</text>
+        <text x="1045" y="140" transform="scale(.1)">{date}</text>
+    </g>
+</svg>
+"""  # noqa: E501
 
 
 def get_azure_container_client(container_name: str = DEFAULT_CONTAINER):
@@ -257,6 +302,68 @@ def filter_upcoming_meetings(meetings: List[Dict]) -> List[Dict]:
     return upcoming
 
 
+def scraper_name_from_meeting(meeting: Dict) -> str:
+    """Return the per-body scraper name encoded as the prefix of a meeting's
+    cityscrapers/id (see harambe_scrapers/utils.generate_id: "<name>/<ts>/...")."""
+    scraper_id = (
+        meeting.get("extras", {}).get("cityscrapers/id")
+        or meeting.get("extras", {}).get("cityscrapers.org/id")
+        or ""
+    )
+    return scraper_id.split("/", 1)[0]
+
+
+def build_status_svg(status: str, date_str: str) -> str:
+    return STATUS_BADGE_SVG.format(
+        color=STATUS_COLORS[status], status=status, date=date_str
+    )
+
+
+def write_status_badges(
+    meetings: List[Dict],
+    scraper_names: List[str],
+    container_name: str = "",
+) -> None:
+    """Publish a per-scraper SVG status badge to the status container.
+
+    Reaching the merge step means the scrape succeeded (the listing stage raises
+    on a systemically empty calendar), so every scraper the pipeline owns is
+    marked "running" — a 0-meeting body is empty, not broken (EMPTY_RUN_STATUS).
+    Genuine breakage fails the job and leaves badges untouched; "gone dark" is
+    owned by Documenters' days_broken health detection. Empty bodies are logged.
+    """
+    container_name = container_name or os.getenv(STATUS_CONTAINER_ENV)
+    if not container_name:
+        print(f"  {STATUS_CONTAINER_ENV} not set — skipping status badges")
+        return
+
+    counts = Counter(scraper_name_from_meeting(m) for m in meetings)
+    date_str = datetime.now(ZoneInfo(STATUS_BADGE_TZ)).strftime("%Y-%m-%d")
+    container_client = get_azure_container_client(container_name)
+
+    written = 0
+    empty = []
+    for name in scraper_names:
+        status = STATUS_RUNNING if counts.get(name, 0) else EMPTY_RUN_STATUS
+        if not counts.get(name, 0):
+            empty.append(name)
+        try:
+            container_client.get_blob_client(f"{name}.svg").upload_blob(
+                build_status_svg(status, date_str),
+                overwrite=True,
+                content_settings=ContentSettings(
+                    content_type="image/svg+xml", cache_control="no-cache"
+                ),
+            )
+            written += 1
+        except Exception as e:
+            print(f"  Failed to write status badge for {name}: {e}")
+
+    if empty:
+        print(f"  No meetings this run (marked {EMPTY_RUN_STATUS}): {', '.join(empty)}")
+    print(f"  Wrote {written}/{len(scraper_names)} status badges ({date_str})")
+
+
 def main():
     print("=" * 70)
     print("Merging Harambe Scraper Outputs with Production Data")
@@ -313,6 +420,9 @@ def main():
 
     print("\nUploading individual scraper files...")
     upload_scraper_files_to_azure(LOCAL_OUTPUT_DIR, container_name)
+
+    print("\nWriting scraper status badges...")
+    write_status_badges(harambe_meetings, harambe_scrapers)
 
     print()
     print("=" * 70)
