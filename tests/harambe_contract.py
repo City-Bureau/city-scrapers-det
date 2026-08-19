@@ -13,14 +13,19 @@ Both harambe bugs this repo has actually shipped are visible at that seam:
   scraper name, so the Documenters importer - which splits ``cityscrapers/id``
   on ``/`` and looks the prefix up in ``Agency.scraper_names`` - matched nothing
   and skipped every meeting. ``H01`` rejects that shape.
-* A detail page publishing a lone start time with no ``" - <end>"`` range hit a
-  range unpack that dropped the meeting entirely. ``H04`` and ``H05`` cover the
-  resulting event shape; the drop itself is a parse-layer bug and is covered by
-  the per-scraper regression test added with its fix.
+* A detail page publishing a lone start time with no ``" - <end>"`` range fell
+  outside a gate (``if meeting_date and " - " in time_text``), so the start was
+  never set, nothing was raised, and the meeting was dropped downstream. None of
+  these checks catch that: with no start there is no event to inspect, so the
+  parse layer is where it has to be caught, and the regression test added with
+  its fix is what covers it. ``H05`` covers only the adjacent case of a range
+  parsed the wrong way round.
 
-These checks are properties of the funnel rather than of any one scraper, so a
-new harambe scraper is covered by them the moment it calls ``create_ocd_event``.
-See ``KNOWN_GAPS`` at the bottom for what this does not reach.
+These checks are properties of the funnel rather than of any one scraper. Their
+coverage of real scrapers comes from ``declared_scraper_names``, which imports
+each module and reads the names it actually stamps on a meeting; without that
+they would only ever grade values written in the test file. See ``KNOWN_GAPS``
+at the bottom for what this does not reach.
 """
 
 import re
@@ -101,6 +106,13 @@ def scraper_name_is_singular(event):
 
 @check("H02", "The id encodes the event's own start time")
 def id_encodes_start(event):
+    """Tautological for events built by ``create_ocd_event``, deliberately kept.
+
+    ``generate_id`` derives the datetime segment from the same ``start_time``
+    field this compares against, so an event that went through the funnel cannot
+    fail. It exists to catch a scraper that assembles an id itself and bypasses
+    the funnel, which is exactly what the Wayne code did with the scraper name.
+    """
     scraper_id = event.get("extras", {}).get("cityscrapers/id", "")
     parts = scraper_id.split("/")
     if len(parts) < 2:
@@ -174,13 +186,36 @@ def end_not_before_start(event):
     return None
 
 
-@check("H06", "status is one the platform recognises")
-def status_recognised(event):
+@check("H06", "status agrees with the meeting's own start time")
+def status_agrees_with_start(event):
+    """Membership alone was a tautology, since the status is computed.
+
+    ``determine_status`` can only ever return one of the recognised values, so
+    checking membership proved nothing. What can actually go wrong is the status
+    disagreeing with the time it was derived from: a meeting stamped "passed"
+    that has not happened, or "tentative" for one that has.
+    """
     status = event.get("status")
     if status not in RECOGNISED_STATUSES:
         return (
             f"status {status!r} is not one of {sorted(RECOGNISED_STATUSES)}; "
             "an unrecognised status is dropped rather than corrected"
+        )
+    if status in ("cancelled", "canceled"):
+        return None
+    start = _parse_iso(event.get("start_time"))
+    if start is None:
+        return None  # H04 reports this
+    now = datetime.now(start.tzinfo)
+    if start > now and status == "passed":
+        return (
+            f"start_time {event['start_time']!r} is in the future "
+            "but status is 'passed'"
+        )
+    if start < now and status == "tentative":
+        return (
+            f"start_time {event['start_time']!r} is in the past "
+            "but status is 'tentative'"
         )
     return None
 
@@ -241,6 +276,42 @@ SPOOFED_UA_RE = re.compile(r"Mozilla/5\.0|AppleWebKit/|Chrome/\d|Safari/\d")
 COOKIE_LITERAL_RE = re.compile(r"""["']Cookie["']\s*:\s*["'][^"']+["']""")
 
 
+# Every name a harambe scraper can stamp onto a meeting, discovered from the
+# scrapers themselves rather than listed here. The review that prompted this
+# found the checks were only ever run against a hardcoded good name, so H01
+# could not have caught the bug it was written for.
+SCRAPER_NAME_CONSTANTS = ("SCRAPER_NAME", "OUTPUT_NAME", "FALLBACK_SCRAPER_NAME")
+
+
+def declared_scraper_names() -> dict:
+    """Map each harambe scraper module to the scraper names it can emit.
+
+    Imports the modules and reads their real constants, so a name that would
+    break the Documenters importer is caught wherever it is introduced.
+    """
+    import importlib
+
+    found = {}
+    for module_path in harambe_modules():
+        relative = module_path.relative_to(HARAMBE_DIR)
+        dotted = "harambe_scrapers." + ".".join(relative.with_suffix("").parts)
+        try:
+            module = importlib.import_module(dotted)
+        except Exception:  # noqa: BLE001 - a module needing a browser to import
+            # is not a naming defect; it is simply out of reach here.
+            continue
+        for attr in SCRAPER_NAME_CONSTANTS:
+            value = getattr(module, attr, None)
+            if isinstance(value, str) and value:
+                found[f"{relative.as_posix()}:{attr}"] = value
+        registry = getattr(module, "REGISTERED_CALENDAR_SCRAPER_NAMES", None)
+        if isinstance(registry, dict):
+            for label, value in registry.items():
+                if isinstance(value, str) and value:
+                    found[f"{relative.as_posix()}:{label}"] = value
+    return found
+
+
 def harambe_modules() -> List[Path]:
     """Every harambe scraper source file, scrapers and extractors alike."""
     return sorted(
@@ -252,6 +323,14 @@ def harambe_modules() -> List[Path]:
 
 def silent_except_blocks(source: str) -> List[str]:
     return SILENT_EXCEPT_RE.findall(source)
+
+
+def spoofed_user_agents(source: str) -> List[str]:
+    return SPOOFED_UA_RE.findall(source)
+
+
+def hardcoded_cookies(source: str) -> List[str]:
+    return COOKIE_LITERAL_RE.findall(source)
 
 
 # Silent except blocks that predate this contract, with the reason each is
@@ -268,6 +347,20 @@ KNOWN_SILENT_EXCEPT = {
     "mi_belle_isle.py": (
         "Two agenda/minutes loops skip a row whose link text will not parse as "
         "a date, so a document goes missing from an otherwise complete meeting."
+    ),
+}
+
+
+# A hardcoded browser user-agent, recorded the same way as the silent excepts.
+# Listing it is not endorsement: it is a deliberate anti-detection measure that
+# predates this contract, and changing it is a scraper-behaviour decision rather
+# than a testing one.
+KNOWN_SPOOFED_UA = {
+    "det_police_department.py": (
+        "Sets a Chrome user-agent on the Playwright context under an "
+        "'anti-detection' comment. Whether to keep impersonating a browser is a "
+        "policy call for whoever owns the relationship with that site, so the "
+        "check records it rather than forcing a change."
     ),
 }
 

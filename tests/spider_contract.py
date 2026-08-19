@@ -6,10 +6,15 @@ than to restate the JSON schema (``scrapy validate`` already does that).
 
 The failure that motivated most of this file: a spider can break in a way
 that produces no error at all. Wayne County's scrapers returned zero meetings
-for months while every run "succeeded", and a separate parsing bug dropped
-individual meetings by raising an exception that was caught and ignored
-upstream. Both were invisible to the test suite because the tests only ever
-asserted on a fixture that still parsed cleanly.
+for months while every run "succeeded". A separate bug dropped individual
+meetings because a gate (``if meeting_date and " - " in time_text``) simply did
+not run on pages publishing a lone start time, leaving the start unset with
+nothing raised and nothing logged. Both were invisible to the test suite
+because the tests only ever asserted on a fixture that still parsed cleanly.
+
+Read HONEST_LIMITS at the bottom before trusting a green run. Two independent
+reviews of this file found real gaps, and they are recorded there rather than
+quietly fixed.
 
 Nothing here is specific to this repository. Spiders are discovered through
 Scrapy, fixtures by naming convention, so the module can be copied into any
@@ -41,6 +46,7 @@ from scrapy.settings import Settings
 from scrapy.spiderloader import SpiderLoader
 from scrapy.utils.project import get_project_settings
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURE_DIR = Path(__file__).parent / "files"
 FIXTURE_EXTENSIONS = ("html", "json", "ics", "xml", "txt", "csv")
 
@@ -78,6 +84,8 @@ class SpiderContext:
     degraded: dict = field(default_factory=dict)
     response_builder: Optional[str] = None
     meetings_complete: bool = True
+    builder_errors: dict = field(default_factory=dict)
+    entry_parse: Optional[dict] = None
     captured_at: Optional[str] = None
     load_error: Optional[str] = None
 
@@ -243,6 +251,41 @@ def _json_payload(fixture: Path, url: str, body: bytes):
     return json.loads(body)
 
 
+def _is_project_module(module) -> bool:
+    """Whether this module's source belongs to this repository.
+
+    Matching on the name "city_scrapers" also matched the installed
+    city_scrapers_core, which meant the source-policy checks graded a
+    third-party library: C19 always found the _get_id and _get_status the base
+    class *defines*, and C16 reported an except/pass inside site-packages as
+    repo debt. Only mixins and spiders in this tree should count.
+    """
+    path = getattr(module, "__file__", None)
+    if not path:
+        return False
+    resolved = Path(path).resolve()
+    try:
+        relative = resolved.relative_to(REPO_ROOT)
+    except ValueError:
+        return False
+    # The virtualenv usually sits inside the repo, so "under the repo root" on
+    # its own still lets installed packages through.
+    return not any(
+        part == "site-packages" or part.startswith(".") for part in relative.parts
+    )
+
+
+def _builders_for(fixture: Path):
+    """The response shapes worth trying for this fixture's type.
+
+    Legistar spiders are handed decoded events, everything else a Response, and
+    offering a builder that cannot apply is how the engine used to crash.
+    """
+    if fixture.suffix == ".json":
+        return (_json_payload, _file_response, _text_response)
+    return (_file_response, _text_response)
+
+
 def _fixture_captured_at(fixture: Path) -> str:
     """When this fixture was saved, as far as git knows.
 
@@ -313,7 +356,7 @@ def build_context(name: str, loader: Optional[SpiderLoader] = None) -> SpiderCon
     source = inspect.getsource(inspect.getmodule(spider_cls))
     for base in spider_cls.__mro__[1:]:
         module = inspect.getmodule(base)
-        if module and "city_scrapers" in getattr(module, "__name__", ""):
+        if _is_project_module(module):
             try:
                 source += "\n" + inspect.getsource(module)
             except OSError:
@@ -334,9 +377,30 @@ def build_context(name: str, loader: Optional[SpiderLoader] = None) -> SpiderCon
     # the fixture was captured rather than to today.
     with freeze_time(ctx.captured_at):
         partial = None
-        for builder in (_file_response, _text_response, _json_payload):
+        entry_builder = _builders_for(ctx.fixture)[0]
+        if hasattr(spider, "parse"):
+            try:
+                ctx.entry_parse = _run_parse(
+                    spider, "parse", entry_builder(ctx.fixture, url, body)
+                )
+            except Exception as exc:  # noqa: BLE001
+                ctx.builder_errors[entry_builder.__name__] = (
+                    f"{type(exc).__name__}: {exc}"
+                )
+
+        for builder in _builders_for(ctx.fixture):
             for method in _parse_methods(spider):
-                run = _run_parse(spider, method, builder(ctx.fixture, url, body))
+                try:
+                    response = builder(ctx.fixture, url, body)
+                except Exception as exc:  # noqa: BLE001 - a builder that cannot
+                    # apply to this fixture is not a spider defect. Record it and
+                    # move on; letting it escape would take the session fixture
+                    # down and hide the C01 failure this is meant to report.
+                    ctx.builder_errors[builder.__name__] = (
+                        f"{type(exc).__name__}: {exc}"
+                    )
+                    break
+                run = _run_parse(spider, method, response)
                 ctx.requests_yielded = max(ctx.requests_yielded, run["requests"])
                 if not _meetings_are_plausible(run["meetings"]):
                     continue
@@ -490,7 +554,7 @@ def location_shape(ctx):
     return None
 
 
-@check("C10", "Links are a list of mappings with href and title")
+@check("C10", "Links are a list of mappings with a usable href")
 def links_shape(ctx):
     for meeting in ctx.meetings:
         links = meeting.get("links")
@@ -564,6 +628,32 @@ def degraded_output_still_valid(ctx):
 # --------------------------------------------------------------------------
 # Source policy
 # --------------------------------------------------------------------------
+
+
+@check(
+    "C20",
+    "The spider's own entry point runs without raising on its fixture",
+    requires_meetings=False,
+)
+def entry_parse_does_not_raise(ctx):
+    """The engine falls back to internal helpers, which can hide a broken entry.
+
+    When ``parse`` raises on the committed fixture, the engine moves on to the
+    next parser-named method and the contract ends up grading a helper rather
+    than the code Scrapy actually calls. That substitution is useful for
+    coverage and dangerous for confidence, so the substitution itself is
+    reported.
+    """
+    if ctx.entry_parse is None:
+        return None
+    raised = ctx.entry_parse.get("raised")
+    if raised:
+        return (
+            f"parse() raised {raised} on {ctx.fixture.name}; the checks below "
+            f"graded {ctx.parse_method!r} instead, so they do not cover the "
+            "path Scrapy calls"
+        )
+    return None
 
 
 @check("C16", "Exceptions are not swallowed without a trace", requires_meetings=False)
@@ -650,3 +740,56 @@ def summary_line(check_id: str) -> str:
         if cid == check_id:
             return summary
     return check_id
+
+
+HONEST_LIMITS = """
+Known gaps in this file, from two independent reviews on 19 August 2026. These
+are recorded rather than fixed because each needs a design decision, and a
+reader deserves to know what a green run does not mean.
+
+1. The checks often grade an internal helper, not the entry point. When
+   ``parse`` yields nothing usable from the fixture, the engine tries other
+   parser-named methods and grades the first that works. In this repo that
+   means 17 of 21 spiders are graded on a helper. C20 now reports when the
+   entry point raised, but not when it merely returned nothing. Demonstrated
+   consequence: breaking all three listing selectors in DetCityMixin produced
+   zero new failures across the seven spiders that use it.
+
+2. A silence check is satisfied by any exception, including an unrelated one.
+   ``_silence_violation`` accepts meetings, an exception, or a log line as
+   evidence the spider noticed. In this repo every current C12-C14 pass is
+   earned by an incidental crash (a JSONDecodeError, an AttributeError on
+   None) rather than by a spider reporting anything. In a scheduled run both a
+   callback exception and a lone warning still produce a run that exits zero
+   with zero items, which is the outage being tested for.
+
+3. Archive mode is forced on, so the checks do not model a scheduled run.
+   Several spiders drop meetings older than a rolling cutoff when the flag is
+   off, silently. With the flag at its production value, 9 of 21 spiders
+   produce nothing from their own fixtures. Running both ways would be the fix.
+
+4. The 'truncated' degradation is not a break for list-shaped input. Halving a
+   decoded JSON list yields valid events, and halving HTML often yields half
+   the rows, so C13 frequently passes by succeeding. A truncated HTTP body of a
+   JSON endpoint would be invalid JSON, which is not what this simulates.
+
+5. The 'undated' degradation corrupts markup, not just dates. Stripping every
+   digit also renames h1/h2 tags and mangles class names and HTML entities, so
+   C14 exercises broken markup more than unparseable dates.
+
+6. SILENT_EXCEPT_RE misses the common shapes. ``except X:  # noqa`` on the same
+   line defeats it, and ``except X: return None`` is not matched at all even
+   though that is closer to the bug that motivated the file. An AST-based
+   implementation shared with tests/harambe_contract.py would fix both.
+
+7. The frozen clock is inert without full git history. ``git log`` in a shallow
+   clone returns the same date for every fixture, and the mtime fallback
+   returns the checkout date. Verified in a depth-1 clone of the Chicago repo:
+   all 83 fixtures reported one identical date. This repo's CI escapes it only
+   because its checkout sets fetch-depth 0.
+
+8. Portability is repo-shaped, not general. Run unchanged against City Bureau's
+   Chicago repo, 38 of 58 spiders parsed, 3 had no fixture, and several helpers
+   matching PARSER_NAME_RE take a datetime or a regex match rather than a
+   response. It runs there; it does not run cleanly there.
+"""

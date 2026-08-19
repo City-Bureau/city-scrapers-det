@@ -10,6 +10,7 @@ before its start used to reach production unremarked.
 """
 
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import pytest
 from city_scrapers_core.items import Meeting
@@ -267,3 +268,70 @@ def test_c19_accepts_the_framework_helpers():
         "meeting['id'] = self._get_id(meeting)\n"
     )
     assert run("C19", context([meeting()], source=source)) is None
+
+
+# -- regressions from the 19 August 2026 reviews ----------------------------
+
+
+def test_builders_are_chosen_by_fixture_type():
+    """A builder that cannot apply must never be offered.
+
+    The engine used to try _json_payload on every fixture as a last resort. It
+    raises unconditionally for non-JSON, and the call sat outside the try block
+    that catches parse errors, so any HTML fixture that parsed to nothing took
+    down the whole session fixture instead of failing C01. Two independent
+    reviews found this; one measured it against City Bureau's Chicago repo,
+    where it crashed 16 of 58 spiders.
+    """
+    assert sc._json_payload not in sc._builders_for(Path("x.html"))
+    assert sc._json_payload not in sc._builders_for(Path("x.ics"))
+    assert sc._json_payload is sc._builders_for(Path("x.json"))[0]
+
+
+def test_json_builder_still_refuses_a_non_json_fixture():
+    """The guard belongs in the caller, so the builder keeps its own check."""
+    with pytest.raises(ValueError):
+        sc._json_payload(Path("x.html"), "https://example.org", b"<html></html>")
+
+
+def test_project_module_detection_excludes_installed_packages():
+    """Source-policy checks must grade this repo, not its dependencies.
+
+    Matching the name "city_scrapers" also matched the installed
+    city_scrapers_core, so C19 always found the _get_id and _get_status its base
+    class defines, and C16 reported an except/pass inside site-packages as repo
+    debt. The virtualenv usually lives inside the repo, so "under the repo root"
+    is not sufficient on its own.
+    """
+    import city_scrapers_core.spiders.legistar as legistar
+
+    from city_scrapers.spiders import det_city_council
+
+    assert sc._is_project_module(det_city_council)
+    assert not sc._is_project_module(legistar)
+
+
+def test_c20_reports_a_broken_entry_point():
+    ctx = context([meeting()])
+    ctx.fixture = Path("tests/files/example.html")
+    ctx.parse_method = "_parse_prev_meetings"
+    ctx.entry_parse = {
+        "meetings": [],
+        "requests": 0,
+        "raised": "IndexError: list index out of range",
+        "logged": [],
+    }
+    detail = run("C20", ctx)
+    assert detail
+    assert "_parse_prev_meetings" in detail
+
+
+def test_c20_is_quiet_when_the_entry_point_works():
+    ctx = context([meeting()])
+    ctx.entry_parse = {
+        "meetings": [meeting()],
+        "requests": 0,
+        "raised": None,
+        "logged": [],
+    }
+    assert run("C20", ctx) is None
