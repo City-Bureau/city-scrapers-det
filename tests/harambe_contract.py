@@ -181,8 +181,10 @@ def end_not_before_start(event):
         return None  # H04 reports this
     if end.tzinfo is None or start.tzinfo is None:
         return "cannot compare start and end: one is timezone-naive"
-    if end < start:
-        return f"end_time {end_raw!r} is before start_time {event['start_time']!r}"
+    if end <= start:
+        return (
+            f"end_time {end_raw!r} is not after start_time " f"{event['start_time']!r}"
+        )
     return None
 
 
@@ -283,6 +285,16 @@ COOKIE_LITERAL_RE = re.compile(r"""["']Cookie["']\s*:\s*["'][^"']+["']""")
 SCRAPER_NAME_CONSTANTS = ("SCRAPER_NAME", "OUTPUT_NAME", "FALLBACK_SCRAPER_NAME")
 
 
+# Modules that could not be imported during the last discovery run, and so
+# contributed no scraper names. Populated by declared_scraper_names().
+IMPORT_FAILURES: dict = {}
+
+# Modules that are legitimately unimportable in a test environment, with the
+# reason. Anything failing to import that is not listed here is a contract
+# failure, not a skipped module.
+KNOWN_UNIMPORTABLE: dict = {}
+
+
 def declared_scraper_names() -> dict:
     """Map each harambe scraper module to the scraper names it can emit.
 
@@ -292,13 +304,17 @@ def declared_scraper_names() -> dict:
     import importlib
 
     found = {}
+    IMPORT_FAILURES.clear()
     for module_path in harambe_modules():
         relative = module_path.relative_to(HARAMBE_DIR)
         dotted = "harambe_scrapers." + ".".join(relative.with_suffix("").parts)
         try:
             module = importlib.import_module(dotted)
-        except Exception:  # noqa: BLE001 - a module needing a browser to import
-            # is not a naming defect; it is simply out of reach here.
+        except Exception as exc:  # noqa: BLE001 - recorded, never swallowed
+            # Silently skipping here would drop a scraper out of the name checks
+            # entirely, which is the failure mode this whole contract exists to
+            # catch. test_no_module_is_silently_undiscoverable reports these.
+            IMPORT_FAILURES[relative.as_posix()] = f"{type(exc).__name__}: {exc}"
             continue
         for attr in SCRAPER_NAME_CONSTANTS:
             value = getattr(module, attr, None)

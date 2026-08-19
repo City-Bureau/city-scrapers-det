@@ -108,6 +108,11 @@ def test_c05_fires_when_end_precedes_start():
     assert run("C05", context([meeting(end=NOW - timedelta(hours=1))]))
 
 
+def test_c05_fires_on_a_zero_length_meeting():
+    """end == start means a parser read the same value twice."""
+    assert run("C05", context([meeting(end=NOW)]))
+
+
 def test_c05_accepts_an_absent_end():
     assert run("C05", context([meeting(end=None)])) is None
 
@@ -259,7 +264,24 @@ def test_c18_fires_on_a_hardcoded_cookie():
 
 def test_c19_fires_when_ids_are_hand_rolled():
     source = "meeting['id'] = f\"{self.name}/{start:%Y%m%d%H%M}/x/{slug}\"\n"
-    assert run("C19", context([meeting()], source=source))
+    ctx = context([meeting()], source=source)
+    ctx.source_units = [source]
+    assert run("C19", ctx)
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "# remember to call self._get_id( and self._get_status(\n",
+        "HELP = 'call self._get_id() and self._get_status()'\n",
+        '"""Docstring mentioning _get_id() and _get_status()."""\n',
+    ],
+)
+def test_c19_is_not_satisfied_by_a_mention(source):
+    """A comment or a string literal is not a call."""
+    ctx = context([meeting()], source=source)
+    ctx.source_units = [source]
+    assert run("C19", ctx)
 
 
 def test_c19_accepts_the_framework_helpers():
@@ -267,7 +289,9 @@ def test_c19_accepts_the_framework_helpers():
         "meeting['status'] = self._get_status(meeting)\n"
         "meeting['id'] = self._get_id(meeting)\n"
     )
-    assert run("C19", context([meeting()], source=source)) is None
+    ctx = context([meeting()], source=source)
+    ctx.source_units = [source]
+    assert run("C19", ctx) is None
 
 
 # -- regressions from the 19 August 2026 reviews ----------------------------

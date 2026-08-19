@@ -11,8 +11,10 @@ import pytest
 from harambe_scrapers.utils import create_ocd_event, localize_iso_datetime
 from tests.harambe_contract import (
     CHECKS,
+    IMPORT_FAILURES,
     KNOWN_SILENT_EXCEPT,
     KNOWN_SPOOFED_UA,
+    KNOWN_UNIMPORTABLE,
     baseline_key,
     declared_scraper_names,
     harambe_modules,
@@ -153,6 +155,46 @@ def test_h09_catches_a_scraper_name_h01_cannot_see():
 # -- every name a real scraper can actually emit ---------------------------
 
 DECLARED_NAMES = sorted(declared_scraper_names().items())
+
+
+def test_no_module_is_silently_undiscoverable():
+    """A module that will not import contributes no names, so say so loudly.
+
+    Dropping it quietly would let a new scraper with an unusable declared name
+    avoid H01 and H09 entirely, which is exactly the shape of failure the rest
+    of this file exists to prevent.
+    """
+    declared_scraper_names()  # refreshes IMPORT_FAILURES
+    unexplained = {
+        module: reason
+        for module, reason in IMPORT_FAILURES.items()
+        if module not in KNOWN_UNIMPORTABLE
+    }
+    assert not unexplained, (
+        f"these harambe modules could not be imported, so their scraper names "
+        f"were never checked: {unexplained}. Fix the import, or record the "
+        f"module and its reason in KNOWN_UNIMPORTABLE in "
+        f"tests/harambe_contract.py."
+    )
+
+
+def test_unimportable_baseline_has_no_stale_entries():
+    """A module that imports again has to leave the exclusion list."""
+    declared_scraper_names()
+    fixed = sorted(set(KNOWN_UNIMPORTABLE) - set(IMPORT_FAILURES))
+    assert not fixed, (
+        f"{fixed} import fine now. Remove them from KNOWN_UNIMPORTABLE in "
+        f"tests/harambe_contract.py so their names stay checked."
+    )
+
+
+def test_h05_rejects_a_zero_length_meeting():
+    """end == start means a parser read the same value twice."""
+    same = localize_iso_datetime("2026-03-25T10:00:00", TIMEZONE)
+    built = event(start_time=same, end_time=same)
+    results = {r.check_id: r for r in run_event_checks(built)}
+    assert not results["H05"].passed
+    assert "not after" in results["H05"].detail
 
 
 def test_scraper_names_were_discovered():

@@ -26,6 +26,7 @@ live site. These run offline against a saved fixture and apply to every spider
 without anyone having to opt in.
 """
 
+import ast
 import inspect
 import json
 import logging
@@ -86,6 +87,7 @@ class SpiderContext:
     meetings_complete: bool = True
     builder_errors: dict = field(default_factory=dict)
     entry_parse: Optional[dict] = None
+    source_units: List[str] = field(default_factory=list)
     captured_at: Optional[str] = None
     load_error: Optional[str] = None
 
@@ -251,6 +253,35 @@ def _json_payload(fixture: Path, url: str, body: bytes):
     return json.loads(body)
 
 
+def called_helper_names(sources) -> set:
+    """Names actually called in these sources, via the syntax tree.
+
+    Searching raw text counted a mention in a comment or a string literal as
+    evidence of a call, so a spider could hand-build its ids and still satisfy
+    C19 by naming the helper in a docstring. Falls back to a text search only
+    when a source unit will not parse, which should not happen for code that
+    imported successfully.
+    """
+    called = set()
+    for source in sources:
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            called.update(
+                name for name in ("_get_id", "_get_status") if f"{name}(" in source
+            )
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            if isinstance(func, ast.Attribute):
+                called.add(func.attr)
+            elif isinstance(func, ast.Name):
+                called.add(func.id)
+    return called
+
+
 def _is_project_module(module) -> bool:
     """Whether this module's source belongs to this repository.
 
@@ -353,15 +384,17 @@ def build_context(name: str, loader: Optional[SpiderLoader] = None) -> SpiderCon
         # always older than the day it is replayed - the contract wants to see
         # everything the selectors can extract, not what a scheduled run keeps.
         spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": True})
-    source = inspect.getsource(inspect.getmodule(spider_cls))
+    units = [inspect.getsource(inspect.getmodule(spider_cls))]
     for base in spider_cls.__mro__[1:]:
         module = inspect.getmodule(base)
         if _is_project_module(module):
             try:
-                source += "\n" + inspect.getsource(module)
+                units.append(inspect.getsource(module))
             except OSError:
                 pass
+    source = "\n".join(units)
     ctx = SpiderContext(name=name, spider=spider, source=source)
+    ctx.source_units = units
 
     ctx.fixture = _find_fixture(name)
     if ctx.fixture is None:
@@ -492,16 +525,19 @@ def required_fields_present(ctx):
     return None
 
 
-@check("C05", "End times are absent or after the start")
+@check("C05", "End times are absent or strictly after the start")
 def end_not_before_start(ctx):
     bad = 0
     for meeting in ctx.meetings:
         end, start = meeting.get("end"), meeting.get("start")
         if isinstance(end, datetime) and isinstance(start, datetime):
-            if end < start:
+            # An end equal to the start is a zero-length meeting, which in
+            # practice means a parser read the same value twice. No meeting in
+            # this repo legitimately does it.
+            if end <= start:
                 bad += 1
     if bad:
-        return f"{bad} meeting(s) end before they start"
+        return f"{bad} meeting(s) do not end after they start"
     return None
 
 
@@ -616,12 +652,33 @@ def undated_input_is_not_silent(ctx):
 
 @check("C15", "Degraded input never yields a malformed meeting")
 def degraded_output_still_valid(ctx):
+    """Whatever a damaged page yields still has to satisfy the output checks.
+
+    This used to assert two rules of its own, start and title, which left a
+    degraded parse free to emit an unrecognised status or a malformed location.
+    It now runs the real C02-C11 functions over the degraded meetings, so the
+    two sets cannot drift apart.
+    """
     for label, run in ctx.degraded.items():
-        for meeting in run["meetings"]:
-            if not isinstance(meeting.get("start"), datetime):
-                return f"{label} input produced a meeting with no usable start"
-            if not str(meeting.get("title") or "").strip():
-                return f"{label} input produced a meeting with an empty title"
+        if not run["meetings"]:
+            continue
+        probe = SpiderContext(
+            name=ctx.name,
+            spider=ctx.spider,
+            source=ctx.source,
+            meetings=run["meetings"],
+            meetings_complete=_meetings_are_complete(run["meetings"]),
+        )
+        for check_id, _summary, _needs, fn in CHECKS:
+            if check_id not in OUTPUT_CHECKS:
+                continue
+            if check_id in FINISHED_ONLY and not probe.meetings_complete:
+                continue
+            detail = fn(probe)
+            if detail:
+                return (
+                    f"{label} input produced a meeting that fails {check_id}: {detail}"
+                )
     return None
 
 
@@ -687,11 +744,8 @@ def no_hardcoded_cookie(ctx):
 
 @check("C19", "Ids and statuses come from the framework helpers")
 def uses_framework_helpers(ctx):
-    missing = []
-    if "_get_id(" not in ctx.source:
-        missing.append("_get_id()")
-    if "_get_status(" not in ctx.source:
-        missing.append("_get_status()")
+    called = called_helper_names(ctx.source_units or [ctx.source])
+    missing = [f"{name}()" for name in ("_get_id", "_get_status") if name not in called]
     if missing:
         return (
             f"does not call {', '.join(missing)}; hand-built ids and statuses "
@@ -707,6 +761,10 @@ def uses_framework_helpers(ctx):
 
 # Checks that only mean something once id and status have been stamped on.
 FINISHED_ONLY = {"C02", "C03", "C08"}
+
+# The output-shape group. C15 replays these over degraded output, so a damaged
+# page cannot yield a meeting that would fail on a good one.
+OUTPUT_CHECKS = {"C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10", "C11"}
 
 
 def run_checks(ctx: SpiderContext) -> List[CheckResult]:

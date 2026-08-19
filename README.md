@@ -25,9 +25,9 @@ pipenv run python scripts/spider_contract_report.py --failures   # all spiders
 The contract discovers spiders through Scrapy's own spider loader, finds each
 one's fixture at `tests/files/<spider_name>.<html|json|ics>`, replays it with the
 clock frozen to the day the fixture was captured, and runs twenty checks in
-three groups:
+four groups:
 
-- **Output shape** (C01-C11) — the fixture parses at all; ids are namespaced and
+- **Output shape** (C01-C11) - the fixture parses at all; ids are namespaced and
   unique; title, start and source are present; an end time is either absent or
   after the start; classification and status are values the framework
   recognises; location and links have the shape downstream code expects; no
