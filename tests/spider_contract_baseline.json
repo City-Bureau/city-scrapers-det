@@ -1,0 +1,120 @@
+{
+  "_readme": [
+    "Violations of the spider contract (tests/spider_contract.py) that",
+    "already existed when the contract was introduced.",
+    "",
+    "tests/test_spider_contract.py xfails everything listed here and",
+    "hard-fails anything that is not, so the existing suite stays green",
+    "while a new spider is held to the full contract from its first commit.",
+    "",
+    "This file is meant to shrink. Fixing a listed violation makes",
+    "test_baseline_has_no_stale_entries fail until its entry is removed, so",
+    "the ratchet only tightens. Nothing here is approved behaviour - it is",
+    "a debt register.",
+    "",
+    "Run `python scripts/spider_contract_report.py --failures` for the",
+    "detail behind each entry."
+  ],
+  "_what_is_listed_and_why": {
+    "C09": "DetCityMixin._parse_location returns {'name': '', 'address': ''} when its .location-info selectors miss, so a meeting can carry a wholly blank location. Only surfaces on the one fixture where the block is absent; the other six spiders on that mixin pass.",
+    "C12": "The largest group. An empty response body yields no meetings, raises nothing and logs nothing, which is indistinguishable from a page that genuinely had no meetings. This is the shape of the Wayne County failure that went unnoticed for months.",
+    "C13": "Same as C12 for a half-truncated body - a partial response is treated as an empty calendar.",
+    "C14": "Same as C12 for a body with every digit stripped - unparseable dates drop meetings without a trace.",
+    "C16": "except/pass or except/continue with no logging, which is how one unparseable row becomes one silently missing meeting."
+  },
+  "_checks": {
+    "C01": "The fixture parses into at least one meeting",
+    "C02": "Meeting ids are prefixed with the spider's own name",
+    "C03": "Meeting ids are unique within one run",
+    "C04": "Title, start and source are present on every meeting",
+    "C05": "End times are absent or after the start",
+    "C06": "Datetimes are consistently naive or consistently aware",
+    "C07": "Classification is one the framework recognises",
+    "C08": "Status is one the framework recognises",
+    "C09": "Location is a mapping with name and address",
+    "C10": "Links are a list of mappings with href and title",
+    "C11": "Text fields carry no leftover markup",
+    "C12": "An empty page is reported, not passed over in silence",
+    "C13": "A truncated page is reported, not passed over in silence",
+    "C14": "Unparseable dates are reported, not passed over in silence",
+    "C15": "Degraded input never yields a malformed meeting",
+    "C16": "Exceptions are not swallowed without a trace",
+    "C17": "The spider does not impersonate a browser",
+    "C18": "The spider carries no hardcoded session cookie",
+    "C19": "Ids and statuses come from the framework helpers"
+  },
+  "known_violations": {
+    "det_board_of_education": [
+      "C12"
+    ],
+    "det_brownfield_redevelopment_authority": [
+      "C12",
+      "C14"
+    ],
+    "det_city_council": [
+      "C12",
+      "C13"
+    ],
+    "det_city_planning": [
+      "C12",
+      "C13"
+    ],
+    "det_downtown_development_authority": [
+      "C12",
+      "C14"
+    ],
+    "det_economic_development_corporation": [
+      "C12",
+      "C14"
+    ],
+    "det_eight_mile_woodward_corridor_improvement_authority": [
+      "C12",
+      "C14"
+    ],
+    "det_emergency_planning": [
+      "C09",
+      "C12",
+      "C13"
+    ],
+    "det_historic_district": [
+      "C12",
+      "C13"
+    ],
+    "det_human_rights": [
+      "C12",
+      "C13"
+    ],
+    "det_local_development_finance_authority": [
+      "C12",
+      "C14"
+    ],
+    "det_neighborhood_development_corporation": [
+      "C12",
+      "C14"
+    ],
+    "det_next_michigan_development_corporation": [
+      "C12",
+      "C14"
+    ],
+    "det_regional_convention": [
+      "C12"
+    ],
+    "det_regional_transit_authority": [
+      "C12",
+      "C14",
+      "C16"
+    ],
+    "det_transportation": [
+      "C12",
+      "C13"
+    ],
+    "det_water_sewage_department": [
+      "C12",
+      "C16"
+    ],
+    "det_zoning_appeals": [
+      "C12",
+      "C13"
+    ]
+  }
+}
