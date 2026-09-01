@@ -1,0 +1,141 @@
+{
+  "_readme": [
+    "Violations of the spider contract (tests/spider_contract.py) that",
+    "already existed when the contract was introduced.",
+    "",
+    "tests/test_spider_contract.py xfails everything listed here and",
+    "hard-fails anything that is not, so the existing suite stays green",
+    "while a new spider is held to the full contract from its first commit.",
+    "",
+    "This file is meant to shrink. Fixing a listed violation makes",
+    "test_baseline_has_no_stale_entries fail until its entry is removed, so",
+    "the ratchet only tightens. Nothing here is approved behaviour: it is a",
+    "debt register.",
+    "",
+    "C01 may not be listed here. A spider whose fixture parses to nothing",
+    "skips every check that needs meetings, so recording C01 would report a",
+    "silent pass for the entire contract.",
+    "",
+    "Read HONEST_LIMITS at the bottom of tests/spider_contract.py before",
+    "reading a green run as an all-clear. Run",
+    "`python scripts/spider_contract_report.py --failures` for the detail",
+    "behind each entry."
+  ],
+  "_what_is_listed_and_why": {
+    "C09": "DetCityMixin._parse_location returns {'name': '', 'address': ''} when its .location-info selectors miss, so a meeting can carry a wholly blank location. Only surfaces on the one fixture where the block is absent; the other six spiders on that mixin pass.",
+    "C12": "The largest group. An empty response body yields no meetings, raises nothing and logs nothing, which is indistinguishable from a page that genuinely had no meetings. This is the shape of the Wayne County failure that went unnoticed for months.",
+    "C13": "Same as C12 for a half-truncated body. Note limit 4 in HONEST_LIMITS: halving list-shaped input often yields valid rows, so this check passes for some spiders by succeeding rather than by reporting.",
+    "C14": "Same as C12 for a body with every digit stripped. Note limit 5 in HONEST_LIMITS: stripping digits also corrupts markup, so this exercises broken HTML as much as unparseable dates.",
+    "C16": "except/pass or except/continue with no logging, which is how one unparseable row becomes one silently missing meeting.",
+    "C20": "The spider's own parse() raises on its committed fixture, so the engine graded an internal helper instead. These nine are the clearest evidence for limit 1 in HONEST_LIMITS: the checks below them are not covering the path Scrapy calls.",
+    "C15": "A truncated page yields a meeting that would fail one of the output checks. Found only after C15 was changed to run the real C02-C11 functions over degraded output instead of restating two of their rules."
+  },
+  "_checks": {
+    "C01": "The fixture parses into at least one meeting",
+    "C02": "Meeting ids are prefixed with the spider's own name",
+    "C03": "Meeting ids are unique within one run",
+    "C04": "Title, start and source are present on every meeting",
+    "C05": "End times are absent or strictly after the start",
+    "C06": "Datetimes are consistently naive or consistently aware",
+    "C07": "Classification is one the framework recognises",
+    "C08": "Status is one the framework recognises",
+    "C09": "Location is a mapping with name and address",
+    "C10": "Links are a list of mappings with a usable href",
+    "C11": "Text fields carry no leftover markup",
+    "C12": "An empty page is reported, not passed over in silence",
+    "C13": "A truncated page is reported, not passed over in silence",
+    "C14": "Unparseable dates are reported, not passed over in silence",
+    "C15": "Degraded input never yields a malformed meeting",
+    "C20": "The spider's own entry point runs without raising on its fixture",
+    "C16": "Exceptions are not swallowed without a trace",
+    "C17": "The spider does not impersonate a browser",
+    "C18": "The spider carries no hardcoded session cookie",
+    "C19": "Ids and statuses come from the framework helpers"
+  },
+  "known_violations": {
+    "det_board_of_education": [
+      "C12"
+    ],
+    "det_brownfield_redevelopment_authority": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_city_council": [
+      "C12",
+      "C13"
+    ],
+    "det_city_planning": [
+      "C12",
+      "C13"
+    ],
+    "det_downtown_development_authority": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_economic_development_corporation": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_eight_mile_woodward_corridor_improvement_authority": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_emergency_planning": [
+      "C09",
+      "C12",
+      "C13"
+    ],
+    "det_general_retirement_system": [
+      "C20"
+    ],
+    "det_historic_district": [
+      "C12",
+      "C13"
+    ],
+    "det_human_rights": [
+      "C12",
+      "C13"
+    ],
+    "det_library_commission": [
+      "C15"
+    ],
+    "det_local_development_finance_authority": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_neighborhood_development_corporation": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_next_michigan_development_corporation": [
+      "C12",
+      "C14",
+      "C20"
+    ],
+    "det_regional_convention": [
+      "C12"
+    ],
+    "det_regional_transit_authority": [
+      "C12",
+      "C14",
+      "C16"
+    ],
+    "det_transportation": [
+      "C12",
+      "C13"
+    ],
+    "det_water_sewage_department": [
+      "C12"
+    ],
+    "det_zoning_appeals": [
+      "C12",
+      "C13"
+    ]
+  }
+}

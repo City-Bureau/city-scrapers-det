@@ -172,7 +172,7 @@ def _parse_meeting_layout(selector: Selector) -> dict:
                     f"{meeting_date} {end_time.strip()}", "%B %d, %Y %I:%M %p"
                 )
             except ValueError:
-                pass
+                print(f"    ✗ Could not parse end time: {meeting_date} {end_time}")
 
     location_text = _text(selector, "div.meeting-address > p:last-of-type") or ""
     location_text = location_text.replace("View Map", "").strip()
