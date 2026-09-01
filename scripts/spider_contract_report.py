@@ -68,14 +68,15 @@ def report(names, failures_only, baseline):
         print(f"\n{name}")
         print(f"  parsed: {describe_parse(ctx)}")
         for r in results:
-            if r.passed:
-                if failures_only:
-                    continue
-                print(f"  {PASS} {r.check_id} {summary_line(r.check_id)}")
-            elif r.skipped:
+            # skipped results also carry passed=True, so skipped goes first
+            if r.skipped:
                 if failures_only:
                     continue
                 print(f"  {SKIP} {r.check_id} {summary_line(r.check_id)}: {r.detail}")
+            elif r.passed:
+                if failures_only:
+                    continue
+                print(f"  {PASS} {r.check_id} {summary_line(r.check_id)}")
             else:
                 tag = " [known]" if r.check_id in known else ""
                 print(f"  {FAIL} {r.check_id} {summary_line(r.check_id)}{tag}")

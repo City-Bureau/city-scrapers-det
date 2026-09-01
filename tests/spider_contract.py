@@ -72,6 +72,13 @@ class CheckResult:
 
 
 @dataclass
+class Skip:
+    """A check that cannot say anything; run_checks reports it skipped, not passed."""
+
+    detail: str = ""
+
+
+@dataclass
 class SpiderContext:
     """Everything a check needs about one spider, computed once."""
 
@@ -410,16 +417,15 @@ def build_context(name: str, loader: Optional[SpiderLoader] = None) -> SpiderCon
     # the fixture was captured rather than to today.
     with freeze_time(ctx.captured_at):
         partial = None
-        entry_builder = _builders_for(ctx.fixture)[0]
-        if hasattr(spider, "parse"):
+        # A .json fixture is decoded events, not the Response parse() receives,
+        # so there is nothing honest to probe with; C20 reports the gap.
+        if hasattr(spider, "parse") and ctx.fixture.suffix != ".json":
             try:
                 ctx.entry_parse = _run_parse(
-                    spider, "parse", entry_builder(ctx.fixture, url, body)
+                    spider, "parse", _file_response(ctx.fixture, url, body)
                 )
             except Exception as exc:  # noqa: BLE001
-                ctx.builder_errors[entry_builder.__name__] = (
-                    f"{type(exc).__name__}: {exc}"
-                )
+                ctx.builder_errors["_file_response"] = f"{type(exc).__name__}: {exc}"
 
         for builder in _builders_for(ctx.fixture):
             for method in _parse_methods(spider):
@@ -701,6 +707,11 @@ def entry_parse_does_not_raise(ctx):
     coverage and dangerous for confidence, so the substitution itself is
     reported.
     """
+    if ctx.fixture is not None and ctx.fixture.suffix == ".json":
+        return Skip(
+            "the committed fixture is decoded events, not the page parse() "
+            "receives, so the entry point cannot be probed from it"
+        )
     if ctx.entry_parse is None:
         return None
     raised = ctx.entry_parse.get("raised")
@@ -789,6 +800,11 @@ def run_checks(ctx: SpiderContext) -> List[CheckResult]:
             )
             continue
         detail = fn(ctx)
+        if isinstance(detail, Skip):
+            results.append(
+                CheckResult(check_id, ctx.name, True, detail.detail, skipped=True)
+            )
+            continue
         results.append(CheckResult(check_id, ctx.name, detail is None, detail or ""))
     return results
 

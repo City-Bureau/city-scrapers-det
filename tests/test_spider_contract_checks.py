@@ -359,3 +359,24 @@ def test_c20_is_quiet_when_the_entry_point_works():
         "logged": [],
     }
     assert run("C20", ctx) is None
+
+
+def test_c20_skips_when_the_fixture_is_decoded_events():
+    """A .json fixture is not what parse() receives, so C20 must skip, not fail.
+
+    The probe used to hand parse() the decoded event list; the guaranteed
+    AttributeError fabricated a baseline entry for every Legistar spider.
+    """
+    ctx = context([meeting()])
+    ctx.fixture = Path("tests/files/det_test.json")
+    assert isinstance(run("C20", ctx), sc.Skip)
+
+
+def test_run_checks_reports_a_skip_returning_check_as_skipped():
+    """A Skip from a check must surface as skipped, never as a silent pass."""
+    ctx = context([meeting()])
+    ctx.fixture = Path("tests/files/det_test.json")
+    ctx.degraded = healthy_degradation()
+    results = {r.check_id: r for r in sc.run_checks(ctx)}
+    assert results["C20"].skipped
+    assert results["C20"].passed  # skipped results never read as failures
