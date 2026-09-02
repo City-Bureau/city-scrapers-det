@@ -208,12 +208,16 @@ class DetCityMixin:
     def _parse_location(self, response):
         """Parse the location name and address from the page"""
         loc_info = response.css(".location-info")
-        return {
-            "name": (loc_info.css("p strong span::text").extract_first() or "").strip(),
-            "address": (
-                loc_info.css(".field--name-field-address::text").extract_first() or ""
-            ).strip(),
-        }
+        name = (loc_info.css("p strong span::text").extract_first() or "").strip()
+        address = (
+            loc_info.css(".field--name-field-address::text").extract_first() or ""
+        ).strip()
+        if not name and not address:
+            # A blank pair means a page with no location or selectors the
+            # site's markup has moved past - either way, say so.
+            self.logger.warning("No location parsed from %s", response.url)
+            return {"name": "TBD", "address": ""}
+        return {"name": name, "address": address}
 
     def _parse_links(self, response, start):
         """Parse links pulled from documents and the agenda"""

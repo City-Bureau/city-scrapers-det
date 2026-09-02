@@ -54,7 +54,17 @@ def test_status():
 
 
 def test_location():
-    assert item["location"] == {"name": "", "address": ""}
+    # The fixture's page carries no location, so the mixin falls back to TBD
+    assert item["location"] == {"name": "TBD", "address": ""}
+
+
+def test_missing_location_is_logged(caplog):
+    with freeze_time("2023-08-19"):
+        spider.parse_event_page(test_response)
+    assert any(
+        "location" in r.getMessage().lower() and r.levelname == "WARNING"
+        for r in caplog.records
+    )
 
 
 def test_source():
