@@ -8,7 +8,7 @@ import pytz
 import scrapy
 from city_scrapers_core.constants import ADVISORY_COMMITTEE, BOARD, COMMITTEE, FORUM
 from city_scrapers_core.items import Meeting
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 
 # Wix Events app that powers the calendar on degc.org/public-authorities
 EVENTS_APP_ID = "140603ad-af8d-84a5-2c80-a0f60cb47351"
