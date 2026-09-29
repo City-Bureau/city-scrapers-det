@@ -440,7 +440,7 @@ class DetAuthorityMixin:
         link_map = defaultdict(list)
         for link in response.css("a[href]"):
             link_text = re.sub(
-                r"[\s​]+", " ", " ".join(link.css("*::text").extract())
+                r"[\s\u200b]+", " ", " ".join(link.css("*::text").extract())
             ).strip()
             if not MEETING_DOC_RE.search(link_text):
                 continue
