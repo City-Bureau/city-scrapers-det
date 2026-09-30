@@ -1,0 +1,122 @@
+name: Staging
+
+# Crawls every spider on the `staging` branch and writes the feed to the staging
+# Azure container (AZURE_STAGING_CONTAINER), which the staging Documenters site
+# imports from. It never touches the production container used by `cron.yml`.
+#
+# Runs nightly so agendas the clerk posts after the last deploy-time crawl still
+# reach staging (DOC-2769 / DOC-2768). Crawl only: no PR merging and no delete
+# on the app side, so staging meeting IDs and URLs stay stable between runs.
+#
+# The `schedule:` trigger is read from this file on `main` (GitHub only fires
+# schedules from the default branch); the crawl itself checks out `staging`.
+# Scheduled runs execute as the last committer of this file, so re-commit it
+# from an active account if that account is ever deactivated.
+#
+# The `workflow-keepalive` job matches atl/dallas `staging.yml` and stops GitHub
+# auto-disabling the schedule after 60 days without commits.
+#
+# Harambe scrapers (the `crawl_harambe` job in cron.yml) are left out on purpose:
+# scripts/merge_harambe_to_latest.py defaults to the production container
+# (meetings-feed-det), so running it here could overwrite the production feed.
+on:
+  schedule:
+    # Nightly, UTC. Before the 06:01 prod cron and the 11:00 Airtable trigger.
+    - cron: "0 5 * * *"
+  push:
+    branches:
+      - staging
+    # A full crawl takes ~20-30 minutes, so don't spend one on a docs or
+    # skills-only commit.
+    paths-ignore:
+      - "**.md"
+      - ".claude/**"
+      - "LICENSE"
+  workflow_dispatch:
+
+env:
+  CI: true
+  PYTHON_VERSION: 3.12
+  PIPENV_VENV_IN_PROJECT: true
+  CITY_SCRAPERS_ENV: staging
+  SCRAPY_SETTINGS_MODULE: city_scrapers.settings.staging
+  AUTOTHROTTLE_MAX_DELAY: 30.0
+  AUTOTHROTTLE_START_DELAY: 1.5
+  AUTOTHROTTLE_TARGET_CONCURRENCY: 3.0
+  AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+  AZURE_ACCOUNT_NAME: ${{ secrets.AZURE_ACCOUNT_NAME }}
+  AZURE_STAGING_CONTAINER: ${{ secrets.AZURE_STAGING_CONTAINER }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Pipenv
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ env.PYTHON_VERSION }}-${{ hashFiles('**/Pipfile.lock') }}
+          restore-keys: |
+            ${{ env.PYTHON_VERSION }}-
+            pip-
+
+      - name: Check and conditionally remove invalid virtual environment
+        run: |
+          if [ -d ".venv" ] && [ ! -f ".venv/bin/python" ]; then
+            echo "Virtual environment exists but Python executable is missing. Rebuilding."
+            rm -rf .venv
+          elif [ ! -d ".venv" ]; then
+            echo "No virtual environment found. Will build new one."
+          elif ! .venv/bin/python --version 2>&1 | grep -q "Python ${{ env.PYTHON_VERSION }}"; then
+            echo "Virtual environment Python version mismatch. Rebuilding."
+            rm -rf .venv
+          else
+            echo "Virtual environment appears valid. Reusing."
+          fi
+
+      - name: Install dependencies
+        run: pipenv sync
+        env:
+          PIPENV_DEFAULT_PYTHON_VERSION: ${{ env.PYTHON_VERSION }}
+
+      - name: Verify staging container is configured
+        run: |
+          if [ -z "$AZURE_STAGING_CONTAINER" ]; then
+            echo "AZURE_STAGING_CONTAINER is not set. Refusing to crawl:"
+            echo "an empty container would make the feed URI ambiguous."
+            exit 1
+          fi
+          echo "Writing feed to container: $AZURE_STAGING_CONTAINER"
+
+      - name: Run scrapers
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          ./.deploy.sh
+
+      - name: Combine output feeds
+        run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          pipenv run scrapy combinefeeds -s LOG_ENABLED=False
+
+  workflow-keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@v1
