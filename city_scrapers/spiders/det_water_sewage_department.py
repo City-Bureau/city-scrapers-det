@@ -56,16 +56,6 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
     agency_cal_id = "All"
     board_cal_id = "1361"
 
-    legistar_bodies = [
-        BOARD_TITLE,
-        "Board of Water Commissioners Workshops",
-        "Audit Committee",
-        "Capital Improvement Program and Operations Committee",
-        "Customer Service Committee",
-        "Finance Committee",
-        "Human Resources/Organizational Development",
-        "Legal and Government Affairs",
-    ]
     youtube_link = {
         "title": "YouTube channel",
         "href": "https://www.youtube.com/@DWSD/streams",
@@ -225,8 +215,6 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
         meetings = []
         for event in events:
             title = self._legistar_label(event, "Name")
-            if title not in self.legistar_bodies:
-                continue
             start = self._legistar_start(event)
             if start is None:
                 continue
@@ -234,12 +222,17 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
                 title=title,
                 # Legistar's location column holds the virtual attendance details
                 description=self._legistar_label(event, "Meeting Location"),
-                classification=self._classify(title),
+                # Every body on this Legistar site belongs to DWSD. Those that aren't
+                # the board or an advisory council are board committees, some
+                # without the word in their name.
+                classification=self._classify(title, default=COMMITTEE),
                 start=start,
                 end=None,
                 time_notes="",
                 all_day=False,
-                location=self._parse_legistar_location(event),
+                location=self._water_board_location(
+                    self._legistar_label(event, "Meeting Location")
+                ),
                 links=self.legistar_links(event) + [dict(self.youtube_link)],
                 source=self.legistar_source(event),
             )
@@ -267,11 +260,9 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
             value = value.get("label", "")
         return value.strip()
 
-    def _parse_legistar_location(self, event):
-        if (
-            "water board building"
-            in self._legistar_label(event, "Meeting Location").lower()
-        ):
+    def _water_board_location(self, text):
+        """The board's usual venue, when the text names it, otherwise TBD"""
+        if "water board building" in text.lower():
             return {"name": "Water Board Building", "address": self.water_board_address}
         return {"name": "TBD", "address": ""}
 
@@ -338,7 +329,9 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
             if line.strip() and not line.strip().startswith(tuple(calendar.day_abbr))
         )
         if not name and not address:
-            return {"name": "TBD", "address": ""}
+            # Some events leave the block empty and name the venue in the
+            # description instead
+            return self._water_board_location(self._parse_description(response))
         return {"name": name, "address": address}
 
     def _parse_links(self, response, start):
@@ -394,7 +387,7 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
         """
         return super()._get_status({**item, "description": ""}, text=text)
 
-    def _classify(self, title):
+    def _classify(self, title, default=NOT_CLASSIFIED):
         lowered = title.lower()
         if "advisory" in lowered:
             return ADVISORY_COMMITTEE
@@ -402,9 +395,6 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
             return COMMITTEE
         if title.startswith(BOARD_TITLE):
             return BOARD
-        if title in self.legistar_bodies:
-            # Board committees whose names leave the word out
-            return COMMITTEE
         if "community" in lowered or "town hall" in lowered:
             return FORUM
-        return NOT_CLASSIFIED
+        return default

@@ -3,7 +3,13 @@ from datetime import datetime
 from os.path import dirname, join
 
 import pytest
-from city_scrapers_core.constants import BOARD, CANCELLED, COMMITTEE, PASSED
+from city_scrapers_core.constants import (
+    ADVISORY_COMMITTEE,
+    BOARD,
+    CANCELLED,
+    COMMITTEE,
+    PASSED,
+)
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 from scrapy.exceptions import IgnoreRequest
@@ -179,6 +185,15 @@ def test_committee_without_the_word_is_classified_committee():
     assert item["classification"] == COMMITTEE
 
 
+def test_every_legistar_body_is_kept():
+    # Legistar pads some body names, like its annual Water Advisory Council
+    event = {**legistar_events[0], "Name": "Water Advisory Council "}
+    with freeze_time("2026-09-30"):
+        (item,) = spider.parse_legistar([event])
+    assert item["title"] == "Water Advisory Council"
+    assert item["classification"] == ADVISORY_COMMITTEE
+
+
 # detroitmi.gov
 
 
@@ -217,6 +232,22 @@ def test_primary_committee_meeting():
     assert committee_meeting["location"] == {"name": "TBD", "address": ""}
     assert "Attend Meeting Virtually" in committee_meeting["description"]
     assert committee_meeting["links"] == [YOUTUBE_LINK]
+
+
+def test_venue_named_only_in_the_description():
+    response = HtmlResponse(
+        url="https://detroitmi.gov/events/board-water-commissioners-october-2026-meeting",  # noqa
+        body=b"""
+        <article class="description">
+          <p>The board will meet at 2 p.m. at the Water Board Building.</p>
+        </article>
+        <article class="item location"></article>
+        """,
+    )
+    assert spider._parse_location(response) == {
+        "name": "Water Board Building",
+        "address": "735 Randolph St, Detroit, MI 48226",
+    }
 
 
 # Combined
