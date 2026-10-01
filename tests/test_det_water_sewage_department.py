@@ -40,42 +40,79 @@ YOUTUBE_LINK = {
 }
 
 
+FROZEN_NOW = "2026-09-30"
+
+
 def fixture(name):
     return join(dirname(__file__), "files", name)
 
 
-legistar_response = file_response(
-    fixture("det_water_sewage_department_legistar.html"),
-    url="https://dwsd.legistar.com/Calendar.aspx",
-)
-list_response = file_response(
-    fixture("det_water_sewage_department_list.html"),
-    url="https://detroitmi.gov/Calendar-and-Events?term_node_tid_depth=171",
-)
-meeting_response = file_response(
-    fixture("det_water_sewage_department_meeting.html"),
-    url="https://detroitmi.gov/events/board-water-commissioners-june-2026-meeting",
-)
-committee_response = file_response(
-    fixture("det_water_sewage_department_committee.html"),
-    url="https://detroitmi.gov/events/board-water-commissioners-june-2026-committee-meetings",  # noqa
-)
+@pytest.fixture(scope="module")
+def legistar_response():
+    return file_response(
+        fixture("det_water_sewage_department_legistar.html"),
+        url="https://dwsd.legistar.com/Calendar.aspx",
+    )
 
-with open(fixture("det_water_sewage_department.json")) as f:
-    legistar_events = json.load(f)
 
-freezer = freeze_time("2026-09-30")
-freezer.start()
+@pytest.fixture(scope="module")
+def list_response():
+    return file_response(
+        fixture("det_water_sewage_department_list.html"),
+        url="https://detroitmi.gov/Calendar-and-Events?term_node_tid_depth=171",
+    )
 
-spider = DetWaterSewageDepartmentSpider()
-legistar_items = spider.parse_legistar(legistar_events)
-board_meeting = spider.parse_event_page(meeting_response)
-committee_meeting = spider.parse_event_page(committee_response)
-merged_items = list(
-    spider._merge_meetings([board_meeting, committee_meeting], legistar_items)
-)
 
-freezer.stop()
+@pytest.fixture(scope="module")
+def meeting_response():
+    return file_response(
+        fixture("det_water_sewage_department_meeting.html"),
+        url="https://detroitmi.gov/events/board-water-commissioners-june-2026-meeting",
+    )
+
+
+@pytest.fixture(scope="module")
+def committee_response():
+    return file_response(
+        fixture("det_water_sewage_department_committee.html"),
+        url="https://detroitmi.gov/events/board-water-commissioners-june-2026-committee-meetings",  # noqa
+    )
+
+
+@pytest.fixture(scope="module")
+def legistar_events():
+    with open(fixture("det_water_sewage_department.json")) as f:
+        return json.load(f)
+
+
+@pytest.fixture(scope="module")
+def spider():
+    return DetWaterSewageDepartmentSpider()
+
+
+@pytest.fixture(scope="module")
+def legistar_items(spider, legistar_events):
+    with freeze_time(FROZEN_NOW):
+        return spider.parse_legistar(legistar_events)
+
+
+@pytest.fixture(scope="module")
+def board_meeting(spider, meeting_response):
+    with freeze_time(FROZEN_NOW):
+        return spider.parse_event_page(meeting_response)
+
+
+@pytest.fixture(scope="module")
+def committee_meeting(spider, committee_response):
+    with freeze_time(FROZEN_NOW):
+        return spider.parse_event_page(committee_response)
+
+
+@pytest.fixture(scope="module")
+def merged_items(spider, board_meeting, committee_meeting, legistar_items):
+    return list(
+        spider._merge_meetings([board_meeting, committee_meeting], legistar_items)
+    )
 
 
 def find(items, title, start):
@@ -85,7 +122,7 @@ def find(items, title, start):
 # Legistar
 
 
-def test_calendar_icon_column_does_not_drop_rows():
+def test_calendar_icon_column_does_not_drop_rows(legistar_response, legistar_events):
     # The core parser returned no events at all from this page
     events = DetWaterSewageDepartmentSpider()._parse_legistar_events(legistar_response)
     assert events == legistar_events
@@ -132,11 +169,11 @@ def test_onclick_link_is_read():
     }
 
 
-def test_legistar_count():
+def test_legistar_count(legistar_items):
     assert len(legistar_items) == 71
 
 
-def test_legistar_title():
+def test_legistar_title(legistar_items):
     assert {item["title"] for item in legistar_items} == {
         "Board of Water Commissioners",
         "Audit Committee",
@@ -148,7 +185,7 @@ def test_legistar_title():
     }
 
 
-def test_legistar_board_meeting():
+def test_legistar_board_meeting(legistar_items):
     item = find(
         legistar_items, "Board of Water Commissioners", datetime(2026, 6, 17, 14)
     )
@@ -177,32 +214,32 @@ def test_legistar_board_meeting():
     )
 
 
-def test_legistar_cancelled_from_meeting_time():
+def test_legistar_cancelled_from_meeting_time(legistar_items):
     item = find(legistar_items, "Audit Committee", datetime(2026, 3, 4))
     assert item["status"] == CANCELLED
 
 
-def test_rescheduled_note_does_not_cancel():
+def test_rescheduled_note_does_not_cancel(spider, legistar_events):
     event = dict(legistar_events[0])
     event["Meeting Location"] = (
         "BOWC Meeting The meeting has been rescheduled to Thursday, July 17, 2025"
     )
-    with freeze_time("2026-09-30"):
+    with freeze_time(FROZEN_NOW):
         (item,) = spider.parse_legistar([event])
     assert item["status"] != CANCELLED
 
 
-def test_committee_without_the_word_is_classified_committee():
+def test_committee_without_the_word_is_classified_committee(legistar_items):
     item = next(
         i for i in legistar_items if i["title"] == "Legal and Government Affairs"
     )
     assert item["classification"] == COMMITTEE
 
 
-def test_every_legistar_body_is_kept():
+def test_every_legistar_body_is_kept(spider, legistar_events):
     # Legistar pads some body names, like its annual Water Advisory Council
     event = {**legistar_events[0], "Name": "Water Advisory Council "}
-    with freeze_time("2026-09-30"):
+    with freeze_time(FROZEN_NOW):
         (item,) = spider.parse_legistar([event])
     assert item["title"] == "Water Advisory Council"
     assert item["classification"] == ADVISORY_COMMITTEE
@@ -211,7 +248,7 @@ def test_every_legistar_body_is_kept():
 # detroitmi.gov
 
 
-def test_event_list_requests_each_event_once():
+def test_event_list_requests_each_event_once(list_response):
     list_spider = DetWaterSewageDepartmentSpider()
     requests = list(list_spider._read_event_list(list_response))
     event_requests = [r for r in requests if "/events/" in r.url]
@@ -223,7 +260,7 @@ def test_event_list_requests_each_event_once():
     ]
 
 
-def test_primary_board_meeting():
+def test_primary_board_meeting(board_meeting, meeting_response):
     assert board_meeting["title"] == "Board of Water Commissioners"
     assert board_meeting["start"] == datetime(2026, 6, 17, 14)
     assert board_meeting["classification"] == BOARD
@@ -236,7 +273,7 @@ def test_primary_board_meeting():
     assert board_meeting["source"] == meeting_response.url
 
 
-def test_primary_committee_meeting():
+def test_primary_committee_meeting(committee_meeting):
     assert (
         committee_meeting["title"] == "Board of Water Commissioners Committee Meeting"
     )
@@ -248,7 +285,7 @@ def test_primary_committee_meeting():
     assert committee_meeting["links"] == [YOUTUBE_LINK]
 
 
-def test_venue_named_only_in_the_description():
+def test_venue_named_only_in_the_description(spider):
     response = HtmlResponse(
         url="https://detroitmi.gov/events/board-water-commissioners-october-2026-meeting",  # noqa
         body=b"""
@@ -267,17 +304,19 @@ def test_venue_named_only_in_the_description():
 # Combined
 
 
-def test_merged_count():
+def test_merged_count(merged_items, legistar_items):
     # The primary board meeting replaces its Legistar twin
     assert len(merged_items) == len(legistar_items) + 1
 
 
-def test_merged_ids_unique():
+def test_merged_ids_unique(merged_items):
     ids = [item["id"] for item in merged_items]
     assert len(ids) == len(set(ids))
 
 
-def test_merged_board_meeting_takes_legistar_attachments():
+def test_merged_board_meeting_takes_legistar_attachments(
+    merged_items, board_meeting, meeting_response
+):
     item = find(merged_items, "Board of Water Commissioners", datetime(2026, 6, 17, 14))
     assert item["source"] == meeting_response.url
     assert item["location"]["name"] == "Water Board Building"
@@ -290,7 +329,7 @@ def test_merged_board_meeting_takes_legistar_attachments():
     assert board_meeting["links"] == [YOUTUBE_LINK]
 
 
-def test_committee_meeting_is_not_merged():
+def test_committee_meeting_is_not_merged(merged_items):
     item = find(
         merged_items,
         "Board of Water Commissioners Committee Meeting",
@@ -301,7 +340,9 @@ def test_committee_meeting_is_not_merged():
     find(merged_items, "Board of Water Commissioners", datetime(2026, 6, 3, 12, 30))
 
 
-def test_merged_meeting_takes_legistar_cancellation():
+def test_merged_meeting_takes_legistar_cancellation(
+    spider, legistar_items, board_meeting
+):
     twin = find(
         legistar_items, "Board of Water Commissioners", datetime(2026, 6, 17, 14)
     )
@@ -314,13 +355,15 @@ def test_merged_meeting_takes_legistar_cancellation():
 # Crawl bookkeeping
 
 
-def test_meetings_are_held_until_every_request_settles():
+def test_meetings_are_held_until_every_request_settles(
+    meeting_response, committee_response, legistar_items, merged_items
+):
     crawl_spider = DetWaterSewageDepartmentSpider()
     requests = list(crawl_spider.start_requests())
     assert len(requests) == 3
     assert crawl_spider._pending == 3
 
-    with freeze_time("2026-09-30"):
+    with freeze_time(FROZEN_NOW):
         assert list(crawl_spider.parse_primary_event(meeting_response)) == []
         assert list(crawl_spider._on_error(Failure(IgnoreRequest()))) == []
         # The last request to settle releases everything
@@ -338,7 +381,7 @@ def test_every_start_request_is_counted_before_the_first_is_sent():
     assert crawl_spider._pending == 3
 
 
-def test_a_page_that_fails_to_parse_still_settles(monkeypatch):
+def test_a_page_that_fails_to_parse_still_settles(monkeypatch, meeting_response):
     crawl_spider = DetWaterSewageDepartmentSpider()
     crawl_spider._pending = 2
 
@@ -350,11 +393,9 @@ def test_a_page_that_fails_to_parse_still_settles(monkeypatch):
     assert crawl_spider._pending == 1
 
 
-@pytest.mark.parametrize("item", merged_items)
-def test_all_day(item):
-    assert item["all_day"] is False
+def test_all_day(merged_items):
+    assert all(item["all_day"] is False for item in merged_items)
 
 
-@pytest.mark.parametrize("item", merged_items)
-def test_youtube_link(item):
-    assert item["links"][-1] == YOUTUBE_LINK
+def test_youtube_link(merged_items):
+    assert all(item["links"][-1] == YOUTUBE_LINK for item in merged_items)

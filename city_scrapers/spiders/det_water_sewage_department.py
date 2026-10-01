@@ -44,7 +44,6 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
     agency = "Detroit Water and Sewerage Department"
     timezone = "America/Detroit"
     start_urls = ["https://dwsd.legistar.com/Calendar.aspx"]
-    link_types = ["Agenda Packet"]
     # detroitmi.gov's robots.txt disallows every URL with a query string, which
     # covers all of its calendar filter pages
     custom_settings = {"ROBOTSTXT_OBEY": False}
