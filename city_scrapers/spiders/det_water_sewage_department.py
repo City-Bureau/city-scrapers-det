@@ -307,7 +307,27 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
         return title
 
     def _parse_description(self, response):
-        """Includes the virtual attendance details, which have no other field"""
+        """
+        Only the "Attend Meeting Virtually" block, which has no other field. It is
+        the run of centered paragraphs starting at that heading; the public comment
+        instructions after it are left out.
+        """
+        heading = response.xpath(
+            "//article[contains(@class, 'description')]"
+            "/p[starts-with(normalize-space(), 'Attend Meeting Virtually')]"
+        )
+        if not heading:
+            return ""
+        lines = []
+        for el in [heading[0]] + heading[0].xpath("./following-sibling::*"):
+            if "text-align-center" not in el.attrib.get("class", ""):
+                break
+            line = " ".join(" ".join(el.css("*::text").getall()).split())
+            if line:
+                lines.append(line)
+        return "\n".join(lines)
+
+    def _description_text(self, response):
         text = " ".join(response.css("article.description *::text").getall())
         return " ".join(text.split())
 
@@ -331,7 +351,7 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
         if not name and not address:
             # Some events leave the block empty and name the venue in the
             # description instead
-            return self._water_board_location(self._parse_description(response))
+            return self._water_board_location(self._description_text(response))
         return {"name": name, "address": address}
 
     def _parse_links(self, response, start):

@@ -20,6 +20,20 @@ from city_scrapers.spiders.det_water_sewage_department import (
     DetWaterSewageDepartmentSpider,
 )
 
+VIRTUAL_DETAILS = "\n".join(
+    [
+        "Attend Meeting Virtually",
+        "To attend online: https://cityofdetroit.zoom.us/j/81572635118",
+        "Use Passcode: 482262021",
+        "Attend by phone: call one of these numbers:",
+        "+1-301-715-8592",
+        "+1-312-626-6799",
+        "+1-267-831-0333",
+        "Use Meeting ID: 815 7263 5118",
+        "Use Passcode: 482262021",
+    ]
+)
+
 YOUTUBE_LINK = {
     "title": "YouTube channel",
     "href": "https://www.youtube.com/@DWSD/streams",
@@ -217,7 +231,7 @@ def test_primary_board_meeting():
         "name": "Water Board Building",
         "address": "735 Randolph Street, First Floor Detroit, MI 48226",
     }
-    assert "https://cityofdetroit.zoom.us/j/81572635118" in board_meeting["description"]
+    assert board_meeting["description"] == VIRTUAL_DETAILS
     assert board_meeting["links"] == [YOUTUBE_LINK]
     assert board_meeting["source"] == meeting_response.url
 
@@ -230,7 +244,7 @@ def test_primary_committee_meeting():
     assert committee_meeting["classification"] == COMMITTEE
     # Held virtually; the attendance details are in the description
     assert committee_meeting["location"] == {"name": "TBD", "address": ""}
-    assert "Attend Meeting Virtually" in committee_meeting["description"]
+    assert committee_meeting["description"] == VIRTUAL_DETAILS
     assert committee_meeting["links"] == [YOUTUBE_LINK]
 
 
