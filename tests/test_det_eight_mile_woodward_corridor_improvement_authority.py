@@ -1,101 +1,80 @@
 from datetime import datetime
-from os.path import dirname, join
 
 import pytest
-from city_scrapers_core.constants import BOARD, CANCELLED, PASSED
-from city_scrapers_core.utils import file_response
-from freezegun import freeze_time
-from scrapy.settings import Settings
+from city_scrapers_core.constants import BOARD, PASSED, TENTATIVE
 
+from city_scrapers.mixins.det_authority import GUARDIAN_LOCATION, JEFFERSON_LOCATION
 from city_scrapers.spiders.det_eight_mile_woodward_corridor_improvement_authority import (  # noqa
     DetEightMileWoodwardCorridorImprovementAuthoritySpider,
 )
-
-test_response = file_response(
-    join(dirname(__file__), "files", "det_authority.html"),
-    url="https://www.degc.org/public-authorities/",
-)
-spider = DetEightMileWoodwardCorridorImprovementAuthoritySpider()
-spider.settings = Settings(values={"CITY_SCRAPERS_ARCHIVE": False})
-
-test_prev_meetings = file_response(
-    join(
-        dirname(__file__),
-        "files",
-        "det_eight_mile_woodward_corridor_improvement_authority.html",
-    ),
-    url="https://www.degc.org/emwcia/",
-)
-freezer = freeze_time("2021-02-10")
-freezer.start()
-
-parsed_items = [item for item in spider._next_meetings(test_response)] + [
-    item for item in spider._parse_prev_meetings(test_prev_meetings)
-]
-parsed_items = sorted(parsed_items, key=lambda x: x["id"], reverse=True)
-freezer.stop()
+from tests.det_authority_utils import find_item, parse_items
 
 
-def test_meeting_count():
-    assert len(parsed_items) == 7
+@pytest.fixture(scope="module")
+def parsed_items():
+    return parse_items(DetEightMileWoodwardCorridorImprovementAuthoritySpider())
 
 
-def test_title():
-    assert parsed_items[0]["title"] == "Board of Directors"
+@pytest.fixture(scope="module")
+def doc_item(parsed_items):
+    """Meeting only listed in documents"""
+    return find_item(parsed_items, datetime(2025, 10, 28))
 
 
-def test_description():
-    assert parsed_items[0]["description"] == ""
+@pytest.fixture(scope="module")
+def event_item(parsed_items):
+    """Upcoming meeting from the events API"""
+    return find_item(parsed_items, datetime(2026, 10, 13, 14))
 
 
-def test_start():
-    assert parsed_items[0]["start"] == datetime(2021, 2, 9, 0, 0)
+def test_count(parsed_items):
+    assert len(parsed_items) == 16
 
 
-def test_end():
-    assert parsed_items[0]["end"] is None
+def test_title(doc_item, event_item):
+    assert doc_item["title"] == "Special Board Meeting"
+    assert event_item["title"] == "Board of Directors"
 
 
-def test_id():
-    assert (
-        parsed_items[0]["id"]
-        == "det_eight_mile_woodward_corridor_improvement_authority/202102090000/x/board_of_directors"  # noqa
+def test_description(doc_item):
+    assert doc_item["description"] == ""
+
+
+def test_end(event_item):
+    assert event_item["end"] is None
+
+
+def test_id(event_item):
+    assert event_item["id"] == (
+        "det_eight_mile_woodward_corridor_improvement_authority/202610131400/x/board_of_directors"  # noqa
     )
 
 
-def test_status():
-    assert parsed_items[0]["status"] == CANCELLED
-    assert parsed_items[-1]["status"] == PASSED
+def test_status(doc_item, event_item):
+    assert doc_item["status"] == PASSED
+    assert event_item["status"] == TENTATIVE
 
 
-def test_location():
-    assert parsed_items[0]["location"] == spider.location
+def test_location(doc_item, event_item):
+    assert doc_item["location"] == GUARDIAN_LOCATION
+    assert event_item["location"] == JEFFERSON_LOCATION
 
 
-def test_source():
-    assert parsed_items[0]["source"] == "https://www.degc.org/emwcia/"
+def test_source(doc_item, event_item):
+    assert doc_item["source"] == "https://www.degc.org/emwcia"
+    assert event_item["source"] == (
+        "https://www.degc.org/event-details/emwcia-board-meeting-2026-10-13-14-00"  # noqa
+    )
 
 
-# disabled for temporary fix
-# def test_links():
-#     assert parsed_items[0]["links"] == []
-#     assert parsed_items[-1]["links"] == [
-#         {
-#             "href": "https://www.degc.org/wp-content/uploads/2020/10/06-08-20-EMWCIA-Board-Meeting-Minutes.pdf",  # noqa
-#             "title": "EMWCIA BOARD MEETING MINUTES",
-#         },
-#         {
-#             "href": "https://www.degc.org/wp-content/uploads/2020/07/06-09-20-EMWCIA-Board-Meeting-Notice-and-Agenda.pdf",  # noqa
-#             "title": "EMWCIA BOARD MEETING NOTICE AND AGENDA",
-#         },
-#     ]
+def test_links(doc_item):
+    assert doc_item["links"][0]["href"].startswith("https://www.degc.org/_files/")
 
 
-def test_classification():
-    assert parsed_items[0]["classification"] == BOARD
-    assert parsed_items[-1]["classification"] == BOARD
+def test_classification(doc_item, event_item):
+    assert doc_item["classification"] == BOARD
+    assert event_item["classification"] == BOARD
 
 
-@pytest.mark.parametrize("item", parsed_items)
-def test_all_day(item):
-    assert item["all_day"] is False
+def test_all_day(parsed_items):
+    assert all(item["all_day"] is False for item in parsed_items)
