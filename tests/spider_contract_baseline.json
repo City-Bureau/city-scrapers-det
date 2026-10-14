@@ -27,7 +27,7 @@
     "C13": "Same as C12 for a half-truncated body. Note limit 4 in HONEST_LIMITS: halving list-shaped input often yields valid rows, so this check passes for some spiders by succeeding rather than by reporting.",
     "C14": "Same as C12 for a body with every digit stripped. Note limit 5 in HONEST_LIMITS: stripping digits also corrupts markup, so this exercises broken HTML as much as unparseable dates.",
     "C16": "except/pass or except/continue with no logging, which is how one unparseable row becomes one silently missing meeting.",
-    "C20": "The spider's own parse() raises on its committed fixture, so the engine graded an internal helper instead. These nine are the clearest evidence for limit 1 in HONEST_LIMITS: the checks below them are not covering the path Scrapy calls.",
+    "C20": "The spider's own parse() raises on its committed fixture, so the engine graded an internal helper instead. This is the clearest evidence for limit 1 in HONEST_LIMITS: the checks below them are not covering the path Scrapy calls.",
     "C15": "A truncated page yields a meeting that would fail one of the output checks. Found only after C15 was changed to run the real C02-C11 functions over degraded output instead of restating two of their rules."
   },
   "_checks": {
@@ -56,11 +56,6 @@
     "det_board_of_education": [
       "C12"
     ],
-    "det_brownfield_redevelopment_authority": [
-      "C12",
-      "C14",
-      "C20"
-    ],
     "det_city_council": [
       "C12",
       "C13"
@@ -68,21 +63,6 @@
     "det_city_planning": [
       "C12",
       "C13"
-    ],
-    "det_downtown_development_authority": [
-      "C12",
-      "C14",
-      "C20"
-    ],
-    "det_economic_development_corporation": [
-      "C12",
-      "C14",
-      "C20"
-    ],
-    "det_eight_mile_woodward_corridor_improvement_authority": [
-      "C12",
-      "C14",
-      "C20"
     ],
     "det_emergency_planning": [
       "C12",
@@ -101,21 +81,6 @@
     ],
     "det_library_commission": [
       "C15"
-    ],
-    "det_local_development_finance_authority": [
-      "C12",
-      "C14",
-      "C20"
-    ],
-    "det_neighborhood_development_corporation": [
-      "C12",
-      "C14",
-      "C20"
-    ],
-    "det_next_michigan_development_corporation": [
-      "C12",
-      "C14",
-      "C20"
     ],
     "det_regional_convention": [
       "C12"

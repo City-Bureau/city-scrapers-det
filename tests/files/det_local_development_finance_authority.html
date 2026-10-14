@@ -1,1178 +1,208 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-	<meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link rel="pingback" href="https://www.degc.org/xmlrpc.php" />
-
-	<script type="text/javascript">
-		document.documentElement.className = 'js';
-	</script>
-	
-	<script>var et_site_url='https://www.degc.org';var et_post_id='8935';function et_core_page_resource_fallback(a,b){"undefined"===typeof b&&(b=a.sheet.cssRules&&0===a.sheet.cssRules.length);b&&(a.onerror=null,a.onload=null,a.href?a.href=et_site_url+"/?et_core_page_resource="+a.id+et_post_id:a.src&&(a.src=et_site_url+"/?et_core_page_resource="+a.id+et_post_id))}
-</script><style id="et-divi-userfonts">@font-face { font-family: "Benton Sans Condensed Bold"; font-display: swap;  src: url("https://degc.org/wp-content/uploads/et-fonts/BentonSans-CondensedBold.otf") format("opentype"); }</style>
-	<!-- This site is optimized with the Yoast SEO plugin v15.7 - https://yoast.com/wordpress/plugins/seo/ -->
-	<title>Local Development Finance Authority - DEGC</title><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2Cregular%2Citalic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic%7COpen%20Sans%3A400%2C700&#038;subset=latin%2Clatin-ext&#038;display=swap" />
-	<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-	<link rel="canonical" href="https://www.degc.org/ldfa/" />
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Local Development Finance Authority - DEGC" />
-	<meta property="og:url" content="https://www.degc.org/ldfa/" />
-	<meta property="og:site_name" content="DEGC" />
-	<meta property="article:modified_time" content="2021-01-11T18:57:23+00:00" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:label1" content="Est. reading time">
-	<meta name="twitter:data1" content="4 minutes">
-	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://www.degc.org/#website","url":"https://www.degc.org/","name":"DEGC","description":"360 Degrees of Economic Development","potentialAction":[{"@type":"SearchAction","target":"https://www.degc.org/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"WebPage","@id":"https://www.degc.org/ldfa/#webpage","url":"https://www.degc.org/ldfa/","name":"Local Development Finance Authority - DEGC","isPartOf":{"@id":"https://www.degc.org/#website"},"datePublished":"2020-07-20T12:24:47+00:00","dateModified":"2021-01-11T18:57:23+00:00","inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://www.degc.org/ldfa/"]}]}]}</script>
-	<!-- / Yoast SEO plugin. -->
-
-
-<link rel='dns-prefetch' href='//fonts.googleapis.com' />
-<link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
-<link rel="alternate" type="application/rss+xml" title="DEGC &raquo; Feed" href="https://www.degc.org/feed/" />
-<link rel="alternate" type="application/rss+xml" title="DEGC &raquo; Comments Feed" href="https://www.degc.org/comments/feed/" />
-<!-- This site uses the Google Analytics by MonsterInsights plugin v7.15.1 - Using Analytics tracking - https://www.monsterinsights.com/ -->
-<script data-rocketlazyloadscript='data:text/javascript;base64,CiAgICAod2luZG93LmdhRGV2SWRzPXdpbmRvdy5nYURldklkc3x8W10pLnB1c2goImRaR0l6WkciKTsKCXZhciBtaV92ZXJzaW9uICAgICAgICAgPSAnNy4xNS4xJzsKCXZhciBtaV90cmFja191c2VyICAgICAgPSB0cnVlOwoJdmFyIG1pX25vX3RyYWNrX3JlYXNvbiA9ICcnOwoJCgl2YXIgZGlzYWJsZVN0ciA9ICdnYS1kaXNhYmxlLVVBLTE3Nzg5Mjg0Mi0xJzsKCgkvKiBGdW5jdGlvbiB0byBkZXRlY3Qgb3B0ZWQgb3V0IHVzZXJzICovCglmdW5jdGlvbiBfX2dhVHJhY2tlcklzT3B0ZWRPdXQoKSB7CgkJcmV0dXJuIGRvY3VtZW50LmNvb2tpZS5pbmRleE9mKGRpc2FibGVTdHIgKyAnPXRydWUnKSA+IC0xOwoJfQoKCS8qIERpc2FibGUgdHJhY2tpbmcgaWYgdGhlIG9wdC1vdXQgY29va2llIGV4aXN0cy4gKi8KCWlmICggX19nYVRyYWNrZXJJc09wdGVkT3V0KCkgKSB7CgkJd2luZG93W2Rpc2FibGVTdHJdID0gdHJ1ZTsKCX0KCgkvKiBPcHQtb3V0IGZ1bmN0aW9uICovCglmdW5jdGlvbiBfX2dhVHJhY2tlck9wdG91dCgpIHsKCSAgZG9jdW1lbnQuY29va2llID0gZGlzYWJsZVN0ciArICc9dHJ1ZTsgZXhwaXJlcz1UaHUsIDMxIERlYyAyMDk5IDIzOjU5OjU5IFVUQzsgcGF0aD0vJzsKCSAgd2luZG93W2Rpc2FibGVTdHJdID0gdHJ1ZTsKCX0KCglpZiAoICd1bmRlZmluZWQnID09PSB0eXBlb2YgZ2FPcHRvdXQgKSB7CgkJZnVuY3Rpb24gZ2FPcHRvdXQoKSB7CgkJCV9fZ2FUcmFja2VyT3B0b3V0KCk7CgkJfQoJfQoJCglpZiAoIG1pX3RyYWNrX3VzZXIgKSB7CgkJKGZ1bmN0aW9uKGkscyxvLGcscixhLG0pe2lbJ0dvb2dsZUFuYWx5dGljc09iamVjdCddPXI7aVtyXT1pW3JdfHxmdW5jdGlvbigpewoJCQkoaVtyXS5xPWlbcl0ucXx8W10pLnB1c2goYXJndW1lbnRzKX0saVtyXS5sPTEqbmV3IERhdGUoKTthPXMuY3JlYXRlRWxlbWVudChvKSwKCQkJbT1zLmdldEVsZW1lbnRzQnlUYWdOYW1lKG8pWzBdO2EuYXN5bmM9MTthLnNyYz1nO20ucGFyZW50Tm9kZS5pbnNlcnRCZWZvcmUoYSxtKQoJCX0pKHdpbmRvdyxkb2N1bWVudCwnc2NyaXB0JywnLy93d3cuZ29vZ2xlLWFuYWx5dGljcy5jb20vYW5hbHl0aWNzLmpzJywnX19nYVRyYWNrZXInKTsKCgkJX19nYVRyYWNrZXIoJ2NyZWF0ZScsICdVQS0xNzc4OTI4NDItMScsICdhdXRvJyk7CgkJX19nYVRyYWNrZXIoJ3NldCcsICdmb3JjZVNTTCcsIHRydWUpOwoJCV9fZ2FUcmFja2VyKCdyZXF1aXJlJywgJ2Rpc3BsYXlmZWF0dXJlcycpOwoJCV9fZ2FUcmFja2VyKCdyZXF1aXJlJywgJ2xpbmtpZCcsICdsaW5raWQuanMnKTsKCQlfX2dhVHJhY2tlcignc2VuZCcsJ3BhZ2V2aWV3Jyk7Cgl9IGVsc2UgewoJCWNvbnNvbGUubG9nKCAiIiApOwoJCShmdW5jdGlvbigpIHsKCQkJLyogaHR0cHM6Ly9kZXZlbG9wZXJzLmdvb2dsZS5jb20vYW5hbHl0aWNzL2Rldmd1aWRlcy9jb2xsZWN0aW9uL2FuYWx5dGljc2pzLyAqLwoJCQl2YXIgbm9vcGZuID0gZnVuY3Rpb24oKSB7CgkJCQlyZXR1cm4gbnVsbDsKCQkJfTsKCQkJdmFyIG5vb3BudWxsZm4gPSBmdW5jdGlvbigpIHsKCQkJCXJldHVybiBudWxsOwoJCQl9OwoJCQl2YXIgVHJhY2tlciA9IGZ1bmN0aW9uKCkgewoJCQkJcmV0dXJuIG51bGw7CgkJCX07CgkJCXZhciBwID0gVHJhY2tlci5wcm90b3R5cGU7CgkJCXAuZ2V0ID0gbm9vcGZuOwoJCQlwLnNldCA9IG5vb3BmbjsKCQkJcC5zZW5kID0gbm9vcGZuOwoJCQl2YXIgX19nYVRyYWNrZXIgPSBmdW5jdGlvbigpIHsKCQkJCXZhciBsZW4gPSBhcmd1bWVudHMubGVuZ3RoOwoJCQkJaWYgKCBsZW4gPT09IDAgKSB7CgkJCQkJcmV0dXJuOwoJCQkJfQoJCQkJdmFyIGYgPSBhcmd1bWVudHNbbGVuLTFdOwoJCQkJaWYgKCB0eXBlb2YgZiAhPT0gJ29iamVjdCcgfHwgZiA9PT0gbnVsbCB8fCB0eXBlb2YgZi5oaXRDYWxsYmFjayAhPT0gJ2Z1bmN0aW9uJyApIHsKCQkJCQljb25zb2xlLmxvZyggJ05vdCBydW5uaW5nIGZ1bmN0aW9uIF9fZ2FUcmFja2VyKCcgKyBhcmd1bWVudHNbMF0gKyAiIC4uLi4pIGJlY2F1c2UgeW91IGFyZSBub3QgYmVpbmcgdHJhY2tlZC4gIiArIG1pX25vX3RyYWNrX3JlYXNvbiApOwoJCQkJCXJldHVybjsKCQkJCX0KCQkJCXRyeSB7CgkJCQkJZi5oaXRDYWxsYmFjaygpOwoJCQkJfSBjYXRjaCAoZXgpIHsKCgkJCQl9CgkJCX07CgkJCV9fZ2FUcmFja2VyLmNyZWF0ZSA9IGZ1bmN0aW9uKCkgewoJCQkJcmV0dXJuIG5ldyBUcmFja2VyKCk7CgkJCX07CgkJCV9fZ2FUcmFja2VyLmdldEJ5TmFtZSA9IG5vb3BudWxsZm47CgkJCV9fZ2FUcmFja2VyLmdldEFsbCA9IGZ1bmN0aW9uKCkgewoJCQkJcmV0dXJuIFtdOwoJCQl9OwoJCQlfX2dhVHJhY2tlci5yZW1vdmUgPSBub29wZm47CgkJCXdpbmRvd1snX19nYVRyYWNrZXInXSA9IF9fZ2FUcmFja2VyOwoJCQkJCX0pKCk7CgkJfQo=' type="text/javascript" data-cfasync="false"></script>
-<!-- / Google Analytics by MonsterInsights -->
-<meta content="DEGC Child Theme v.1.0.0" name="generator"/><style type="text/css">
-img.wp-smiley,
-img.emoji {
-	display: inline !important;
-	border: none !important;
-	box-shadow: none !important;
-	height: 1em !important;
-	width: 1em !important;
-	margin: 0 .07em !important;
-	vertical-align: -0.1em !important;
-	background: none !important;
-	padding: 0 !important;
-}
-</style>
-	<link rel='stylesheet' id='wpmf_divi_css-css'  href='https://www.degc.org/wp-content/plugins/wp-media-folder/assets/css/divi-widgets.css?ver=5.3.13' type='text/css' media='all' />
-<link rel='stylesheet' id='gtranslate-style-css'  href='https://www.degc.org/wp-content/plugins/gtranslate/gtranslate-style24.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='ags-divi-icons-css'  href='https://www.degc.org/wp-content/plugins/wp-and-divi-icons/css/icons.css?ver=1.1.0' type='text/css' media='all' />
-<link rel='stylesheet' id='vcfti-font-awesome-css-css'  href='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/css/font-awesome.min.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='vcfti-font-stroke-css-css'  href='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/css/pe-icon-7-stroke.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='vcfti-slick-css-css'  href='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/css/slick.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='vcfti-owl2-css-css'  href='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/css/owl.carousel.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='timeline-css-css'  href='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/css/timeline.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='wp-block-library-css'  href='https://www.degc.org/wp-includes/css/dist/block-library/style.min.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='awsm-team-css-css'  href='https://www.degc.org/wp-content/plugins/awsm-team-pro/css/team.min.css?ver=1.9.0' type='text/css' media='all' />
-<link rel='stylesheet' id='wtfdivi-user-css-css'  href='https://www.degc.org/wp-content/uploads/wtfdivi/wp_head.css?ver=1611104748' type='text/css' media='all' />
-<link rel='stylesheet' id='monsterinsights-popular-posts-style-css'  href='https://www.degc.org/wp-content/plugins/google-analytics-premium/assets/css/frontend.min.css?ver=7.15.1' type='text/css' media='all' />
-<link rel='stylesheet' id='parent-style-css'  href='https://www.degc.org/wp-content/themes/Divi/style.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='divi-style-css'  href='https://www.degc.org/wp-content/themes/DEGC-Child-Theme/style.css?ver=4.8.2' type='text/css' media='all' />
-<link rel='stylesheet' id='dflip-icons-style-css'  href='https://www.degc.org/wp-content/plugins/3d-flipbook-dflip-lite/assets/css/themify-icons.min.css?ver=1.7.5.1' type='text/css' media='all' />
-<link rel='stylesheet' id='dflip-style-css'  href='https://www.degc.org/wp-content/plugins/3d-flipbook-dflip-lite/assets/css/dflip.min.css?ver=1.7.5.1' type='text/css' media='all' />
-<link rel='stylesheet' id='wpdreams-ajaxsearchpro-instances-css'  href='https://www.degc.org/wp-content/uploads/asp_upload/style.instances-po-no-da-au-se.css?ver=eFiWOQ' type='text/css' media='all' />
-<link rel='stylesheet' id='wpmf-styles-css'  href='https://www.degc.org/wp-content/plugins/wp-media-folder/class/divi-widgets/styles/style.min.css?ver=1.0.0' type='text/css' media='all' />
-
-<link rel='stylesheet' id='dashicons-css'  href='https://www.degc.org/wp-includes/css/dashicons.min.css?ver=5.6.1' type='text/css' media='all' />
-<link rel='stylesheet' id='jv_team_single-css'  href='https://www.degc.org/wp-content/plugins/divi-team-members/assets/css/single-jv-team.css' type='text/css' media='all' />
-<link rel='stylesheet' id='DiviBars-main-css'  href='https://www.degc.org/wp-content/plugins/divi-bars/assets/css/main.css?ver=5.6.1' type='text/css' media='all' />
-<script type='text/javascript' src='https://www.degc.org/wp-includes/js/jquery/jquery.min.js?ver=3.5.1' id='jquery-core-js'></script>
-<script type='text/javascript' src='https://www.degc.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2' id='jquery-migrate-js' defer></script>
-<script type='text/javascript' id='ags-divi-icons-js-extra'>
-/* <![CDATA[ */
-var ags_divi_icons_config = {"pluginDirUrl":"https:\/\/www.degc.org\/wp-content\/plugins\/wp-and-divi-icons"};
-/* ]]> */
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-and-divi-icons/js/icons.js?ver=1.1.0' id='ags-divi-icons-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/moment-with-locales.min.js?ver=5.6.1' id='moment-locale-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/isotope.pkgd.min.js?ver=5.6.1' id='svc-isotop-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/imagesloaded.pkgd.min.js?ver=5.6.1' id='svc-imagesloaded-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/jquery.viewportchecker.js?ver=5.6.1' id='viewportchecker-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/slick.min.js?ver=5.6.1' id='slick-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/timeline.js?ver=5.6.1' id='timeline-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/doT.min.js?ver=5.6.1' id='doT-js-js' defer></script>
-<script type='text/javascript' id='vc-fb-social-stream-js-js-extra'>
-/* <![CDATA[ */
-var svc_ajax_url = {"url":"https:\/\/www.degc.org\/wp-admin\/admin-ajax.php","laungage":"en_US"};
-/* ]]> */
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/js/social-stream.js?ver=5.6.1' id='vc-fb-social-stream-js-js' defer></script>
-<script type='text/javascript' id='monsterinsights-frontend-script-js-extra'>
-/* <![CDATA[ */
-var monsterinsights_frontend = {"js_events_tracking":"true","download_extensions":"doc,pdf,ppt,zip,xls,docx,pptx,xlsx","inbound_paths":"[{\"path\":\"\\\/go\\\/\",\"label\":\"affiliate\"},{\"path\":\"\\\/recommend\\\/\",\"label\":\"affiliate\"}]","home_url":"https:\/\/www.degc.org","hash_tracking":"false"};
-/* ]]> */
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/google-analytics-premium/assets/js/frontend.min.js?ver=7.15.1' id='monsterinsights-frontend-script-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/snap.svg-min.js?ver=5.6.1' id='snap_svg_js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/modernizr.custom.js?ver=5.6.1' id='modernizr_js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/jquery.transit.min.js?ver=5.6.1' id='jquery_transit-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/actual.min.js?ver=5.6.1' id='actual-js' defer></script>
-<link rel="https://api.w.org/" href="https://www.degc.org/wp-json/" /><link rel="alternate" type="application/json" href="https://www.degc.org/wp-json/wp/v2/pages/8935" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.degc.org/xmlrpc.php?rsd" />
-<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.degc.org/wp-includes/wlwmanifest.xml" /> 
-<link rel='shortlink' href='https://www.degc.org/?p=8935' />
-<link rel="alternate" type="application/json+oembed" href="https://www.degc.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.degc.org%2Fldfa%2F" />
-<link rel="alternate" type="text/xml+oembed" href="https://www.degc.org/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.degc.org%2Fldfa%2F&#038;format=xml" />
-<style>
-/* Display the team member icons */
-.db_pb_team_member_website_icon:before{content:"\e0e3";}
-.db_pb_team_member_email_icon:before{content:"\e010";}
-.db_pb_team_member_instagram_icon:before{content:"\e09a";}
-
-/* Fix email icon hidden by Email Address Encoder plugin */
-ul.et_pb_member_social_links li > span { 
-	display: inline-block !important; 
-}
-</style>
-<style>
-@media only screen and (min-width: 981px) {
-    .et_pb_module.db_inline_form .et_pb_newsletter_fields > p { 
-        flex: auto !important;
-    }
-    .et_pb_module.db_inline_form .et_pb_newsletter_fields p.et_pb_newsletter_field {
-        margin-right: 2%; 
-    }
-}
-</style>
-<script>var gt_request_uri = '/ldfa/';</script>    <style>
-	.svc_social_stream_container{ display:none;}
-	#loader {background-image: url("https://www.degc.org/wp-content/plugins/wp-fb-stream/inc/../assets/css/loader.GIF");}
-	</style>
-    <link rel="preload" href="https://www.degc.org/wp-content/themes/Divi/core/admin/fonts/modules.ttf" as="font" crossorigin="anonymous">
-<link rel="preload" as="font" href="https://www.degc.org/wp-content/uploads/et-fonts/BentonSans-CondensedBold.otf" crossorigin><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /><script data-cfasync="false"> var dFlipLocation = "https://www.degc.org/wp-content/plugins/3d-flipbook-dflip-lite/assets/"; var dFlipWPGlobal = {"text":{"toggleSound":"Turn on\/off Sound","toggleThumbnails":"Toggle Thumbnails","toggleOutline":"Toggle Outline\/Bookmark","previousPage":"Previous Page","nextPage":"Next Page","toggleFullscreen":"Toggle Fullscreen","zoomIn":"Zoom In","zoomOut":"Zoom Out","toggleHelp":"Toggle Help","singlePageMode":"Single Page Mode","doublePageMode":"Double Page Mode","downloadPDFFile":"Download PDF File","gotoFirstPage":"Goto First Page","gotoLastPage":"Goto Last Page","share":"Share","mailSubject":"I wanted you to see this FlipBook","mailBody":"Check out this site {{url}}","loading":"DearFlip: Loading "},"moreControls":"download,pageMode,startPage,endPage,sound","hideControls":"","scrollWheel":"true","backgroundColor":"#777","backgroundImage":"","height":"auto","paddingLeft":"20","paddingRight":"20","controlsPosition":"bottom","duration":800,"soundEnable":"true","enableDownload":"true","enableAnnotation":"false","enableAnalytics":"false","webgl":"true","hard":"none","maxTextureSize":"1600","rangeChunkSize":"524288","zoomRatio":1.5,"stiffness":3,"pageMode":"0","singlePageMode":"0","pageSize":"0","autoPlay":"false","autoPlayDuration":5000,"autoPlayStart":"false","linkTarget":"2","sharePrefix":"dearflip-"};</script>		<script type="text/javascript">
-		var ajax_url = 'https://www.degc.org/wp-admin/admin-ajax.php';
-		</script>
-					<script type="text/javascript">
-				function dibTogglePlayableTags( divibar_id, wait ) {
-				
-					var $ = jQuery;
-					
-					if ( !divibar_id  ) {
-						
-						divibar_id = "";
-					}
-					
-					if ( !wait  ) {
-						
-						wait = 1;
-					}
-					
-					/* Prevent playable tags load content before divibar call */
-					setTimeout(function() {
-						
-						$( divibar_id + ".divibars").find("iframe").each(function() { 
-						
-							var iframeParent = $(this).parent();
-							var iframe = $(this).prop("outerHTML");
-							var src = iframe.match(/src=[\'"]?((?:(?!\/>|>|"|\'|\s).)+)"/)[0];
-							
-							src = src.replace("src", "data-src");
-							iframe = iframe.replace(/src=".*?"/i, "src=\"about:blank\" data-src=\"\"" );
-							
-							if ( src != "data-src=\"about:blank\"" ) {
-								iframe = iframe.replace("data-src=\"\"", src );
-							}
-							
-							$( iframe ).insertAfter( $(this) );
-							
-							$(this).remove();
-						});
-						
-					}, wait);
-					
-					$( divibar_id + ".divibars").find("video").each(function() {
-						$(this).get(0).pause();
-					});
-					
-					$( divibar_id + ".divibars").find("audio").each(function() {
-						
-						this.pause();
-						this.currentTime = 0;
-					});
-				}
-				
-				dibTogglePlayableTags( '', 1000 );
-			</script>
-			            <style type="text/css">
-                <!--
-                @font-face {
-                    font-family: 'asppsicons2';
-                    src: url('https://www.degc.org/wp-content/plugins/ajax-search-pro/css/fonts/icons/icons2.eot');
-                    src: url('https://www.degc.org/wp-content/plugins/ajax-search-pro/css/fonts/icons/icons2.eot?#iefix') format('embedded-opentype'),
-                    url('https://www.degc.org/wp-content/plugins/ajax-search-pro/css/fonts/icons/icons2.woff2') format('woff2'),
-                    url('https://www.degc.org/wp-content/plugins/ajax-search-pro/css/fonts/icons/icons2.woff') format('woff'),
-                    url('https://www.degc.org/wp-content/plugins/ajax-search-pro/css/fonts/icons/icons2.ttf') format('truetype'),
-                    url('https://www.degc.org/wp-content/plugins/ajax-search-pro/css/fonts/icons/icons2.svg#icons') format('svg');
-                    font-weight: normal;
-                    font-style: normal;
-                }
-                                .asp_m{height: 0;}                -->
-            </style>
-                        <script type="text/javascript">
-                if ( typeof _ASP !== "undefined" && _ASP !== null && typeof _ASP.initialize !== "undefined" )
-                    _ASP.initialize();
-            </script>
-            <!-- LANDING PAGE SEARCH LAPTOP & DESKTOP -- REVEAL/HIDE SECTIONS ON CLICK OTHER BUTTON-->
-<script type="text/javascript">
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal1').hide();
-jQuery('.rv_button1').click(function(e){
-e.preventDefault();jQuery("#reveal1").slideToggle();
-jQuery('.rv_button1').toggleClass('opened closed');
-jQuery('#reveal2').hide();
-jQuery('#reveal3').hide();
-jQuery('#reveal4').hide();
-});
-});
-
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal2').hide();
-jQuery('.rv_button2').click(function(e){
-e.preventDefault();jQuery("#reveal2").slideToggle();
-jQuery('.rv_button2').toggleClass('opened closed');
-jQuery('#reveal1').hide();
-jQuery('#reveal3').hide();
-jQuery('#reveal4').hide();
-});
-});
-
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal3').hide();
-jQuery('.rv_button3').click(function(e){
-e.preventDefault();jQuery("#reveal3").slideToggle();
-jQuery('.rv_button3').toggleClass('opened closed');
-jQuery('#reveal1').hide();
-jQuery('#reveal2').hide();
-jQuery('#reveal4').hide();
-});
-});
-
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal4').hide();
-jQuery('.rv_button4').click(function(e){
-e.preventDefault();jQuery("#reveal4").slideToggle();
-jQuery('.rv_button4').toggleClass('opened closed');
-jQuery('#reveal1').hide();
-jQuery('#reveal2').hide();
-jQuery('#reveal3').hide();
-});
-});
-</script>
-
-<!-- LANDING PAGE SEARCH TABLET AND MOBILE -- REVEAL/HIDE SECTIONS ON CLICK OTHER BUTTON-->
-<script type="text/javascript">
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal5').hide();
-jQuery('.rv_button5').click(function(e){
-e.preventDefault();jQuery("#reveal5").slideToggle();
-jQuery('.rv_button5').toggleClass('opened closed');
-jQuery('#reveal6').hide();
-jQuery('#reveal7').hide();
-jQuery('#reveal8').hide();
-});
-});
-
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal6').hide();
-jQuery('.rv_button6').click(function(e){
-e.preventDefault();jQuery("#reveal6").slideToggle();
-jQuery('.rv_button6').toggleClass('opened closed');
-jQuery('#reveal5').hide();
-jQuery('#reveal7').hide();
-jQuery('#reveal8').hide();
-});
-});
-
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal7').hide();
-jQuery('.rv_button7').click(function(e){
-e.preventDefault();jQuery("#reveal7").slideToggle();
-jQuery('.rv_button7').toggleClass('opened closed');
-jQuery('#reveal5').hide();
-jQuery('#reveal6').hide();
-jQuery('#reveal8').hide();
-});
-});
-
-jQuery(document).ready(function() {
-// Hide the div
-jQuery('#reveal8').hide();
-jQuery('.rv_button8').click(function(e){
-e.preventDefault();jQuery("#reveal8").slideToggle();
-jQuery('.rv_button8').toggleClass('opened closed');
-jQuery('#reveal5').hide();
-jQuery('#reveal6').hide();
-jQuery('#reveal7').hide();
-});
-});
-</script>
-
-
-<!--NEIGHBORHOOD BUSINESS PLANNING PAGE REVEAL SECTION 1-->
-
-<script type="text/javascript">
-jQuery(document).ready(function() {
-// Hide the div
-	jQuery('.nbp_reveal_1').hide();
-	jQuery('.nbp_button_3').hide();
-	//onclick hide button and show hidden row and view less button
-	jQuery('.nbp_button_1').click(function(e){
-		e.preventDefault();
-		jQuery(".nbp_reveal_1").slideToggle();
-		jQuery('.nbp_button_1').hide();
-		jQuery('.nbp_button_3').show();
-	});
-});
-	
-	jQuery(document).ready(function() {
-	//onclick hide view less button and hidden row and show view more button
-	jQuery('.nbp_button_3').click(function(e){
-		e.preventDefault();
-		jQuery(".nbp_reveal_1").hide();
-		jQuery('.nbp_button_3').hide();
-		jQuery('.nbp_button_1').show();
-	});
-});
-	
-</script>
-<!--NEIGHBORHOOD BUSINESS PLANNING PAGE REVEAL SECTION 2-->
-
-
-<script type="text/javascript">
-jQuery(document).ready(function() {
-// Hide the div
-	jQuery('.nbp_reveal_2').hide();
-	jQuery('.nbp_button_4').hide();
-	//onclick hide button and show hidden row and view less button
-	jQuery('.nbp_button_2').click(function(e){
-		e.preventDefault();
-		jQuery(".nbp_reveal_2").slideToggle();
-		jQuery('.nbp_button_2').hide();
-		jQuery('.nbp_button_4').show();
-	});
-});
-	
-	jQuery(document).ready(function() {
-	//onclick hide view less button and hidden row and show view more button
-	jQuery('.nbp_button_4').click(function(e){
-		e.preventDefault();
-		jQuery(".nbp_reveal_2").hide();
-		jQuery('.nbp_button_4').hide();
-		jQuery('.nbp_button_2').show();
-	});
-});
-	
-	
-</script>
-
-<!-- make social icons click to call -->
-<script type="text/javascript">
-jQuery(document).ready(function($) {
-jQuery(".et-social-icon a").attr('target', 'blank');
-});
-</script><link rel="icon" href="https://www.degc.org/wp-content/uploads/2020/06/cropped-110448-000_040519_DEGC-LOGO_fnl-32x32.png" sizes="32x32" />
-<link rel="icon" href="https://www.degc.org/wp-content/uploads/2020/06/cropped-110448-000_040519_DEGC-LOGO_fnl-192x192.png" sizes="192x192" />
-<link rel="apple-touch-icon" href="https://www.degc.org/wp-content/uploads/2020/06/cropped-110448-000_040519_DEGC-LOGO_fnl-180x180.png" />
-<meta name="msapplication-TileImage" content="https://www.degc.org/wp-content/uploads/2020/06/cropped-110448-000_040519_DEGC-LOGO_fnl-270x270.png" />
-<link rel="stylesheet" id="et-divi-customizer-global-cached-inline-styles" href="https://www.degc.org/wp-content/et-cache/global/et-divi-customizer-global-161292743472.min.css" onerror="et_core_page_resource_fallback(this, true)" onload="et_core_page_resource_fallback(this)" /><noscript><style id="rocket-lazyload-nojs-css">.rll-youtube-player, [data-lazy-src]{display:none !important;}</style></noscript></head>
-<body class="page-template-default page page-id-8935 et-tb-has-template et-tb-has-footer dbdb_divi_2_4_up desktop et_bloom et_button_custom_icon et_pb_button_helper_class et_fullwidth_nav et_fullwidth_secondary_nav et_fixed_nav et_show_nav et_hide_fixed_logo et_secondary_nav_enabled et_secondary_nav_only_menu et_primary_nav_dropdown_animation_fade et_secondary_nav_dropdown_animation_fade et_header_style_left et_pb_svg_logo et_cover_background et_pb_gutter linux et_pb_gutters3 et_pb_pagebuilder_layout et_no_sidebar et_divi_theme et-db et_minified_js et_minified_css divibar-active">
-	<div id="page-container">
-<div id="et-boc" class="et-boc">
-			
-				<div id="top-header">
-		<div class="container clearfix">
-
-		
-			<div id="et-secondary-menu">
-			<ul id="et-secondary-nav" class="menu"><!-- GTranslate: https://gtranslate.io/ -->
-<li style="position:relative;" class="menu-item menu-item-gtranslate"><a href="https://www.degc.org/ar/" onclick="doGTranslate('en|ar');return false;" title="العربية" class="glink nturl notranslate">العربية</a></li> <li style="position:relative;" class="menu-item menu-item-gtranslate"><a href="https://www.degc.org/bn/" onclick="doGTranslate('en|bn');return false;" title="বাংলা" class="glink nturl notranslate">বাংলা</a></li> <li style="position:relative;" class="menu-item menu-item-gtranslate"><a href="https://www.degc.org" onclick="doGTranslate('en|en');return false;" title="English" class="glink nturl notranslate">English</a></li> <li style="position:relative;" class="menu-item menu-item-gtranslate"><a href="https://www.degc.org/es/" onclick="doGTranslate('en|es');return false;" title="Español" class="glink nturl notranslate">Español</a></li> 
-
-<script data-rocketlazyloadscript='data:text/javascript;base64,DQpmdW5jdGlvbiBkb0dUcmFuc2xhdGUobGFuZ19wYWlyKSB7aWYobGFuZ19wYWlyLnZhbHVlKWxhbmdfcGFpcj1sYW5nX3BhaXIudmFsdWU7aWYobGFuZ19wYWlyPT0nJylyZXR1cm47dmFyIGxhbmc9bGFuZ19wYWlyLnNwbGl0KCd8JylbMV07aWYodHlwZW9mIF9nYXEhPSd1bmRlZmluZWQnKXtfZ2FxLnB1c2goWydfdHJhY2tFdmVudCcsICdHVHJhbnNsYXRlJywgbGFuZywgbG9jYXRpb24ucGF0aG5hbWUrbG9jYXRpb24uc2VhcmNoXSk7fWVsc2Uge2lmKHR5cGVvZiBnYSE9J3VuZGVmaW5lZCcpZ2EoJ3NlbmQnLCAnZXZlbnQnLCAnR1RyYW5zbGF0ZScsIGxhbmcsIGxvY2F0aW9uLnBhdGhuYW1lK2xvY2F0aW9uLnNlYXJjaCk7fXZhciBwbGFuZz1sb2NhdGlvbi5wYXRobmFtZS5zcGxpdCgnLycpWzFdO2lmKHBsYW5nLmxlbmd0aCAhPTIgJiYgcGxhbmcgIT0gJ3poLUNOJyAmJiBwbGFuZyAhPSAnemgtVFcnICYmIHBsYW5nICE9ICdobW4nICYmIHBsYW5nICE9ICdoYXcnICYmIHBsYW5nICE9ICdjZWInKXBsYW5nPSdlbic7aWYobGFuZyA9PSAnZW4nKWxvY2F0aW9uLmhyZWY9bG9jYXRpb24ucHJvdG9jb2wrJy8vJytsb2NhdGlvbi5ob3N0K2d0X3JlcXVlc3RfdXJpO2Vsc2UgbG9jYXRpb24uaHJlZj1sb2NhdGlvbi5wcm90b2NvbCsnLy8nK2xvY2F0aW9uLmhvc3QrJy8nK2xhbmcrZ3RfcmVxdWVzdF91cmk7fQ0K' ></script>
-</ul>			</div> <!-- #et-secondary-menu -->
-
-		</div> <!-- .container -->
-	</div> <!-- #top-header -->
-
-
-	<header id="main-header" data-height-onload="120">
-		<div class="container clearfix et_menu_container">
-					<div class="logo_container">
-				<span class="logo_helper"></span>
-				<a href="https://www.degc.org/">
-					<img src="https://www.degc.org/wp-content/uploads/2021/01/110448-000_040519_DEGC-LOGO_fnl.svg" alt="DEGC" id="logo" data-height-percentage="100" />
-				</a>
-			</div>
-					<div id="et-top-navigation" data-height="120" data-fixed-height="30">
-									<nav id="top-menu-nav">
-					<ul id="top-menu" class="nav"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home dbdb_primary-menu menu-item-11262"><a href="https://www.degc.org/">Home</a></li>
-<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-13080"><a href="https://www.degc.org/about/">About</a></li>
-<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-14099"><a href="https://www.degc.org/buydetroit/">BuyDetroit</a></li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dbdb_primary-menu menu-item-10494"><a href="#">Advantages</a>
-<ul class="sub-menu">
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10159"><a href="https://www.degc.org/economic-advantages/">Economic Advantages</a></li>
-	<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dbdb_primary-menu menu-item-14472"><a href="#">Featured Sectors</a>
-	<ul class="sub-menu">
-		<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-14473"><a href="https://www.degc.org/automobility/">Automobility</a></li>
-	</ul>
-</li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10167"><a href="https://www.degc.org/lifestyle-amenities/">Lifestyle Amenities</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10180"><a href="https://www.degc.org/tax-incentives/">Tax Incentives</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10161"><a href="https://www.degc.org/funding/">Funding</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10175"><a href="https://www.degc.org/land-development/">Land Development</a></li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dbdb_primary-menu menu-item-10492"><a href="#">Services</a>
-<ul class="sub-menu">
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10165"><a href="https://www.degc.org/real-estate-development/">Real Estate Development</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10152"><a href="https://www.degc.org/business-development/">Business Development</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10157"><a href="https://www.degc.org/district-business-liaisons/">District Business Liaisons</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10177"><a href="https://www.degc.org/small-business-programming/">Small Business Programming</a></li>
-	<li class="menu-item menu-item-type-custom menu-item-object-custom dbdb_primary-menu menu-item-10697"><a target="_blank" rel="noopener" href="http://www.motorcitymatch.com/">Motor City Match</a></li>
-	<li class="menu-item menu-item-type-custom menu-item-object-custom dbdb_primary-menu menu-item-10698"><a target="_blank" rel="noopener" href="http://www.motorcityre-store.com/">Motor City Re-Store</a></li>
-	<li class="menu-item menu-item-type-custom menu-item-object-custom dbdb_primary-menu menu-item-10699"><a target="_blank" rel="noopener" href="https://detroitmeansbusiness.org/">Detroit Means Business</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10171"><a href="https://www.degc.org/nbp/">Neighborhood Business Planning</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10176"><a href="https://www.degc.org/rfp/">Requests for Proposal</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-11048"><a href="https://www.degc.org/shop-small-detroit/">Shop Small Detroit</a></li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children dbdb_primary-menu menu-item-10493"><a href="#">Champions</a>
-<ul class="sub-menu">
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10162"><a href="https://www.degc.org/governance/">Governance</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10178"><a href="https://www.degc.org/team-members/">Team Members</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10166"><a href="https://www.degc.org/funders/">Funders</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-8948"><a href="https://www.degc.org/public-authorities/">Public Authorities</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10153"><a href="https://www.degc.org/careers/">Careers</a></li>
-	<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-10179"><a href="https://www.degc.org/support-education/">Support &#038; Education Partners</a></li>
-</ul>
-</li>
-<li class="menu-item menu-item-type-post_type menu-item-object-page dbdb_primary-menu menu-item-7609"><a href="https://www.degc.org/newsroom/">Newsroom</a></li>
-</ul>					</nav>
-				
-				
-				
-								<div id="et_top_search">
-					<span id="et_search_icon"></span>
-				</div>
-				
-				<div id="et_mobile_nav_menu">
-				<div class="mobile_nav closed">
-					<span class="select_page">Select Page</span>
-					<span class="mobile_menu_bar mobile_menu_bar_toggle"></span>
-				</div>
-			</div>			</div> <!-- #et-top-navigation -->
-		</div> <!-- .container -->
-		<div class="et_search_outer">
-			<div class="container et_search_form_container">
-				<form role="search" method="get" class="et-search-form" action="https://www.degc.org/">
-				<input type="search" class="et-search-field" placeholder="Search &hellip;" value="" name="s" title="Search for:" />				</form>
-				<span class="et_close_search_field"></span>
-			</div>
-		</div>
-	</header> <!-- #main-header -->
-<div id="et-main-area">
-	
-<div id="main-content">
-
-
-			
-				<article id="post-8935" class="post-8935 page type-page status-publish hentry category-public-authorities">
-
-				
-					<div class="entry-content">
-					<div class="et-l et-l--post">
-			<div class="et_builder_inner_content et_pb_gutters3">
-		<div class="et_pb_section et_pb_section_0 et_pb_with_background et_section_regular" >
-				
-				
-				
-				
-					<div class="et_pb_row et_pb_row_0">
-				<div class="et_pb_column et_pb_column_4_4 et_pb_column_0  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_module et_pb_text et_pb_text_0  et_pb_text_align_left et_pb_bg_layout_light">
-				
-				
-				<div class="et_pb_text_inner"><h1>Local Development Finance Authority</h1></div>
-			</div> <!-- .et_pb_text -->
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row -->
-				
-				
-			</div> <!-- .et_pb_section --><div class="et_pb_section et_pb_section_1 et_section_regular" >
-				
-				
-				
-				
-					<div class="et_pb_row et_pb_row_1">
-				<div class="et_pb_column et_pb_column_4_4 et_pb_column_1  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_module et_pb_text et_pb_text_1  et_pb_text_align_left et_pb_bg_layout_light">
-				
-				
-				<div class="et_pb_text_inner"><p>The City of Detroit Local Development Finance Authority (LDFA) prevents conditions of unemployment and promotes growth in Detroit.</p>
-<p>The LDFA was established pursuant to Michigan Public Act 281 of 1986, as amended, which has been recodified into Michigan Public Act 57 of 2018, to prevent conditions of unemployment and promotes growth in Detroit. The LDFA has the ability to support projects such as industrial facility revitalizations, technology park development, streetscape improvements and more. Funding comes from grants and taxes collected as a result of new growth within the new development areas.</p>
-<p>The LDFA undertook the Jefferson/Connor Industrial Revitalization Project on the city’s east side to assist Chrysler Corporation in creating jobs and constructing a new manufacturing facility. (Link to TIF Plan) The LDFA has also obtained grant funding from the State of Michigan to support the Wayne State University Technology Park, the William G. Milliken State Park, and the streetscape improvements in the Lower Woodward and University Cultural Center Association areas.</p>
-<p>The LDFA is governed by its Board of Directors, whose members are, with certain exceptions, appointed by the mayor subject to the consent of City Council. </p>
-<p>For more information, contact <a href="mailto:%20jkanalos@degc.org">Jennifer Kanalos</a>, Director of Board Administration.</p></div>
-			</div> <!-- .et_pb_text -->
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row --><div class="et_pb_row et_pb_row_2">
-				<div class="et_pb_column et_pb_column_4_4 et_pb_column_2  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_module et_pb_tabs et_pb_tabs_0 " >
-				
-				
-				<ul class="et_pb_tabs_controls clearfix">
-					<li class="et_pb_tab_0 et_pb_tab_active"><a href="#">LDFA Documents</a></li><li class="et_pb_tab_1"><a href="#">FY 2020-2021 Meetings</a></li><li class="et_pb_tab_2"><a href="#">FY 2019-2020 Meetings</a></li><li class="et_pb_tab_3"><a href="#">FY 2018-2019 Meetings</a></li><li class="et_pb_tab_4"><a href="#">FY 2017-2018 Meetings</a></li><li class="et_pb_tab_5"><a href="#">FY 2016-2017 Meetings</a></li>
-				</ul>
-				<div class="et_pb_all_tabs">
-					<div class="et_pb_tab et_pb_tab_0 clearfix et_pb_active_content">
-				
-				
-				<div class="et_pb_tab_content"><div class="accordion-row"><a class="accordion-label link link--withoutTriangle" href="https://www.degc.org/wp-content/uploads/2020/07/ldfa-board-members-1-30-20-WEB.pdf" target="_self" rel="noopener noreferrer"><span>BOARD MEMBERS</span> <i class="fa fa-download" aria-hidden="true"></i></a></div>
-<div class="accordion-row">
-<p><span class="accordion-label">FOIA PROCEDURES</span></p>
-<ul class="linksGroup">
-<li class="linksGroup-item"><a class="link link--upper" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-FOIA-Guidelines.pdf" target="_self" rel="noopener noreferrer"><span>LDFA FOIA GUIDELINES</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-FOIA-Written-Public-Summary.pdf" target="_self" rel="noopener noreferrer"><span>LDFA FOIA WRITTEN PUBLIC SUMMARY</span></a></li>
-</ul>
-</div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-20-21-Operating-Budget.pdf" target="_self" rel="noopener noreferrer"><span>LDFA FY 2020-21 BUDGET</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-Budget-for-FY-19-20.pdf" target="_self" rel="noopener noreferrer"><span>LDFA FY 2019-20 BUDGET</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-FY-2018-19-Budget.pdf" target="_self" rel="noopener noreferrer"><span>LDFA FY 2018-2019 BUDGET</span></a></div>
-<div class="accordion-row"><a href="https://www.degc.org/wp-content/uploads/2021/01/ldfa-20-audited-fs.pdf">FISCAL YEAR END 2020 LDFA AUDIT</a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/ldfa-19-audited-fs.pdf" target="_self" rel="noopener noreferrer"><span>FISCAL YEAR END 2019 LDFA AUDIT </span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/Second-Amended-and-Restated-Jefferson-Conner-TIF-and-Development-Plan.pdf" target="_self" rel="noopener noreferrer"><span>SECOND AMENDED AND RESTATED JEFFERSON CONNER TAX INCREMENT FINANCING AND DEVELOPMENT PLAN</span></a></div>
-<div class="accordion-row"><a href="https://www.degc.org/wp-content/uploads/2020/12/PA-57-Information-LDFA-FYE-20.pdf"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2020</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/PA-57-Information-for-FYE-19-LDFA-.pdf" target="_self" rel="noopener noreferrer"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2019</span></a></div></div>
-			</div> <!-- .et_pb_tab --><div class="et_pb_tab et_pb_tab_1 clearfix">
-				
-				
-				<div class="et_pb_tab_content"><p><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-Board-Meeting-Notice-for-FY-2020-21.pdf" target="_self" rel="noopener noreferrer"><span>LDFA BOARD MEETING NOTICE FOR FY 2020-21</span></a></p>
-<p><a href="https://www.degc.org/wp-content/uploads/2020/11/Notice-of-121520-Public-Information-Meeting-for-DDA-CIA-and-LDFA-5.pdf">NOTICE OF DECEMBER 15, 2020 PUBLIC INFORMATIONAL MEETING NO. 2</a></p>
-<p><a href="https://www.degc.org/wp-content/uploads/2020/10/10-27-20-LDFA-Board-Meeting-Notice-and-Agenda.pdf">OCTOBER 27, 2020 LDFA BOARD MEETING NOTICE AND AGENDA</a></p></div>
-			</div> <!-- .et_pb_tab --><div class="et_pb_tab et_pb_tab_2 clearfix">
-				
-				
-				<div class="et_pb_tab_content"><div class="accordion-row"><a href="https://www.degc.org/wp-content/uploads/2020/10/LDFA-06-23-20-Board-Meeting-Minutes.pdf">JUNE 23, 2020 LDFA BOARD MEETING MINUTES</a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://degc.org/wp-content/uploads/2020/07/06-23-20-LDFA-Board-Meeting-Notice-and-Agenda.pdf" target="_self" rel="noopener noreferrer"><span>JUNE 23, 2020 REGULAR LDFA BOARD MEETING NOTICE AND AGENDA</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/Notice-of-063020Public-Information-Meeting-for-DDA-CIA-and-LDFA.pdf" target="_self" rel="noopener noreferrer"><span>CALENDAR YEAR 2020 LDFA PUBLIC INFORMATIONAL MEETING NO. 1 &#8211; JUNE 30, 2020 AT 3:00 PM</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/Notice-of-120319-Public-Information-Meeting-for-DDA-CIA-and-LDFA.pdf" target="_self" rel="noopener noreferrer"><span>NOTICE OF DECEMBER 3, 2019 PUBLIC INFORMATION MEETING NO. 2</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/LDFA-10-22-19-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>OCTOBER 22, 2019 LDFA BOARD MEETING MINUTES</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/10-22-19-LDFA-Board-Meeting-Agenda-Only.pdf" target="_self" rel="noopener noreferrer"><span>OCTOBER 22, 2019 LDFA BOARD MEETING AGENDA</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/Notice-of-072419-Public-Information-Meeting-for-DDA-CIA-and-LDFA.pdf" target="_self" rel="noopener noreferrer"><span>NOTICE OF 07-24-19 PUBLIC INFORMATIONAL MEETING</span></a></div></div>
-			</div> <!-- .et_pb_tab --><div class="et_pb_tab et_pb_tab_3 clearfix">
-				
-				
-				<div class="et_pb_tab_content"><div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/06-25-19-LDFA-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>JUNE 25, 2019 LDFA BOARD MEETING MINUTES</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/06-25-19-LDFA-Board-Meeting-Agenda-Only.pdf" target="_self" rel="noopener noreferrer"><span>JUNE 25, 2019 LDFA BOARD MEETING AGENDA</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/10-23-18-LDFA-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>OCTOBER 23, 2018 LDFA BOARD MEETING MINUTES</span></a></div>
-<div class="accordion-row"><a class="accordion-label link" href="https://www.degc.org/wp-content/uploads/2020/07/10-23-18-LDFA-Board-Meeting-Agenda-Only.pdf" target="_self" rel="noopener noreferrer"><span>OCTOBER 23, 2018 LDFA BOARD MEETING AGENDA</span></a></div></div>
-			</div> <!-- .et_pb_tab --><div class="et_pb_tab et_pb_tab_4 clearfix">
-				
-				
-				<div class="et_pb_tab_content"><ul class="linksGroup">
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/06-19-18-LDFA-Special-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>LDFA JUNE 19, 2018 SPECIAL BOARD MEETING MINUTES</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/06-19-18-Special-LDFA-Board-Meeting-Agenda-Only.pdf" target="_self" rel="noopener noreferrer"><span>LDFA JUNE 19, 2018 SPECIAL BOARD MEETING AGENDA</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/12-12-17-LDFA-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>LDFA DECEMBER 12, 2017 SPECIAL BOARD MEETING MINUTES</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/12-12-17-Special-LDFA-Board-Meeting-Agenda-Only.pdf" target="_self" rel="noopener noreferrer"><span>LDFA DECEMBER 12, 2017 SPECIAL BOARD MEETING AGENDA</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/2017-07-25-LDFA-Board-Meeting-Agenda.pdf" target="_self" rel="noopener noreferrer"><span>LDFA JULY 25, 2017 AGENDA</span></a></li>
-</ul></div>
-			</div> <!-- .et_pb_tab --><div class="et_pb_tab et_pb_tab_5 clearfix">
-				
-				
-				<div class="et_pb_tab_content"><ul class="linksGroup">
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/2017-05-18-Special-LDFA-Board-Meeting-Agenda.pdf" target="_self" rel="noopener noreferrer"><span>LDFA MAY 18, 2017 MEETING AGENDA</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/2017-05-18-LDFA-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>LDFA MAY 18, 2017 MEETING MINUTES</span></a></li>
-<li class="linksGroup-item"><a class="link link--upper" href="https://degc.org/wp-content/uploads/2020/07/2016-11-16-LDFA-Board-Meeting-Minutes.pdf" target="_self" rel="noopener noreferrer"><span>LDFA NOVEMBER 16, 2016 MEETING MINUTES</span></a></li>
-</ul></div>
-			</div> <!-- .et_pb_tab -->
-				</div> <!-- .et_pb_all_tabs -->
-			</div> <!-- .et_pb_tabs -->
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row --><div class="et_pb_row et_pb_row_4">
-				<div class="et_pb_column et_pb_column_4_4 et_pb_column_3  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_button_module_wrapper et_pb_button_0_wrapper et_pb_button_alignment_center et_pb_module ">
-				<a class="et_pb_button et_pb_button_0 et_pb_bg_layout_light" href="/public-authorities">Back to Public Authorities</a>
-			</div>
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row -->
-				
-				
-			</div> <!-- .et_pb_section -->		</div><!-- .et_builder_inner_content -->
-	</div><!-- .et-l -->
-	<span class="et_bloom_bottom_trigger"></span>					</div> <!-- .entry-content -->
-
-				
-				</article> <!-- .et_pb_post -->
-
-			
-
-</div> <!-- #main-content -->
-
-	<footer class="et-l et-l--footer">
-			<div class="et_builder_inner_content et_pb_gutters3"><div class="et_pb_with_border et_pb_section et_pb_section_0_tb_footer et_pb_with_background et_section_regular" >
-				
-				
-				
-				
-					<div class="et_pb_row et_pb_row_0_tb_footer et_pb_equal_columns et_pb_gutters1">
-				<div class="et_pb_column et_pb_column_1_5 et_pb_column_0_tb_footer  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<ul class="et_pb_module et_pb_social_media_follow et_pb_social_media_follow_0_tb_footer clearfix  et_pb_bg_layout_light">
-				
-				
-				<li
-            class='et_pb_social_media_follow_network_0_tb_footer et_pb_social_icon et_pb_social_network_link  et-social-facebook et_pb_social_media_follow_network_0_tb_footer'><a
-              href='https://www.facebook.com/DEGCAllBusiness/'
-              class='icon et_pb_with_border'
-              title='Follow on Facebook'
-               target="_blank"><span
-                class='et_pb_social_media_follow_network_name'
-                aria-hidden='true'
-                >Follow</span></a></li><li
-            class='et_pb_social_media_follow_network_1_tb_footer et_pb_social_icon et_pb_social_network_link  et-social-twitter et_pb_social_media_follow_network_1_tb_footer'><a
-              href='https://twitter.com/degcallbusiness?lang=en'
-              class='icon et_pb_with_border'
-              title='Follow on Twitter'
-               target="_blank"><span
-                class='et_pb_social_media_follow_network_name'
-                aria-hidden='true'
-                >Follow</span></a></li><li
-            class='et_pb_social_media_follow_network_2_tb_footer et_pb_social_icon et_pb_social_network_link  et-social-linkedin et_pb_social_media_follow_network_2_tb_footer'><a
-              href='https://www.linkedin.com/company/detroit-economic-growth-corporation/'
-              class='icon et_pb_with_border'
-              title='Follow on LinkedIn'
-               target="_blank"><span
-                class='et_pb_social_media_follow_network_name'
-                aria-hidden='true'
-                >Follow</span></a></li><li
-            class='et_pb_social_media_follow_network_3_tb_footer et_pb_social_icon et_pb_social_network_link  et-social-instagram et_pb_social_media_follow_network_3_tb_footer'><a
-              href='https://www.instagram.com/degcallbusiness/'
-              class='icon et_pb_with_border'
-              title='Follow on Instagram'
-               target="_blank"><span
-                class='et_pb_social_media_follow_network_name'
-                aria-hidden='true'
-                >Follow</span></a></li>
-			</ul> <!-- .et_pb_counters -->
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_3_5 et_pb_column_1_tb_footer  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_text et_pb_text_0_tb_footer  et_pb_text_align_center et_pb_bg_layout_light">
-				
-				
-				<div class="et_pb_text_inner"><h4><a href="https://degc.org/contact-us/">Let Us Help You</a></h4>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1" id="wixDesktopViewport" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Wix.com Website Builder"/>
+  <!-- Safari Pinned Tab Icon -->
+  <!--  -->
+  <!-- Segmenter Polyfill -->
+  <!-- Legacy Polyfills -->
+  <!-- Performance API Polyfills -->
+    <!-- Essential Viewer Model -->
+  <!-- Globals Definitions -->
+  <!-- BEGIN handleAccessTokens bundle -->
+<!-- END handleAccessTokens bundle -->
+<!-- BEGIN overrideGlobals bundle -->
+<!-- END overrideGlobals bundle -->
+  <!-- Initial CSS -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="skype_toolbar" content="skype_toolbar_parser_compatible">
+      <!--pageHtmlEmbeds.head start-->
+      <meta name="google-site-verification" content="vtjvTHrKYnEYv6ZywZzoL6RSAABFQIcsKgwmjFZh6Nk" />
+      <meta name="msvalidate.01" content="E92E13665D54DA8160D5903D54EA7349" />
+      <!--pageHtmlEmbeds.head end-->
+  <!-- head performance data start -->
+  <!-- head performance data end -->
+<meta http-equiv="X-Wix-Meta-Site-Id" content="d19b6bac-fc85-41d7-8c90-c99cb48fb93e">
+<meta http-equiv="X-Wix-Application-Instance-Id" content="e697ce7f-aead-40b4-b66d-1a9e5c3280dd">
+    <meta http-equiv="X-Wix-Published-Version" content="5098"/>
+    <meta http-equiv="etag" content="bug"/>
+<!-- render-head end -->
+<title>LDFA | DEGC</title>
+  <meta property="og:title" content="LDFA | DEGC"/>
+  <meta property="og:image" content="https://static.wixstatic.com/media/a7a51b_67f9a522563e492fa36d9cf6c07b4d25%7Emv2.jpg/v1/fit/w_2500,h_1330,al_c/a7a51b_67f9a522563e492fa36d9cf6c07b4d25%7Emv2.jpg"/>
+  <meta property="og:image:width" content="2500"/>
+  <meta property="og:image:height" content="1330"/>
+  <meta property="og:url" content="https://www.degc.org/ldfa"/>
+  <meta property="og:site_name" content="DEGC"/>
+  <meta property="og:type" content="website"/>
+  <meta name="google-site-verification" content="vtjvTHrKYnEYv6ZywZzoL6RSAABFQIcsKgwmjFZh6Nk"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="LDFA | DEGC"/>
+  <meta name="twitter:image" content="https://static.wixstatic.com/media/a7a51b_67f9a522563e492fa36d9cf6c07b4d25%7Emv2.jpg/v1/fit/w_2500,h_1330,al_c/a7a51b_67f9a522563e492fa36d9cf6c07b4d25%7Emv2.jpg"/>
+</head>
+<body class='' >
+    <!--pageHtmlEmbeds.bodyStart start-->
+    <!--pageHtmlEmbeds.bodyStart end-->
+    <!-- domStoreHtml -->
+<div id="SITE_CONTAINER"><div id="main_MF"><div id="SCROLL_TO_TOP" role="region" tabindex="-1" aria-label="top of page"><span>top of page</span></div><div id="BACKGROUND_GROUP"><div id="BACKGROUND_GROUP_TRANSITION_GROUP"><div id="pageBackground_yhwya"><div id="bgLayers_pageBackground_yhwya"><div></div><div id="bgMedia_pageBackground_yhwya"></div><div></div></div></div></div></div><div id="site-root"><div id="masterPage"><header id="SITE_HEADER" tabindex="-1"><div><div></div></div><div><div><div></div></div><div><div><div><!--$--><section id="comp-k0wenl02"><div id="bgLayers_comp-k0wenl02"><div></div><div id="bgMedia_comp-k0wenl02"></div></div><div><!--$--><div id="comp-k0wenl1n"><div id="bgLayers_comp-k0wenl1n"><div></div><div id="bgMedia_comp-k0wenl1n"></div></div><div><div><!--$--><div id="comp-m4bqj79u" title="DEGC LOGO_Tagline_color.png"><div><img fetchpriority="high" sizes="233px" srcSet="https://static.wixstatic.com/media/9ce86c_06404e500f75461c95532dd287426cc4~mv2.png/v1/fill/w_233,h_70,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/9ce86c_06404e500f75461c95532dd287426cc4~mv2.png 1x, https://static.wixstatic.com/media/9ce86c_06404e500f75461c95532dd287426cc4~mv2.png/v1/fill/w_466,h_140,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/9ce86c_06404e500f75461c95532dd287426cc4~mv2.png 2x" id="img_comp-m4bqj79u" src="https://static.wixstatic.com/media/9ce86c_06404e500f75461c95532dd287426cc4~mv2.png/v1/fill/w_233,h_70,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/9ce86c_06404e500f75461c95532dd287426cc4~mv2.png" alt="Logo_Detroit Economic Growth Corporation" width="233" height="70"/></div></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-k0weoj0j"><div id="bgLayers_comp-k0weoj0j"><div></div><div id="bgMedia_comp-k0weoj0j"></div></div><div><div><!--$--><div id="comp-lua0tpmk"></div><!--/$--><!--$--><div id="comp-ltg9kd5m"><div><div><!--$--><div id="comp-ltg9kd72" dir="ltr" aria-live="polite" tabindex="-1"><div><div><form role="search" action="https://www.degc.org/search"><div><div></div><div><div></div></div><div><div><div id="search-box-input-comp-ltg9kd72"><div><input name="q" id="input_search-box-input-comp-ltg9kd72" type="search" placeholder="SEARCH" aria-invalid="false" maxLength="100" autoComplete="off" aria-label="SEARCH" aria-required="false" value=""/></div></div></div></div><button aria-label="SEARCH" type="submit"><div></div></button></div><input type="submit" tabindex="-1" aria-hidden="true" value="SEARCH"/></form></div></div></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-jumlew44" aria-disabled="false"><a href="https://www.degc.org" target="_self" aria-disabled="false" aria-label="CONTACT"><span>CONTACT</span></a></div><!--/$--><!--$--><div id="comp-mfbkf2hn" aria-disabled="false"><a href="https://www.degc.org/donate" target="_blank" aria-disabled="false" aria-label="DONATE"><span>DONATE</span></a></div><!--/$--></div></div></div><!--/$--></div></section><!--/$--><!--$--><div id="comp-ltqcwjq3"></div><!--/$--><div id="comp-ltqcg0r9"><nav aria-label="Site"><ul><li aria-current="false"><div><a href="https://www.degc.org" target="_self" tabindex="0"><div><span>HOME</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/about" target="_self" tabindex="0"><div><span>ABOUT</span></div></a></div></li><li aria-current="false"><div><div tabindex="0" aria-haspopup="true" aria-expanded="false" role="button"><div><span>WHY DETROIT?</span></div></div><div><button tabindex="0" aria-label="Toggle WHY DETROIT?"></button></div></div><div role="group" aria-label="WHY DETROIT?"><div><div><ul><li aria-current="false"><div><a href="https://www.degc.org/strategic-location" target="_self" tabindex="0"><div><span>STRATEGIC LOCATION</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/automobility-advanced-manufacturing" target="_self" tabindex="0"><div><span>AUTOMOBILITY ADVANCED MANUFACTURING</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/clean-energy-sustainability" target="_self" tabindex="0"><div><span>CLEAN ENERGY AND SUSTAINABILITY</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/research-engineering-design" target="_self" tabindex="0"><div><span>RESEARCH ENGINEERING DESIGN</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/tax-incentives" target="_self" tabindex="0"><div><span>TAX INCENTIVES</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/land-development" target="_self" tabindex="0"><div><span>LAND DEVELOPMENT</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/back-to-paradise" target="_self" tabindex="0"><div><span>BACK TO PARADISE DOCUSERIES</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/lifestyle-amenities" target="_self" tabindex="0"><div><span>LIFESTYLE AMENITIES</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/funding" target="_self" tabindex="0"><div><span>FUNDING</span></div></a></div></li></ul></div></div></div></li><li aria-current="false"><div><div tabindex="0" aria-haspopup="true" aria-expanded="false" role="button"><div><span>SERVICES</span></div></div><div><button tabindex="0" aria-label="Toggle SERVICES"></button></div></div><div role="group" aria-label="SERVICES"><div><div><ul><li aria-current="false"><div><a href="https://www.degc.org/real-estate-development" target="_self" tabindex="0"><div><span>REAL ESTATE DEVELOPMENT</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/business-development" target="_self" tabindex="0"><div><span>BUSINESS DEVELOPMENT</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/business-retention" target="_self" tabindex="0"><div><span>BUSINESS RETENTION</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/dbl" target="_self" tabindex="0"><div><span>DISTRICT BUSINESS LIAISONS</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/small-business-programming" target="_self" tabindex="0"><div><span>SMALL BUSINESS SERVICES</span></div></a></div></li><li aria-current="false"><div><a href="http://www.motorcitymatch.com" target="_blank" rel="noreferrer noopener" tabindex="0"><div><span>MOTOR CITY MATCH</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/greengrocer" target="_self" tabindex="0"><div><span>GREEN GROCER PROGRAM</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/neighborhood-business-planning" target="_self" tabindex="0"><div><span>NEIGHBORHOOD BUSINESS PLANNING</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/request-for-proposals" target="_self" tabindex="0"><div><span>REQUEST FOR PROPOSALS</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/calendar" target="_self" tabindex="0"><div><span>EVENTS</span></div></a></div></li></ul></div></div></div></li><li aria-current="false"><div><a href="https://www.degc.org/buydetroit" target="_self" aria-expanded="false" aria-haspopup="true" tabindex="0"><div><span>BUYDETROIT</span></div></a><div><button tabindex="0" aria-label="Toggle BUYDETROIT"></button></div></div><div role="group" aria-label="BUYDETROIT"><div><div><ul><li aria-current="false"><div><a href="https://www.degc.org/procurement-portal" target="_self" tabindex="0"><div><span>PROCUREMENT PORTAL</span></div></a></div></li></ul></div></div></div></li><li aria-current="false"><div><div tabindex="0" aria-haspopup="true" aria-expanded="false" role="button"><div><span>CHAMPIONS</span></div></div><div><button tabindex="0" aria-label="Toggle CHAMPIONS"></button></div></div><div role="group" aria-label="CHAMPIONS"><div><div><ul><li aria-current="false"><div><a href="https://www.degc.org/public-authorities" target="_self" aria-expanded="false" aria-haspopup="true" tabindex="0"><div><span>PUBLIC AUTHORITIES</span></div></a><div><button tabindex="0" aria-label="Toggle PUBLIC AUTHORITIES"></button></div></div><div role="group" aria-label="PUBLIC AUTHORITIES"><div><div><ul><li aria-current="false"><div><a href="https://www.degc.org/dbra" target="_self" tabindex="0"><div><span>DBRA</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/d-nmdc" target="_self" tabindex="0"><div><span>D-NMDC</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/dda" target="_self" tabindex="0"><div><span>DDA</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/edc" target="_self" tabindex="0"><div><span>EDC</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/emwcia" target="_self" tabindex="0"><div><span>EMWCIA</span></div></a></div></li><li aria-current="true"><div><a href="https://www.degc.org/ldfa" target="_self" tabindex="0"><div><span>LDFA</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/ndc" target="_self" tabindex="0"><div><span>NDC</span></div></a></div></li></ul></div></div></div></li><li aria-current="false"><div><a href="https://www.degc.org/governance" target="_self" tabindex="0"><div><span>GOVERNANCE</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/team-members" target="_self" tabindex="0"><div><span>TEAM MEMBERS</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/funders" target="_self" tabindex="0"><div><span>FUNDERS</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/careers" target="_self" tabindex="0"><div><span>CAREERS</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/support-education" target="_self" tabindex="0"><div><span>SUPPORT &amp; EDUCATION</span></div></a></div></li><li aria-current="false"><div><a href="https://www.degc.org/donate" target="_self" tabindex="0"><div><span>DONATE</span></div></a></div></li></ul></div></div></div></li><li aria-current="false"><div><a href="https://www.degc.org/newsroom" target="_self" tabindex="0"><div><span>NEWSROOM</span></div></a></div></li></ul></nav></div></div></div></div></div></header><main id="PAGES_CONTAINER" tabindex="-1"><div id="SITE_PAGES"><div id="SITE_PAGES_TRANSITION_GROUP"><div id="yhwya"><div></div><div><!--$--><div id="Containeryhwya"><div><div><!--$--><section id="comp-ltq9l6yf" tabindex="-1"><div id="bgLayers_comp-ltq9l6yf"><div></div><div id="bgMedia_comp-ltq9l6yf"></div></div><div><div><!--$--><section id="comp-ltq9l6yg3"><div id="bgLayers_comp-ltq9l6yg3"><div></div><div id="bgMedia_comp-ltq9l6yg3"></div></div><div><!--$--><div id="comp-ltq9l6yi"><div id="bgLayers_comp-ltq9l6yi"><div></div><div id="bgMedia_comp-ltq9l6yi"><wow-image id="img_comp-ltq9l6yi"><img src="https://static.wixstatic.com/media/nsplsh_aa2b43bc4292411fa2106b20fb8a31e8~mv2.jpg/v1/fill/w_42,h_70,al_c,q_80,usm_0.66_1.00_0.01,blur_2,enc_avif,quality_auto/nsplsh_aa2b43bc4292411fa2106b20fb8a31e8~mv2.jpg" alt="Image by Creative Hina By.Quileen" width="980" height="466"/></wow-image></div></div><div><div><!--$--><div id="comp-ltq9l6yk1"><div><div><!--$--><div id="comp-ltq9l6yl3"><div>
+</div></div><!--/$--><!--$--><div id="comp-ltq9l6yo3"><h1><span><span><span><span><span><span>LOCAL DEVELOPMENT FINANCE AUTHORITY</span></span></span></span></span></span></h1></div><!--/$--></div></div></div><!--/$--></div></div></div><!--/$--></div></section><!--/$--></div></div></section><!--/$--><!--$--><section id="comp-ltq9l6yu2" tabindex="-1"><div id="bgLayers_comp-ltq9l6yu2"><div></div><div id="bgMedia_comp-ltq9l6yu2"></div></div><div><div><!--$--><section id="comp-ltq9l6yv6"><div id="bgLayers_comp-ltq9l6yv6"><div></div><div id="bgMedia_comp-ltq9l6yv6"></div></div><div><!--$--><div id="comp-ltq9l6yx1"><div id="bgLayers_comp-ltq9l6yx1"><div></div><div id="bgMedia_comp-ltq9l6yx1"></div></div><div><div><!--$--><div id="comp-ltq9l6yy6"><h2><span><span>WHAT DOES THE LDFA DO?</span></span></h2></div><!--/$--><!--$--><div id="comp-ltq9l6z01"><p><span>The City of Detroit Local Development Finance Authority (LDFA) prevents conditions of unemployment and promotes growth in Detroit.</span></p>
+<p><span>The LDFA was established pursuant to Michigan Public Act 281 of 1986, as amended, which has been recodified into Michigan Public Act 57 of 2018, to prevent conditions of unemployment and promotes growth in Detroit. The LDFA has the ability to support projects such as industrial facility revitalizations, technology park development, streetscape improvements and more. Funding comes from grants and taxes collected as a result of new growth within the new development areas.</span></p>
+<p><span><span>​</span></span></p>
+<p><span>The LDFA undertook the Jefferson/Connor Industrial Revitalization Project on the city&rsquo;s east side to assist Chrysler Corporation in creating jobs and constructing a new manufacturing facility. (Link to TIF Plan) The LDFA has also obtained grant funding from the State of Michigan to support the Wayne State University Technology Park, the William G. Milliken State Park, and the streetscape improvements in the Lower Woodward and University Cultural Center Association areas.</span></p>
+<p><span><span>​</span></span></p>
+<p><span>The LDFA is governed by its Board of Directors, whose members are, with certain exceptions, appointed by the mayor subject to the consent of City Council.</span></p></div><!--/$--><!--$--><div id="comp-ltq9l6z11"><div></div><div><div><!--$--><div id="comp-ltq9l6z22"><a href="https://www.degc.org/_files/ugd/69e7f0_8bb277a75cc84d608a68499833c5445b.pdf" target="_blank"><img loading="lazy" sizes="289px" srcSet="https://static.wixstatic.com/media/69e7f0_d24c79b952d94a76a319f5a2ff4a6c0c~mv2.jpg/v1/fill/w_289,h_373,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/LDFA%20Board%20Meeting%20Notice%20for%20FY%202026-27.jpg 1x, https://static.wixstatic.com/media/69e7f0_d24c79b952d94a76a319f5a2ff4a6c0c~mv2.jpg/v1/fill/w_578,h_746,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/LDFA%20Board%20Meeting%20Notice%20for%20FY%202026-27.jpg 2x" id="img_comp-ltq9l6z22" src="https://static.wixstatic.com/media/69e7f0_d24c79b952d94a76a319f5a2ff4a6c0c~mv2.jpg/v1/fill/w_289,h_373,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/LDFA%20Board%20Meeting%20Notice%20for%20FY%202026-27.jpg" alt="LDFA Board Meeting Notice for FY 2026-27.jpg" width="289" height="373"/></a></div><!--/$--><!--$--><div id="comp-ltq9l6z36"><h2><span><span>LDFA MEETINGS NOTICE &ndash; FY 2026-2027</span></span></h2></div><!--/$--><!--$--><div id="comp-ltq9l6z51"><a href="https://www.degc.org/_files/ugd/69e7f0_ca0ffc037cf042f9b99016757315fe22.pdf" target="_blank" aria-label="LEARN MORE"><span><span>LEARN MORE</span><span aria-hidden="true"><span>
+</span></span></span></a></div><!--/$--></div></div></div><!--/$--></div></div></div><!--/$--></div></section><!--/$--></div></div></section><!--/$--><!--$--><section id="comp-m396q29i" tabindex="-1"><div id="bgLayers_comp-m396q29i"><div></div><div id="bgMedia_comp-m396q29i"></div></div><div><div><!--$--><div id="comp-m396q2an"><h2><span><span>DOCUMENTS</span></span></h2></div><!--/$--><!--$--><div id="comp-m396q2ao"><div><div><div aria-hidden="true"></div><div role="tablist"><div id="tab-comp-m396q2aq4" role="tab" tabindex="0" aria-selected="true" aria-controls="comp-m396q2aq4"><span>LDFA DOCUMENTS</span></div><div id="tab-comp-mqv2vh64" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-mqv2vh64"><span>FY 2026-2027 MEETINGS</span></div><div id="tab-comp-mcdkfe4v" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-mcdkfe4v"><span>FY 2025-2026 MEETINGS</span></div><div id="tab-comp-m396q2bo" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2bo"><span>FY 2024-2025 MEETINGS</span></div><div id="tab-comp-m396q2az" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2az"><span>FY 2023-2024 MEETINGS</span></div><div id="tab-comp-m396q2b2" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2b2"><span>FY 2022-2023 MEETINGS</span></div><div id="tab-comp-m396q2b7" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2b7"><span>FY 2021-2022 MEETINGS</span></div><div id="tab-comp-m396q2ba" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2ba"><span>FY 2020-2021 MEETINGS</span></div><div id="tab-comp-m396q2bd" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2bd"><span>FY 2019-2020 MEETINGS</span></div><div id="tab-comp-m396q2bg" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2bg"><span>FY 2017-2018 MEETINGS</span></div><div id="tab-comp-m396q2bj" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2bj"><span>FY 2016-2017 MEETINGS</span></div><div id="tab-comp-m396q2bl4" role="tab" tabindex="-1" aria-selected="false" aria-controls="comp-m396q2bl4"><span>FY 2018-2019 MEETINGS</span></div></div><div></div><div aria-hidden="true"></div></div><div><div><div aria-hidden="false" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2aq4"><!--$--><div id="comp-m396q2aq4"><div><div><!--$--><div id="comp-m396q2as"><div><div><!--$--><div id="comp-m396q2at"><p><span><a href="https://www.degc.org/_files/ugd/69e7f0_16d5b715f37d4464ad4dce80eda25133.pdf" target="_blank">BOARD MEMBERS&nbsp;</a></span></p></div><!--/$--><!--$--><div id="comp-m396q2au3"><p><span><span><span>FOIA PROCEDURES</span></span></span></p></div><!--/$--><!--$--><div id="comp-m396q2av5"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_abb0cfceb36b491f85d800e9d793f86e.pdf" target="_blank"><span>LDFA FOIA GUIDELINES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_b67181ae8bc241dbae09222c80cb3a85.pdf" target="_blank"><span>LDFA FOIA WRITTEN PUBLIC SUMMARY</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_dd22d3da599d4884a0db0e99844655bf.pdf" target="_blank"><span>LDFA RULES FOR PUBLIC COMMENT&nbsp;</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_da3d7aaec6b844cba5a92379bcf8117d.pdf" target="_blank"><span>LDFA FY 2026-27 BUDGET</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_5a1b29cd7891494bae44c67c6dd328c8.pdf" target="_blank"><span>LDFA FY 2025-26 BUDGET</span></a></span></p>
+<p><span><span><span><span><span><a href="https://www.degc.org/_files/ugd/9ce86c_5f7791cd8bf24c58bbd47d8ee8ad7a46.pdf" target="_blank"><span>LDFA FY 2024-25 BUDGET</span></a></span></span></span></span></span><span><span>​</span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_e02bd5913c814ac389b763ca66ffabf8.pdf" target="_blank"><span>LDFA FY 2023-24 BUDGET</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_9f010f13058f4c01940b6c35e8f970dd.pdf" target="_blank"><span>LDFA FY 2022-23 BUDGET</span></a></span></p>
+<p><span><span><a href="https://www.degc.org/_files/ugd/a7a51b_5cab4374b74e4a398fc625ff6245ceff.pdf" target="_blank">LDFA FY 2021-22 BUDGET</a></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_b752d4e5258b4fce99166d87b33f179f.pdf" target="_blank"><span>LDFA FY 2020-21 BUDGET</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_813640a22e34455789c74d385620d7ad.pdf" target="_blank"><span>LDFA FY 2019-20 BUDGET</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_c2b1e226566e4e16800fc73f448fec6d.pdf" target="_blank"><span>LDFA FY 2018-2019 BUDGET</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_8cba2f4a745a4ed0a2a40ac66b4acaaa.pdf" target="_blank"><span>FISCAL YEAR END 2025 LDFA AUDIT&nbsp;</span></a></span></p>
+<p><span><span><a href="https://www.degc.org/_files/ugd/69e7f0_a44d02341d0b4b3d9acdf281ca8df1ff.pdf" target="_blank">FISCAL YEAR END 2024 LDFA AUDIT</a></span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_4095a5a7f4834541b1ebb12544b5bae3.pdf" target="_blank"><span>FISCAL YEAR END 2023 LDFA AUDIT</span></a></span></p>
+<p><span><span><a href="https://www.degc.org/_files/ugd/a7a51b_18901303b1d84179a0dbf24995b36f4d.pdf" target="_blank">FISCAL YEAR END 2022 LDFA AUDIT</a></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_81a7f0f4e6074fab90e825dbdfb9c2a4.pdf" target="_blank"><span>FISCAL YEAR END 2021 LDFA AUDIT</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_9d7c917075764cada588a36930f1015f.pdf" target="_blank"><span>FISCAL YEAR END 2020 LDFA AUDIT</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_5578dee2ef1342d5a9cb23682845ae96.pdf" target="_blank"><span>FISCAL YEAR END 2019 LDFA AUDIT&nbsp;</span></a></span></p>
+<p><span><span>​</span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_18ec62ba9fde4b92b4c8e42343ec2e02.pdf" target="_blank"><span>SECOND AMENDED AND RESTATED JEFFERSON CONNER TAX INCREMENT FINANCING AND DEVELOPMENT PLAN</span></a></span></p>
+<p><span><span><span>​</span></span></span></p>
+<p><span><span><span>​</span></span></span></p>
+<p><span><span><span>​</span></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_1c2ac55430184a01af5788d1753f49f0.pdf" target="_blank"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2025</span></a></span></p>
+<p><span><span><a href="https://www.degc.org/_files/ugd/69e7f0_e092baa32a3f43d080ffae3357a826ba.pdf" target="_blank">LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2024</a></span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_ef705afc1da942fe9fba1723093b1aad.pdf" target="_blank"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2023</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_df0c88d5743d4d1ba24cf13a6e2a518e.pdf" target="_blank"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2022</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_6c3da4ce76a54dd88935d3604ef03070.pdf" target="_blank"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2021</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_0d625f9428ea4380a868552f4b3d4e6f.pdf" target="_blank"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2020</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_77ea1e260b0d4556a53008133a5f4e18.pdf" target="_blank"><span>LDFA PUBLIC ACT 57 OF 2018 INFORMATION FOR FISCAL YEAR END 2019</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2az"><!--$--><div id="comp-m396q2az"><div><div><!--$--><div id="comp-m396q2b02"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_d7aea623e3fc4ff6a6b7a3ebb3d15b24.pdf" target="_blank"><span>LDFA BOARD MEETINGS FOR FY 2023-2024</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_323db0726335440dbd3c701596d5769b.pdf" target="_blank"><span>NOTICE OF THE DECEMBER 14, 2023 PUBLIC INFORMATIONAL MEETING NO.2&nbsp;</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_17d52a856ac7473daf5ede7d9a3445e2.pdf" target="_blank"><span>NOTICE OF THE NOVEMBER 16, 2023 PUBLIC INFORMATIONAL MEETING NO. 1</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_9733886816544aa7b29e6b1b8039fe53.pdf" target="_blank"><span>OCTOBER 24, 2023 BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_c26e5b0b08c349dfabd41c4a3bac49a0.pdf" target="_blank"><span>OCTOBER 24, 2023 BOARD MEETING NOTICE</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_d090fe940acf47168a0601bc186f67dc.pdf" target="_blank"><span>JULY 10,2023 SPECIAL BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_6708024c445c4defa494adfc6858d6bb.pdf" target="_blank"><span>JULY 10, 2023 SPECIAL BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_310b5b4d53cd45319a6dd35a9e84fbcc.pdf" target="_blank"><span>JULY 10, 2023 SPECIAL BOARD MEETING NOTICE&nbsp;</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2b2"><!--$--><div id="comp-m396q2b2"><div><div><!--$--><div id="comp-m396q2b34"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_900aa7943a91454b8b79ea995d7fe188.pdf" target="_blank"><span>LDFA BOARD MEETINGS FOR FY 2022-2023</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_1d5c6d3ba27247a48f58eb8c009e450a.pdf" target="_blank"><span>JUNE 27, 2023 BOARD MEETING CANCELLATION NOTICE&nbsp;</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_213714197262448eaa17394024b491fb.pdf" target="_blank"><span>JUNE 27, 2023 BOARD MEETING NOTICE</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_cb1e9e69f0604996bd7bd32a173655fd.pdf" target="_blank"><span>JUNE 13, 2023 SPECIAL BOARD MEETING CANCELLATION NOTICE</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_e3147fd893ab46b6b76aeb8495054f61.pdf" target="_blank"><span>JUNE 13, 2023 SPECIAL BOARD MEETING NOTICE</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_ec3b0af8f0524396b7c058156465bc5a.pdf" target="_blank"><span>NOTICE OF THE DECEMBER 19, 2022 PUBLIC INFORMATIONAL MEETING NO. 2</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_6535f2b913634660b2c2583ef2ecc1b0.pdf" target="_blank"><span>NOTICE OF THE NOVEMBER 16, 2022 PUBLIC INFORMATIONAL MEETING NO. 1</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_fd15257f6f4b4d68807777611d9fcba4.pdf" target="_blank"><span>OCTOBER 25, 2022 BOARD MEETING MINUTES&nbsp;</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_0168b6f0a7b4453bbd693ab3d2feaa3f.pdf" target="_blank"><span>OCTOBER 25, 2022 BOARD MEETING NOTICE AND AGENDA</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2b7"><!--$--><div id="comp-m396q2b7"><div><div><!--$--><div id="comp-m396q2b81"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_83d4080785aa44789397decae452eb03.pdf" target="_blank"><span>LDFA NOTICE OF REGULAR BOARD MEETINGS FOR FY 2021-2022</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_c931dcdb9cae4e3a97aaaba0d4cb9613.pdf" target="_blank"><span>JUNE 28, 2022 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_8a91100935584547941f098efac6efda.pdf" target="_blank"><span>JUNE 28, 2022 LDFA BOARD MEETING NOTICE AND AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_ce2b8486648047f5a00cf0ffa78c7fc7.pdf" target="_blank"><span>NOTICE OF DECEMBER 13, 2021 PUBLIC INFORMATIONAL MEETING NO. 2</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_b5fb84f592cb4a57b55b9542c58263c6.pdf" target="_blank"><span>OCTOBER 26, 2021 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_3fa487b587d645ec9c1652b74089b125.pdf" target="_blank"><span>OCTOBER 26, 2021 LDFA BOARD MEETING NOTICE AND AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_0014a69f672b4c5bacc5c2f7ba833731.pdf" target="_blank"><span>NOTICE OF OCTOBER 18, 2021 PUBLIC INFORMATIONAL MEETING NO. 1</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2ba"><!--$--><div id="comp-m396q2ba"><div><div><!--$--><div id="comp-m396q2bb3"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_6ca0990471214c4e8d6a4ad37050ea96.pdf" target="_blank"><span>LDFA BOARD MEETING NOTICE FOR FY 2020-21</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_84a9b71dbd8547e99d973f5400610b2f.pdf" target="_blank"><span>JUNE 22, 2021 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_5296a235e38b4328918b3391ed8be2e5.pdf" target="_blank"><span>JUNE 22, 2021 LDFA BOARD MEETING NOTICE AND AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_bc668ae6f3fa4fe78a765a19bca72d49.pdf" target="_blank"><span>NOTICE OF DECEMBER 15, 2020 PUBLIC INFORMATIONAL MEETING NO. 2</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_cf147e58d60b4f4bb62fb7160f6f7764.pdf" target="_blank"><span>OCTOBER 27, 2020 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_3c9d08a69f9a401e9f266092ca747db5.pdf" target="_blank"><span>OCTOBER 27, 2020 LDFA BOARD MEETING NOTICE AND AGENDA</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2bd"><!--$--><div id="comp-m396q2bd"><div><div><!--$--><div id="comp-m396q2be3"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_f54f338cb14447b6b3501d9eb5b0a26c.pdf" target="_blank"><span>JUNE 23, 2020 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_1b2bf80059184cc1b96c88cd04e2b736.pdf" target="_blank"><span>JUNE 23, 2020 REGULAR LDFA BOARD MEETING NOTICE AND AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_a79c537e5f5343cfb1430f2eb1d0ab65.pdf" target="_blank"><span>CALENDAR YEAR 2020 LDFA PUBLIC INFORMATIONAL MEETING NO. 1 &ndash; JUNE 30, 2020 AT 3:00 PM</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_0cb359aa7873440eabfa697a3e0fab26.pdf" target="_blank"><span>NOTICE OF DECEMBER 3, 2019 PUBLIC INFORMATION MEETING NO. 2</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_f564329502ff4a5280a73ad4fae607c0.pdf" target="_blank"><span>OCTOBER 22, 2019 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_cb66ea9568af4e8da4e4b3b81213b8c2.pdf" target="_blank"><span>OCTOBER 22, 2019 LDFA BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_c057c3b8795945b7bf3d4af98b8a550d.pdf" target="_blank"><span>NOTICE OF 07-24-19 PUBLIC INFORMATIONAL MEETING</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2bg"><!--$--><div id="comp-m396q2bg"><div><div><!--$--><div id="comp-m396q2bh3"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_d0a573b23a604cbfaf4833a8c90fb861.pdf" target="_blank"><span>LDFA JUNE 19, 2018 SPECIAL BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_d0a573b23a604cbfaf4833a8c90fb861.pdf" target="_blank"><span>LDFA JUNE 19, 2018 SPECIAL BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_44eeaf8f51914c83b05d97eb6cb9d91a.pdf" target="_blank"><span>LDFA DECEMBER 12, 2017 SPECIAL BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_89c9a2f1c6ed4ae385b3c0c82ed8c907.pdf" target="_blank"><span>LDFA DECEMBER 12, 2017 SPECIAL BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_6038a257d8ee40eaaba119235b9d4d58.pdf" target="_blank"><span>LDFA JULY 25, 2017 AGENDA</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2bj"><!--$--><div id="comp-m396q2bj"><div><div><!--$--><div id="comp-m396q2bk"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_70d43bf5b40e4564a645d65bf6dd22fd.pdf" target="_blank"><span>LDFA MAY 18, 2017 MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_1e642df2f69a4755986d1a8ef7981687.pdf" target="_blank"><span>LDFA MAY 18, 2017 MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_aa3358cc925646c9b6144a62b3682a1b.pdf" target="_blank"><span>LDFA NOVEMBER 16, 2016 MEETING MINUTES</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2bl4"><!--$--><div id="comp-m396q2bl4"><div><div><!--$--><div id="comp-m396q2bm5"><p><span><a href="https://www.degc.org/_files/ugd/a7a51b_7190725176da4291a97adf906947eeb4.pdf" target="_blank"><span>JUNE 25, 2019 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_4edbdb7b073c4e38a7719d1d8cdd6979.pdf" target="_blank"><span>JUNE 25, 2019 LDFA BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_d2212855f8194fcb8b016a32c75e9c12.pdf" target="_blank"><span>OCTOBER 23, 2018 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/a7a51b_06dfc1ad5a4a43429dc881c534fea61f.pdf" target="_blank"><span>OCTOBER 23, 2018 LDFA BOARD MEETING AGENDA</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-m396q2bo"><!--$--><div id="comp-m396q2bo"><div><div><!--$--><div id="comp-m396q2bp1"><p><span><a href="https://www.degc.org/_files/ugd/69e7f0_8f59aa0ccb06414caa70406efc42886f.pdf" target="_blank"><span>NOTICE OF THE JUNE 18, 2025 PUBLIC INFORMATIONAL MEETING NO. 1​​</span></a></span></p>
+<p><span><span><span><span><span>​</span>​</span>​</span></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_676eda8124c145e083b8c66a431d1b03.pdf" target="_blank"><span>JUNE 24, 2025 LDFA BOARD MEETING MINUTES</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_944fc2f3c73542de89ee78fc60ff30f5.pdf" target="_blank"><span>JUNE 24, 2025 LDFA BOARD MEETING AGENDA</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_07ae053871af4c6cb3cea72505582f61.pdf" target="_blank"><span>JUNE 24, 2025 LDFA BOARD MEETING NOTICE</span></a></span></p>
+<p><span><span><span>​</span></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_9dc84769aeca42ba8fe501415fa3475e.pdf" target="_blank"><span>MAY 27, 2025 LDFA BOARD MEETING CANCELLATION NOTICE&nbsp;</span></a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_a6393a88c12e48b4a1ff960e03801c42.pdf" target="_blank">MAY 27, 2025 LDFA BOARD MEETING NOTICE</a></span>&nbsp;</p>
+<p><span><span>​</span>​</span></p>
+<p><span><span><a href="https://www.degc.org/_files/ugd/69e7f0_c9d46c1f4d7d4d71957f6f04fafbd9b8.pdf" target="_blank">OCTOBER 22, 2024 LDFA BOARD MEETING MINUTES</a></span>&nbsp;</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_42c40a69ed754bbe9d0a2d8450a73155.pdf" target="_blank">OCTOBER 22, 2024 LDFA BOARD MEETING AGENDA</a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_29858b17aa6747f288f959bbcd4678c9.pdf" target="_blank">OCTOBER 22, 2024 LDFA BOARD MEETING NOTICE&nbsp;</a></span></p>
+<p><span><span>​</span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_4ef5270149194b319e6f38a895d3b704.pdf" target="_blank">NOTICE OF THE DECEMBER 4, 2024 PUBLIC INFORMATIONAL MEETING NO. 2&nbsp;</a></span></p>
+<p><span><span><span><a href="https://www.degc.org/_files/ugd/69e7f0_b855c3f839ee44758d721e6bbf082707.pdf" target="_blank"><span><span><span>NOTICE OF THE OCTOBER 15, 2024 PUBLIC INFORMATIONAL MEETING NO. 1</span></span></span></a></span></span></span></p>
+<p><span><span><span><span><span><span><span>​</span></span></span></span></span></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_71996636583a49eca03e45ecf51f5809.pdf" target="_blank">JULY 2, 2024 LDFA BOARD MEETING MINUTES&nbsp;</a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_fda8545794464888a91126466e99ed55.pdf" target="_blank">JULY 2, 2024 LDFA BOARD MEETING AGENDA&nbsp;</a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_f972fe321e59494e806f6a83209f3ea4.pdf" target="_blank">JULY 2, 2024 LDFA BOARD MEETING NOTICE&nbsp;</a></span></p>
+<p><span>​</span></p>
 <p>&nbsp;</p>
-<h5>500 Griswold St., Ste. 2200 Detroit, MI 48226</h5>
-<p>&nbsp;</p>
-<p>© 2020 Detroit Economic Growth Corporation. All Rights Reserved.</p>
-<p>Powered by <a href="https://www.whim-detroit.com/">WHIM</a></p></div>
-			</div> <!-- .et_pb_text -->
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_5 et_pb_column_2_tb_footer  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_module et_pb_image et_pb_image_0_tb_footer et_pb_image_sticky">
-				
-				
-				<span class="et_pb_image_wrap "><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" title="110448 000 040519 DEGC LOGO Mark Only Fnl" height="auto" width="auto" class="wp-image-11273" data-lazy-src="https://degc.org/wp-content/uploads/2020/08/110448-000_040519_DEGC-LOGO_Mark-only-fnl-791x1024.png" /><noscript><img src="https://degc.org/wp-content/uploads/2020/08/110448-000_040519_DEGC-LOGO_Mark-only-fnl-791x1024.png" alt="" title="110448 000 040519 DEGC LOGO Mark Only Fnl" height="auto" width="auto" class="wp-image-11273" /></noscript></span>
-			</div>
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row -->
-				
-				
-			</div> <!-- .et_pb_section -->		</div><!-- .et_builder_inner_content -->
-	</footer><!-- .et-l -->
-	    </div> <!-- #et-main-area -->
-
-			
-		</div><!-- #et-boc -->
-		</div> <!-- #page-container -->
-
-			<div id="sidebar-divibar"><script type="text/javascript">var divibars_settings = {};</script><style type="text/css">
-							.divibar-customclose-btn-12933 {
-								top:5px !important;
-								color:#000000 !important;
-								background-color:#00 !important;
-								font-size:25px !important;
-								padding:px !important;
-								-moz-border-radius:% !important;
-								-webkit-border-radius:% !important;
-								-khtml-border-radius:% !important;
-								border-radius:% !important;
-							}
-							</style><script type="text/javascript">var divibars_with_automatic_trigger = {'12933': '{"at_type":"divibar-timed","at_value":"0","at_onceperload":"1"}',};</script><div id="divi-divibars-container-12933" class="divibars-container">
-	<div id="divibar-12933" class="divibars divibar-hugeinc"  
-	data-bgcolor="" data-fontcolor="" data-scrolltop="" 
-	data-placement="top" data-pushpage="1" data-screenfixed="0"
-	data-cookie="1" data-ismobile="0" data-istablet="0">
-		<div class="divibars-content-inner">
-			<div class="divibars-body">
-				<div class="et-l et-l--post">
-			<div class="et_builder_inner_content et_pb_gutters3">
-		<div class="divibars_dbars_section et_pb_section_2 et_section_regular" >
-				
-				
-				
-				
-					<div class="et_pb_row et_pb_row_5 et_pb_equal_columns et_pb_gutters1">
-				<div class="et_pb_column et_pb_column_1_3 et_pb_column_4  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_image et_pb_image_0">
-				
-				
-				<span class="et_pb_image_wrap "><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" title="Uxwing Svg Icon Editor (18)" height="auto" width="auto" data-lazy-src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-18.svg" /><noscript><img src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-18.svg" alt="" title="Uxwing Svg Icon Editor (18)" height="auto" width="auto" /></noscript></span>
-			</div>
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_3 et_pb_column_5  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_text et_pb_text_2  et_pb_text_align_left et_pb_bg_layout_light">
-				
-				
-				<div class="et_pb_text_inner"><p><b style="font-size:16px">Paycheck Protection Program Reopens for Small Businesses |</b>  The PPP provides loans to help businesses during the  COVID-19 crisis.</p></div>
-			</div> <!-- .et_pb_text -->
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_3 et_pb_column_6  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_button_module_wrapper et_pb_button_1_wrapper et_pb_button_alignment_center et_pb_module ">
-				<a class="et_pb_button et_pb_button_1 et_pb_bg_layout_dark" href="https://www.degc.org/billion-dollar-paycheck-protection-program-helps-covid-hit-small-businesses-keep-employees-pay-expenses/" target="_blank">Read More</a>
-			</div>
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row --><div class="et_pb_row et_pb_row_6 et_pb_equal_columns et_pb_gutters1">
-				<div class="et_pb_column et_pb_column_1_3 et_pb_column_7  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_image et_pb_image_1">
-				
-				
-				<span class="et_pb_image_wrap "><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" title="Uxwing Svg Icon Editor (19)" height="auto" width="auto" data-lazy-src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-19.svg" /><noscript><img src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-19.svg" alt="" title="Uxwing Svg Icon Editor (19)" height="auto" width="auto" /></noscript></span>
-			</div>
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_3 et_pb_column_8  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_text et_pb_text_3  et_pb_text_align_left et_pb_bg_layout_light">
-				
-				
-				<div class="et_pb_text_inner"><p><b style = "font-size:16px">COVID-19 Vaccine Schedule and Updates |</b> Detroit residents may begin scheduling appointments at the TCF Center.</p></div>
-			</div> <!-- .et_pb_text -->
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_3 et_pb_column_9  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_button_module_wrapper et_pb_button_2_wrapper et_pb_button_alignment_center et_pb_module ">
-				<a class="et_pb_button et_pb_button_2 et_pb_bg_layout_dark" href="https://detroitmi.gov/departments/detroit-health-department/programs-and-services/communicable-disease/coronavirus-covid-19/covid-19-vaccine-latest-updates?fbclid=IwAR2PMJIP4IW3RoVr_w4kQ75RivlgGufKbC6dQuoIEbyROtJTQyp2wQLZ668" target="_blank">Read More</a>
-			</div>
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row -->
-				
-				
-			</div> <!-- .divibars_dbars_section --><div class="divibars_dbars_section et_pb_section_3 et_section_regular" >
-				
-				
-				
-				
-					<div class="et_pb_row et_pb_row_7 et_pb_equal_columns et_pb_gutters1">
-				<div class="et_pb_column et_pb_column_1_2 et_pb_column_10  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_image et_pb_image_2">
-				
-				
-				<span class="et_pb_image_wrap "><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" title="Uxwing Svg Icon Editor (18)" height="auto" width="auto" data-lazy-src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-18.svg" /><noscript><img src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-18.svg" alt="" title="Uxwing Svg Icon Editor (18)" height="auto" width="auto" /></noscript></span>
-			</div>
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_2 et_pb_column_11  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_button_module_wrapper et_pb_button_3_wrapper et_pb_button_alignment_center et_pb_module ">
-				<a class="et_pb_button et_pb_button_3 et_pb_bg_layout_dark" href="https://www.degc.org/billion-dollar-paycheck-protection-program-helps-covid-hit-small-businesses-keep-employees-pay-expenses/" target="_blank">Paycheck Protection Program Reopens for Small Businesses</a>
-			</div>
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row --><div class="et_pb_row et_pb_row_8 et_pb_equal_columns et_pb_gutters1">
-				<div class="et_pb_column et_pb_column_1_2 et_pb_column_12  et_pb_css_mix_blend_mode_passthrough">
-				
-				
-				<div class="et_pb_module et_pb_image et_pb_image_3">
-				
-				
-				<span class="et_pb_image_wrap "><img src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%200%200'%3E%3C/svg%3E" alt="" title="Uxwing Svg Icon Editor (19)" height="auto" width="auto" data-lazy-src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-19.svg" /><noscript><img src="https://degcdev2.wpengine.com/wp-content/uploads/2020/09/uxwing-svg-icon-editor-19.svg" alt="" title="Uxwing Svg Icon Editor (19)" height="auto" width="auto" /></noscript></span>
-			</div>
-			</div> <!-- .et_pb_column --><div class="et_pb_column et_pb_column_1_2 et_pb_column_13  et_pb_css_mix_blend_mode_passthrough et-last-child">
-				
-				
-				<div class="et_pb_button_module_wrapper et_pb_button_4_wrapper et_pb_button_alignment_center et_pb_module ">
-				<a class="et_pb_button et_pb_button_4 et_pb_bg_layout_dark" href="https://detroitmi.gov/departments/detroit-health-department/programs-and-services/communicable-disease/coronavirus-covid-19/covid-19-vaccine-latest-updates?fbclid=IwAR2PMJIP4IW3RoVr_w4kQ75RivlgGufKbC6dQuoIEbyROtJTQyp2wQLZ668" target="_blank">COVID-19 Vaccine Schedule and Updates</a>
-			</div>
-			</div> <!-- .et_pb_column -->
-				
-				
-			</div> <!-- .et_pb_row -->
-				
-				
-			</div> <!-- .divibars_dbars_section -->		</div><!-- .et_builder_inner_content -->
-	</div><!-- .et-l -->
-				</div>
-		</div>
-		<div class="divibars-close-container">
-						<button type="button" class="divibars-close divibar-customclose-btn-12933">
-				<span class="custom_btn">&times;</span>
-			</button>
-					</div>
-	</div>
-</div></div>				<script type="text/javascript">
-				var ajaxurl = "https://www.degc.org/wp-admin/admin-ajax.php";
-				var diviAjaxUrl = 'https://www.degc.org/wp-content/plugins/divi-bars/includes/ajax-handler-wp.php';
-				</script>
-					<style>
-	.et_pb_slide.db_background_url:hover{
-		cursor:pointer;
-	}
-	</style>
-		<script>
-	jQuery(function($){
-		$(".db_background_url").click(function(){
-			var url = $(this).data('db_background_url');
-			if (url.indexOf('#') == 0 || url.indexOf('.') == 0) {
-				et_pb_smooth_scroll($(url), false, 800);
-			} else {
-				document.location=url;
-			}
-		});
-	});
-	</script>
-	
-<style>.et-fb-modal__support-notice{display:none;}</style>            <div class='asp_hidden_data' id="asp_hidden_data" style="display: none !important;">
-                <svg style="position:absolute" height="0" width="0">
-                    <filter id="aspblur">
-                        <feGaussianBlur in="SourceGraphic" stdDeviation="4"/>
-                    </filter>
-                </svg>
-                <svg style="position:absolute" height="0" width="0">
-                    <filter id="no_aspblur"></filter>
-                </svg>
-            </div>
-        <link rel="preload" href="https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.woff2?87visu" as="font" crossorigin>
-<style>
-@font-face {
-  font-family: 'Socicon';
-  src:  url('https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.eot?87visu');
-  src:  url('https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.eot?87visu#iefix') format('embedded-opentype'),
-	url('https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.woff2?87visu') format('woff2'),
-	url('https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.ttf?87visu') format('truetype'),
-	url('https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.woff?87visu') format('woff'),
-	url('https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/fonts/Socicon.svg?87visu#Socicon') format('svg');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-</style>
-		<script type="text/javascript">
-		/* MonsterInsights Scroll Tracking */
-			if ( typeof(jQuery) !== 'undefined' ) {
-				jQuery( document ).ready(function(){
-					function monsterinsights_scroll_tracking_load() {
-						if ( ( typeof(__gaTracker) !== 'undefined' && __gaTracker && __gaTracker.hasOwnProperty( "loaded" ) && __gaTracker.loaded == true ) || ( typeof(__gtagTracker) !== 'undefined' && __gtagTracker ) ) {
-							(function(factory) {
-								factory(jQuery);
-							}(function($) {
-
-								/* Scroll Depth */
-								"use strict";
-								var defaults = {
-									percentage: true
-								};
-
-								var $window = $(window),
-									cache = [],
-									scrollEventBound = false,
-									lastPixelDepth = 0;
-
-								/*
-								 * Plugin
-								 */
-
-								$.scrollDepth = function(options) {
-
-									var startTime = +new Date();
-
-									options = $.extend({}, defaults, options);
-
-									/*
-									 * Functions
-									 */
-
-									function sendEvent(action, label, scrollDistance, timing) {
-                                                                                    var fieldsArray = {
-                                                hitType       : 'event',
-                                                eventCategory : 'Scroll Depth',
-                                                eventAction   : action,
-                                                eventLabel    : label,
-                                                eventValue    : 1,
-                                                nonInteraction: 1
-                                            };
-
-                                            if ( 'undefined' === typeof MonsterInsightsObject || 'undefined' === typeof MonsterInsightsObject.sendEvent ) {
-                                                return;
-                                            }
-
-                                            MonsterInsightsObject.sendEvent( fieldsArray );
-                                            if (arguments.length > 3) {
-                                                fieldsArray = {
-                                                    hitType        : 'timing',
-                                                    timingCategory : 'Scroll Depth',
-                                                    timingVar      : action,
-                                                    timingValue    : timing,
-                                                    timingLabel    : label,
-                                                    nonInteraction: 1
-                                                };
-                                                MonsterInsightsObject.sendEvent( fieldsArray );
-                                            }
-                                        									}
-
-									function calculateMarks(docHeight) {
-										return {
-											'25%' : parseInt(docHeight * 0.25, 10),
-											'50%' : parseInt(docHeight * 0.50, 10),
-											'75%' : parseInt(docHeight * 0.75, 10),
-											/* Cushion to trigger 100% event in iOS */
-											'100%': docHeight - 5
-										};
-									}
-
-									function checkMarks(marks, scrollDistance, timing) {
-										/* Check each active mark */
-										$.each(marks, function(key, val) {
-											if ( $.inArray(key, cache) === -1 && scrollDistance >= val ) {
-												sendEvent('Percentage', key, scrollDistance, timing);
-												cache.push(key);
-											}
-										});
-									}
-
-									function rounded(scrollDistance) {
-										/* Returns String */
-										return (Math.floor(scrollDistance/250) * 250).toString();
-									}
-
-									function init() {
-										bindScrollDepth();
-									}
-
-									/*
-									 * Public Methods
-									 */
-
-									/* Reset Scroll Depth with the originally initialized options */
-									$.scrollDepth.reset = function() {
-										cache = [];
-										lastPixelDepth = 0;
-										$window.off('scroll.scrollDepth');
-										bindScrollDepth();
-									};
-
-									/* Add DOM elements to be tracked */
-									$.scrollDepth.addElements = function(elems) {
-
-										if (typeof elems == "undefined" || !$.isArray(elems)) {
-											return;
-										}
-
-										$.merge(options.elements, elems);
-
-										/* If scroll event has been unbound from window, rebind */
-										if (!scrollEventBound) {
-											bindScrollDepth();
-										}
-
-									};
-
-									/* Remove DOM elements currently tracked */
-									$.scrollDepth.removeElements = function(elems) {
-
-										if (typeof elems == "undefined" || !$.isArray(elems)) {
-											return;
-										}
-
-										$.each(elems, function(index, elem) {
-
-											var inElementsArray = $.inArray(elem, options.elements);
-											var inCacheArray = $.inArray(elem, cache);
-
-											if (inElementsArray != -1) {
-												options.elements.splice(inElementsArray, 1);
-											}
-
-											if (inCacheArray != -1) {
-												cache.splice(inCacheArray, 1);
-											}
-
-										});
-
-									};
-
-									/*
-									 * Throttle function borrowed from:
-									 * Underscore.js 1.5.2
-									 * http://underscorejs.org
-									 * (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-									 * Underscore may be freely distributed under the MIT license.
-									 */
-
-									function throttle(func, wait) {
-										var context, args, result;
-										var timeout = null;
-										var previous = 0;
-										var later = function() {
-											previous = new Date;
-											timeout = null;
-											result = func.apply(context, args);
-										};
-										return function() {
-											var now = new Date;
-											if (!previous) previous = now;
-											var remaining = wait - (now - previous);
-											context = this;
-											args = arguments;
-											if (remaining <= 0) {
-												clearTimeout(timeout);
-												timeout = null;
-												previous = now;
-												result = func.apply(context, args);
-											} else if (!timeout) {
-												timeout = setTimeout(later, remaining);
-											}
-											return result;
-										};
-									}
-
-									/*
-									 * Scroll Event
-									 */
-
-									function bindScrollDepth() {
-
-										scrollEventBound = true;
-
-										$window.on('scroll.scrollDepth', throttle(function() {
-											/*
-											 * We calculate document and window height on each scroll event to
-											 * account for dynamic DOM changes.
-											 */
-
-											var docHeight = $(document).height(),
-												winHeight = window.innerHeight ? window.innerHeight : $window.height(),
-												scrollDistance = $window.scrollTop() + winHeight,
-
-												/* Recalculate percentage marks */
-												marks = calculateMarks(docHeight),
-
-												/* Timing */
-												timing = +new Date - startTime;
-
-											checkMarks(marks, scrollDistance, timing);
-										}, 500));
-
-									}
-
-									init();
-								};
-
-								/* UMD export */
-								return $.scrollDepth;
-
-							}));
-
-							jQuery.scrollDepth();
-						} else {
-							setTimeout(monsterinsights_scroll_tracking_load, 200);
-						}
-					}
-					monsterinsights_scroll_tracking_load();
-				});
-			}
-		/* End MonsterInsights Scroll Tracking */
-		
-</script>
-<link rel='stylesheet' id='dbdb-icons-socicon-css'  href='https://www.degc.org/wp-content/plugins/divi-booster/core/icons/socicon/style.css?ver=3.3.6' type='text/css' media='all' />
-<script type='text/javascript' id='awsm-team-js-extra'>
-/* <![CDATA[ */
-var awsmTeamPublic = {"ajaxurl":"https:\/\/www.degc.org\/wp-admin\/admin-ajax.php","deep_linking":{"enable":"","member":{"prefix":"member","suffix":"info"},"team":{"prefix":"team","suffix":"info"}},"scripts_src":"https:\/\/www.degc.org\/wp-content\/plugins\/awsm-team-pro\/js"};
-/* ]]> */
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/awsm-team-pro/js/team.min.js?ver=1.9.0' id='awsm-team-js' defer></script>
-<script type='text/javascript' id='rocket-browser-checker-js-after'>
-"use strict";var _createClass=function(){function defineProperties(target,props){for(var i=0;i<props.length;i++){var descriptor=props[i];descriptor.enumerable=descriptor.enumerable||!1,descriptor.configurable=!0,"value"in descriptor&&(descriptor.writable=!0),Object.defineProperty(target,descriptor.key,descriptor)}}return function(Constructor,protoProps,staticProps){return protoProps&&defineProperties(Constructor.prototype,protoProps),staticProps&&defineProperties(Constructor,staticProps),Constructor}}();function _classCallCheck(instance,Constructor){if(!(instance instanceof Constructor))throw new TypeError("Cannot call a class as a function")}var RocketBrowserCompatibilityChecker=function(){function RocketBrowserCompatibilityChecker(options){_classCallCheck(this,RocketBrowserCompatibilityChecker),this.passiveSupported=!1,this._checkPassiveOption(this),this.options=!!this.passiveSupported&&options}return _createClass(RocketBrowserCompatibilityChecker,[{key:"_checkPassiveOption",value:function(self){try{var options={get passive(){return!(self.passiveSupported=!0)}};window.addEventListener("test",null,options),window.removeEventListener("test",null,options)}catch(err){self.passiveSupported=!1}}},{key:"initRequestIdleCallback",value:function(){!1 in window&&(window.requestIdleCallback=function(cb){var start=Date.now();return setTimeout(function(){cb({didTimeout:!1,timeRemaining:function(){return Math.max(0,50-(Date.now()-start))}})},1)}),!1 in window&&(window.cancelIdleCallback=function(id){return clearTimeout(id)})}},{key:"isDataSaverModeOn",value:function(){return"connection"in navigator&&!0===navigator.connection.saveData}},{key:"supportsLinkPrefetch",value:function(){var elem=document.createElement("link");return elem.relList&&elem.relList.supports&&elem.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype}},{key:"isSlowConnection",value:function(){return"connection"in navigator&&"effectiveType"in navigator.connection&&("2g"===navigator.connection.effectiveType||"slow-2g"===navigator.connection.effectiveType)}}]),RocketBrowserCompatibilityChecker}();
-</script>
-<script type='text/javascript' id='rocket-delay-js-js-after'>
-(function() {
-"use strict";var e=function(){function n(e,t){for(var r=0;r<t.length;r++){var n=t[r];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}return function(e,t,r){return t&&n(e.prototype,t),r&&n(e,r),e}}();function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var t=function(){function r(e,t){n(this,r),this.attrName="data-rocketlazyloadscript",this.browser=t,this.options=this.browser.options,this.triggerEvents=e,this.userEventListener=this.triggerListener.bind(this)}return e(r,[{key:"init",value:function(){this._addEventListener(this)}},{key:"reset",value:function(){this._removeEventListener(this)}},{key:"_addEventListener",value:function(t){this.triggerEvents.forEach(function(e){return window.addEventListener(e,t.userEventListener,t.options)})}},{key:"_removeEventListener",value:function(t){this.triggerEvents.forEach(function(e){return window.removeEventListener(e,t.userEventListener,t.options)})}},{key:"_loadScriptSrc",value:function(){var r=this,e=document.querySelectorAll("script["+this.attrName+"]");0!==e.length&&Array.prototype.slice.call(e).forEach(function(e){var t=e.getAttribute(r.attrName);e.setAttribute("src",t),e.removeAttribute(r.attrName)}),this.reset()}},{key:"triggerListener",value:function(){this._loadScriptSrc(),this._removeEventListener(this)}}],[{key:"run",value:function(){RocketBrowserCompatibilityChecker&&new r(["keydown","mouseover","touchmove","touchstart"],new RocketBrowserCompatibilityChecker({passive:!0})).init()}}]),r}();t.run();
-}());
-</script>
-<script type='text/javascript' id='divi-custom-script-js-extra'>
-/* <![CDATA[ */
-var DIVI = {"item_count":"%d Item","items_count":"%d Items"};
-var et_shortcodes_strings = {"previous":"Previous","next":"Next"};
-var et_pb_custom = {"ajaxurl":"https:\/\/www.degc.org\/wp-admin\/admin-ajax.php","images_uri":"https:\/\/www.degc.org\/wp-content\/themes\/Divi\/images","builder_images_uri":"https:\/\/www.degc.org\/wp-content\/themes\/Divi\/includes\/builder\/images","et_frontend_nonce":"58611b3648","subscription_failed":"Please, check the fields below to make sure you entered the correct information.","et_ab_log_nonce":"844043fb7d","fill_message":"Please, fill in the following fields:","contact_error_message":"Please, fix the following errors:","invalid":"Invalid email","captcha":"Captcha","prev":"Prev","previous":"Previous","next":"Next","wrong_captcha":"You entered the wrong number in captcha.","wrong_checkbox":"Checkbox","ignore_waypoints":"no","is_divi_theme_used":"1","widget_search_selector":".widget_search","ab_tests":[],"is_ab_testing_active":"","page_id":"8935","unique_test_id":"","ab_bounce_rate":"5","is_cache_plugin_active":"yes","is_shortcode_tracking":"","tinymce_uri":""}; var et_builder_utils_params = {"condition":{"diviTheme":true,"extraTheme":false},"scrollLocations":["app","top"],"builderScrollLocations":{"desktop":"app","tablet":"app","phone":"app"},"onloadScrollLocation":"app","builderType":"fe"}; var et_frontend_scripts = {"builderCssContainerPrefix":"#et-boc","builderCssLayoutPrefix":"#et-boc .et-l"};
-var et_pb_box_shadow_elements = [];
-var et_pb_motion_elements = {"desktop":[],"tablet":[],"phone":[]};
-var et_pb_sticky_elements = [];
-/* ]]> */
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/themes/Divi/js/custom.unified.js?ver=4.8.2' id='divi-custom-script-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/themes/Divi/core/admin/js/es6-promise.auto.min.js?ver=4.8.2' id='es6-promise-js' defer></script>
-<script type='text/javascript' src='https://www.google.com/recaptcha/api.js?render=6Lf0c8sZAAAAANldC-knD923-KA_9NERkEC9BnaG&#038;ver=4.8.2' id='et-recaptcha-v3-js'></script>
-<script type='text/javascript' id='et-core-api-spam-recaptcha-js-extra'>
-/* <![CDATA[ */
-var et_core_api_spam_recaptcha = {"site_key":"6Lf0c8sZAAAAANldC-knD923-KA_9NERkEC9BnaG","page_action":{"action":"ldfa"}};
-/* ]]> */
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/themes/Divi/core/admin/js/recaptcha.js?ver=4.8.2' id='et-core-api-spam-recaptcha-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/3d-flipbook-dflip-lite/assets/js/dflip.min.js?ver=1.7.5.1' id='dflip-script-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/ajax-search-pro/js/min/jquery.lazy.min.js?ver=eFiWOQ' id='wd-asp-lazy-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill.min.js?ver=7.4.4' id='wp-polyfill-js' defer></script>
-<script type='text/javascript' id='wp-polyfill-js-after'>
-( 'fetch' in window ) || document.write( '<script src="https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill-fetch.min.js?ver=3.0.0" defer></scr' + 'ipt>' );( document.contains ) || document.write( '<script src="https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill-node-contains.min.js?ver=3.42.0" defer></scr' + 'ipt>' );( window.DOMRect ) || document.write( '<script src="https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill-dom-rect.min.js?ver=3.42.0" defer></scr' + 'ipt>' );( window.URL && window.URL.prototype && window.URLSearchParams ) || document.write( '<script src="https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill-url.min.js?ver=3.6.4" defer></scr' + 'ipt>' );( window.FormData && window.FormData.prototype.keys ) || document.write( '<script src="https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill-formdata.min.js?ver=3.0.12" defer></scr' + 'ipt>' );( Element.prototype.matches && Element.prototype.closest ) || document.write( '<script src="https://www.degc.org/wp-includes/js/dist/vendor/wp-polyfill-element-closest.min.js?ver=2.0.2" defer></scr' + 'ipt>' );
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-includes/js/dist/hooks.min.js?ver=84b89ab09cbfb4469f02183611cc0939' id='wp-hooks-js' defer></script>
-<script type='text/javascript' id='wd-asp-ajaxsearchpro-js-before'>
-var ASP = {"ajaxurl":"https:\/\/www.degc.org\/wp-content\/plugins\/ajax-search-pro\/ajax_search.php","backend_ajaxurl":"https:\/\/www.degc.org\/wp-admin\/admin-ajax.php","js_scope":"jQuery","asp_url":"https:\/\/www.degc.org\/wp-content\/plugins\/ajax-search-pro\/","upload_url":"https:\/\/www.degc.org\/wp-content\/uploads\/asp_upload\/","css_basic_url":"https:\/\/www.degc.org\/wp-content\/uploads\/asp_upload\/style.basic-po-no-da-au-se.css","detect_ajax":"0","media_query":"eFiWOQ","version":"5013","scrollbar":"1","css_loaded":"1","js_retain_popstate":"0","highlight":{"enabled":false,"data":[]},"fix_duplicates":"1","debug":"","analytics":{"method":0,"tracking_id":"","string":"?ajax_search={asp_term}","event":{"focus":{"active":1,"action":"focus","category":"ASP {search_id} | {search_name}","label":"Input focus","value":"1"},"search_start":{"active":0,"action":"search_start","category":"ASP {search_id} | {search_name}","label":"Phrase: {phrase}","value":"1"},"search_end":{"active":1,"action":"search_end","category":"ASP {search_id} | {search_name}","label":"{phrase} | {results_count}","value":"1"},"magnifier":{"active":1,"action":"magnifier","category":"ASP {search_id} | {search_name}","label":"Magnifier clicked","value":"1"},"return":{"active":1,"action":"return","category":"ASP {search_id} | {search_name}","label":"Return button pressed","value":"1"},"try_this":{"active":1,"action":"try_this","category":"ASP {search_id} | {search_name}","label":"Try this click | {phrase}","value":"1"},"facet_change":{"active":0,"action":"facet_change","category":"ASP {search_id} | {search_name}","label":"{option_label} | {option_value}","value":"1"},"result_click":{"active":1,"action":"result_click","category":"ASP {search_id} | {search_name}","label":"{result_title} | {result_url}","value":"1"}}}};
-</script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/ajax-search-pro/js/min/jquery.ajaxsearchpro-isotope-sb.min.js?ver=eFiWOQ' id='wd-asp-ajaxsearchpro-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/wp-media-folder/class/divi-widgets/scripts/frontend-bundle.min.js?ver=1.0.0' id='wpmf-frontend-bundle-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/main.js?ver=1.8.6.1' id='DiviBars-main-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/main.helper.js?ver=1.8.6.1' id='DiviBars-main-helper-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/themes/Divi/core/admin/js/common.js?ver=4.8.2' id='et-core-common-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/uploads/wtfdivi/wp_footer.js?ver=1611104748' id='wtfdivi-user-js-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-includes/js/wp-embed.min.js?ver=5.6.1' id='wp-embed-js' defer></script>
-<script type='text/javascript' src='https://www.degc.org/wp-content/plugins/divi-bars/assets/js/jquery.exitintent.js?ver=5.6.1' id='exit-intent-js' defer></script>
-<style id="et-builder-module-design-tb-10024-8935-cached-inline-styles">@font-face{font-family:"Benton Sans Condensed Bold";font-display:swap;src:url("https://degc.org/wp-content/uploads/et-fonts/BentonSans-CondensedBold.otf") format("opentype")}.et_pb_section_0_tb_footer{border-top-width:25px;border-top-color:#1fa797;position:static!important;top:0px;right:auto;bottom:auto;left:0px;position:sticky;bottom:0}.et_pb_section_0_tb_footer.et_pb_section{padding-top:16px;padding-bottom:0px;background-color:#ffffff!important}.et_pb_row_0_tb_footer{min-height:197px;overflow-y:visible}.et_pb_row_0_tb_footer.et_pb_row{padding-top:0px!important;padding-right:90px!important;padding-bottom:3px!important;padding-left:90px!important;margin-right:auto!important;margin-bottom:-2px!important;margin-left:auto!important;padding-top:0px;padding-right:90px;padding-bottom:3px;padding-left:90px}.et_pb_row_0_tb_footer,body #page-container .et-db #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row{max-width:100%}ul.et_pb_social_media_follow_0_tb_footer{margin-right:38px!important}.et_pb_social_media_follow_0_tb_footer{width:15%;position:absolute!important;top:50%;bottom:auto;right:0px;left:auto;transform:translateY(-50%)}.et_pb_social_media_follow_0_tb_footer li a.icon:before{transition:color 300ms ease 0ms;font-size:17px;line-height:34px;height:34px;width:34px}.et_pb_social_media_follow_0_tb_footer li.et_pb_social_icon a.icon:before{color:#003b48}.et_pb_social_media_follow_0_tb_footer li.et_pb_social_icon a.icon:hover:before{color:#1fa797}.et_pb_social_media_follow_0_tb_footer li a.icon{height:34px;width:34px}.et_pb_text_0_tb_footer.et_pb_text a{color:#003b48!important}.et_pb_text_0_tb_footer.et_pb_text{color:#003b48!important}.et_pb_text_0_tb_footer p{line-height:1em}.et_pb_text_0_tb_footer{font-size:10px;line-height:1em;padding-top:32px!important;padding-right:0px!important;padding-bottom:34px!important;padding-left:0px!important;margin-right:98px!important;margin-bottom:-1px!important;margin-left:0px!important;width:100%}.et_pb_text_0_tb_footer.et_pb_text a:hover{color:#1fa797!important}.et_pb_text_0_tb_footer a{font-weight:600}.et_pb_text_0_tb_footer h4{font-family:'Benton Sans Condensed Bold',Helvetica,Arial,Lucida,sans-serif;text-transform:uppercase;-webkit-text-decoration-color:#ffffff;text-decoration-color:#ffffff;color:#003b48!important;text-align:center}.et_pb_text_0_tb_footer h4:hover{color:#ffffff!important}.et_pb_text_0_tb_footer h5{font-weight:600;font-size:17px;color:#003b48!important}.et_pb_text_0_tb_footer.et_pb_text a,.et_pb_text_0_tb_footer h4{transition:color 300ms ease 0ms}.et_pb_image_0_tb_footer{position:absolute!important;top:50%;bottom:auto;left:50%;right:auto;transform:translateX(-50%) translateY(-50%);text-align:left;margin-left:0}.et_pb_social_media_follow_network_2_tb_footer a.icon{background-color:rgba(0,0,0,0)!important}.et_pb_social_media_follow_network_0_tb_footer a.icon{background-color:rgba(0,0,0,0)!important}.et_pb_social_media_follow_network_1_tb_footer a.icon{background-color:rgba(0,0,0,0)!important}.et_pb_social_media_follow_network_3_tb_footer a.icon{background-color:rgba(0,0,0,0)!important}.et_pb_text_0_tb_footer.et_pb_module{margin-left:auto!important;margin-right:0px!important}@media only screen and (min-width:981px){.et_pb_row_0_tb_footer,body #page-container .et-db #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row{width:1000px}.et_pb_column_1_tb_footer{margin:auto!important}.et_pb_column_2_tb_footer{margin:auto!important}.et_pb_image_0_tb_footer{width:105%}}@media only screen and (max-width:980px){.et_pb_section_0_tb_footer{border-top-width:25px;border-top-color:#1fa797}.et_pb_row_0_tb_footer{min-height:auto;display:flex}.et_pb_row_0_tb_footer.et_pb_row{padding-right:0px!important;padding-left:0px!important;padding-right:0px!important;padding-left:0px!important}.et_pb_row_0_tb_footer,body #page-container .et-db #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_0_tb_footer.et_pb_row{width:100%}.et_pb_column_0_tb_footer{display:block!important}.et_pb_social_media_follow_0_tb_footer li a.icon:before{font-size:12px;line-height:24px;height:24px;width:24px}.et_pb_social_media_follow_0_tb_footer li a.icon{height:24px;width:24px}.et_pb_image_0_tb_footer{width:70%;max-width:70%;position:static!important;top:0px;right:auto;bottom:auto;left:0px;transform:translateX(0px) translateY(0px)}}@media only screen and (min-width:768px) and (max-width:980px){.et_pb_column_1_tb_footer{width:1500px!important;margin:auto!important}.et_pb_column_2_tb_footer{margin:auto!important}}@media only screen and (max-width:767px){.et_pb_section_0_tb_footer{border-top-width:25px;border-top-color:#1fa797}.et_pb_row_0_tb_footer{min-height:auto;display:flex}.et_pb_row_0_tb_footer.et_pb_row{padding-right:0px!important;padding-left:0px!important;padding-right:0px!important;padding-left:0px!important}.et_pb_column_1_tb_footer{width:2000px!important;margin:auto!important}.et_pb_column_2_tb_footer{margin:auto!important}.et_pb_image_0_tb_footer{width:100%;max-width:100%;position:absolute!important;top:50%;bottom:auto;left:50%;right:auto;transform:translateX(-50%) translateY(-50%);width:100%!important}body.logged-in.admin-bar .et_pb_image_0_tb_footer{top:50%}}@font-face{font-family:"Benton Sans Condensed Bold";font-display:swap;src:url("https://degc.org/wp-content/uploads/et-fonts/BentonSans-CondensedBold.otf") format("opentype")}div.et_pb_section.et_pb_section_0{background-image:radial-gradient(circle at center,rgba(0,59,72,0.2) 0%,rgba(0,0,0,0) 100%),url(https://degc.org/wp-content/uploads/2020/08/Public-Authorities-Hero-AdobeStock_119945210-2560-x-794-1.jpeg)!important}.et_pb_section_0.et_pb_section{padding-top:24vh;padding-bottom:24vh}.et_pb_text_0 h1{font-weight:700;color:#ffffff!important;text-align:center}.et_pb_tabs_0 .et_pb_tab{padding-bottom:0px}.et_pb_button_1,.et_pb_button_1:after{transition:all 300ms ease 0ms}.et_pb_button_3,.et_pb_button_3:after{transition:all 300ms ease 0ms}.et_pb_button_2,.et_pb_button_2:after{transition:all 300ms ease 0ms}.et_pb_button_4,.et_pb_button_4:after{transition:all 300ms ease 0ms}.et_pb_button_0,.et_pb_button_0:after{transition:all 300ms ease 0ms}.et_pb_section_2.et_pb_section{padding-top:0px;padding-bottom:0px;margin-top:-1px;margin-bottom:-1px}.et_pb_section_3.et_pb_section{padding-top:0px;padding-bottom:0px;margin-top:-1px;margin-bottom:-1px}.et_pb_row_8.et_pb_row{padding-top:0px!important;padding-right:0px!important;padding-bottom:0px!important;padding-left:0px!important;margin-top:0px!important;margin-right:0px!important;margin-bottom:0px!important;margin-left:0px!important;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px}.et_pb_row_6.et_pb_row{padding-top:0px!important;padding-right:0px!important;padding-bottom:0px!important;padding-left:0px!important;margin-top:0px!important;margin-right:0px!important;margin-bottom:0px!important;margin-left:0px!important;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px}.et_pb_row_5.et_pb_row{padding-top:0px!important;padding-right:0px!important;padding-bottom:0px!important;padding-left:0px!important;margin-top:0px!important;margin-right:0px!important;margin-bottom:0px!important;margin-left:0px!important;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px}.et_pb_row_7.et_pb_row{padding-top:0px!important;padding-right:0px!important;padding-bottom:0px!important;padding-left:0px!important;margin-top:0px!important;margin-right:0px!important;margin-bottom:0px!important;margin-left:0px!important;padding-top:0px;padding-right:0px;padding-bottom:0px;padding-left:0px}.et_pb_row_5,body #page-container .et-db #et-boc .et-l .et_pb_row_5.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_5.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_5.et_pb_row{width:100%;max-width:none}.et_pb_row_6,body #page-container .et-db #et-boc .et-l .et_pb_row_6.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_6.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_6.et_pb_row{width:100%;max-width:none}.et_pb_row_7,body #page-container .et-db #et-boc .et-l .et_pb_row_7.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_7.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_7.et_pb_row{width:100%;max-width:none}.et_pb_row_8,body #page-container .et-db #et-boc .et-l .et_pb_row_8.et_pb_row,body.et_pb_pagebuilder_layout.single #page-container #et-boc .et-l .et_pb_row_8.et_pb_row,body.et_pb_pagebuilder_layout.single.et_full_width_page #page-container #et-boc .et-l .et_pb_row_8.et_pb_row{width:100%;max-width:none}.et_pb_row_7{display:flex}.et_pb_row_5{display:flex}.et_pb_row_8{display:flex}.et_pb_row_6{display:flex}.et_pb_image_0 .et_pb_image_wrap img{max-height:30px}.et_pb_image_1 .et_pb_image_wrap img{max-height:30px}.et_pb_image_0{margin-top:0.5vw!important;margin-right:0.5vw!important;margin-bottom:0.5vw!important;margin-left:0.5vw!important;text-align:center}.et_pb_image_1{margin-top:0.5vw!important;margin-right:0.5vw!important;margin-bottom:0.5vw!important;margin-left:0.5vw!important;text-align:center}.et_pb_image_2 .et_pb_image_wrap{display:block}.et_pb_image_1 .et_pb_image_wrap{display:block}.et_pb_image_0 .et_pb_image_wrap{display:block}.et_pb_image_3 .et_pb_image_wrap{display:block}.et_pb_text_2.et_pb_text{color:#ffffff!important}.et_pb_text_3.et_pb_text{color:#ffffff!important}.et_pb_text_3 p{line-height:1.2em}.et_pb_text_2 p{line-height:1.2em}.et_pb_text_2{font-size:15px;line-height:1.2em;margin-top:10px!important;margin-right:3vw!important;margin-bottom:10px!important;margin-left:3vw!important}.et_pb_text_3{font-size:15px;line-height:1.2em;margin-top:10px!important;margin-right:3vw!important;margin-bottom:10px!important;margin-left:3vw!important}.et_pb_text_3 h3{font-size:16px;color:#ffffff!important}.et_pb_text_2 h3{font-size:16px;color:#ffffff!important}.et_pb_button_1_wrapper .et_pb_button_1,.et_pb_button_1_wrapper .et_pb_button_1:hover{padding-top:2px!important;padding-bottom:2px!important}.et_pb_button_2_wrapper .et_pb_button_2,.et_pb_button_2_wrapper .et_pb_button_2:hover{padding-top:2px!important;padding-bottom:2px!important}body #page-container .et_pb_section .et_pb_button_2{color:#ffffff!important;font-size:16px}body #page-container .et_pb_section .et_pb_button_1{color:#ffffff!important;font-size:16px}body #page-container .et_pb_section .et_pb_button_4:after{font-size:1.6em}body #page-container .et_pb_section .et_pb_button_2:after{font-size:1.6em}body #page-container .et_pb_section .et_pb_button_3:after{font-size:1.6em}body #page-container .et_pb_section .et_pb_button_1:after{font-size:1.6em}body.et_button_custom_icon #page-container .et_pb_button_1:after{font-size:16px}body.et_button_custom_icon #page-container .et_pb_button_2:after{font-size:16px}.et_pb_image_3 .et_pb_image_wrap img{max-height:40px}.et_pb_image_2 .et_pb_image_wrap img{max-height:40px}.et_pb_image_2{margin-top:5px!important;margin-right:5px!important;margin-bottom:5px!important;margin-left:5px!important;width:100%;text-align:center}.et_pb_image_3{margin-top:5px!important;margin-right:5px!important;margin-bottom:5px!important;margin-left:5px!important;width:100%;text-align:center}body #page-container .et_pb_section .et_pb_button_4{color:#ffffff!important;border-width:0px!important;font-size:14px;font-weight:700!important}body #page-container .et_pb_section .et_pb_button_3{color:#ffffff!important;border-width:0px!important;font-size:14px;font-weight:700!important}body.et_button_custom_icon #page-container .et_pb_button_4:after{font-size:14px}body.et_button_custom_icon #page-container .et_pb_button_3:after{font-size:14px}.et_pb_column_4{background-color:#dd722a;box-shadow:8px -1px 9px 2px rgba(0,0,0,0.3);width:8%!important;min-width:70px;display:flex;flex-direction:column;justify-content:center}.et_pb_column_11{background-color:rgba(221,114,42,0.75);box-shadow:8px -1px 9px 2px rgba(0,0,0,0.3);width:100%!important;display:flex;flex-direction:column;justify-content:center}.et_pb_column_5{background-color:rgba(221,114,42,0.75);box-shadow:8px -1px 9px 2px rgba(0,0,0,0.3);width:100%!important;display:flex;flex-direction:column;justify-content:center}.et_pb_column_6{background-color:rgba(221,114,42,0.61)}.et_pb_column_7{background-color:#31a59a;box-shadow:8px 3px 9px 2px rgba(0,0,0,0.3);width:8%!important;min-width:70px;display:flex;flex-direction:column;justify-content:center}.et_pb_column_13{background-color:rgba(49,165,154,0.78);box-shadow:8px 3px 9px 2px rgba(0,0,0,0.3);width:100%!important;display:flex;flex-direction:column;justify-content:center}.et_pb_column_8{background-color:rgba(49,165,154,0.78);box-shadow:8px 3px 9px 2px rgba(0,0,0,0.3);width:100%!important;display:flex;flex-direction:column;justify-content:center}.et_pb_column_9{background-color:rgba(49,165,154,0.56)}.et_pb_column_10{background-color:#dd722a;box-shadow:8px -1px 9px 2px rgba(0,0,0,0.3);width:20%!important;display:flex;flex-direction:column;justify-content:center}.et_pb_column_12{background-color:#31a59a;box-shadow:8px 3px 9px 2px rgba(0,0,0,0.3);width:20%!important;display:flex;flex-direction:column;justify-content:center}.et_pb_section_0{width:100%;margin-left:auto!important;margin-right:auto!important}.et_pb_image_0.et_pb_module{margin-left:auto!important;margin-right:auto!important}.et_pb_image_3.et_pb_module{margin-left:auto!important;margin-right:auto!important}.et_pb_image_1.et_pb_module{margin-left:auto!important;margin-right:auto!important}.et_pb_image_2.et_pb_module{margin-left:auto!important;margin-right:auto!important}@media only screen and (min-width:981px){.et_pb_image_0{width:100%}.et_pb_image_1{width:100%}.et_pb_column_6{width:36%!important;max-width:350px;display:flex;flex-direction:column;justify-content:center}.et_pb_column_9{width:36%!important;max-width:350px;display:flex;flex-direction:column;justify-content:center}.et_pb_section_3{display:none!important}}@media only screen and (max-width:980px){.et_pb_image_0{width:100%}.et_pb_image_1{width:100%}.et_pb_text_2{font-size:14px;margin-top:10px!important;margin-right:3vw!important;margin-bottom:9px!important;margin-left:3vw!important}.et_pb_text_3{font-size:14px;margin-top:10px!important;margin-right:3vw!important;margin-bottom:9px!important;margin-left:3vw!important}.et_pb_text_2 h3{font-size:17px;line-height:1em}.et_pb_text_3 h3{font-size:17px;line-height:1em}body #page-container .et_pb_section .et_pb_button_1:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_2:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_3:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_4:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_1:hover:after{opacity:1}body #page-container .et_pb_section .et_pb_button_2:hover:after{opacity:1}body #page-container .et_pb_section .et_pb_button_3:hover:after{opacity:1}body #page-container .et_pb_section .et_pb_button_4:hover:after{opacity:1}}@media only screen and (min-width:768px) and (max-width:980px){.et_pb_column_6{width:27%!important;max-width:400px;display:flex;flex-direction:column;justify-content:center}.et_pb_column_9{width:27%!important;max-width:400px;display:flex;flex-direction:column;justify-content:center}.et_pb_section_3{display:none!important}}@media only screen and (max-width:767px){.et_pb_text_0 h1{font-size:46px}.et_pb_section_2{display:none!important}.et_pb_column_7{display:none!important}.et_pb_column_4{display:none!important}.et_pb_column_6{}.et_pb_row_6{}.et_pb_row_5{}.et_pb_column_9{}body #page-container .et_pb_section .et_pb_button_1:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_2:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_3:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_4:after{display:inline-block;opacity:0}body #page-container .et_pb_section .et_pb_button_1:hover:after{opacity:1}body #page-container .et_pb_section .et_pb_button_2:hover:after{opacity:1}body #page-container .et_pb_section .et_pb_button_3:hover:after{opacity:1}body #page-container .et_pb_section .et_pb_button_4:hover:after{opacity:1}.et_pb_row_8{display:flex}}</style><script>window.lazyLoadOptions={elements_selector:"img[data-lazy-src],.rocket-lazyload,iframe[data-lazy-src]",data_src:"lazy-src",data_srcset:"lazy-srcset",data_sizes:"lazy-sizes",class_loading:"lazyloading",class_loaded:"lazyloaded",threshold:300,callback_loaded:function(element){if(element.tagName==="IFRAME"&&element.dataset.rocketLazyload=="fitvidscompatible"){if(element.classList.contains("lazyloaded")){if(typeof window.jQuery!="undefined"){if(jQuery.fn.fitVids){jQuery(element).parent().fitVids()}}}}}};window.addEventListener('LazyLoad::Initialized',function(e){var lazyLoadInstance=e.detail.instance;if(window.MutationObserver){var observer=new MutationObserver(function(mutations){var image_count=0;var iframe_count=0;var rocketlazy_count=0;mutations.forEach(function(mutation){for(i=0;i<mutation.addedNodes.length;i++){if(typeof mutation.addedNodes[i].getElementsByTagName!=='function'){continue}
-if(typeof mutation.addedNodes[i].getElementsByClassName!=='function'){continue}
-images=mutation.addedNodes[i].getElementsByTagName('img');is_image=mutation.addedNodes[i].tagName=="IMG";iframes=mutation.addedNodes[i].getElementsByTagName('iframe');is_iframe=mutation.addedNodes[i].tagName=="IFRAME";rocket_lazy=mutation.addedNodes[i].getElementsByClassName('rocket-lazyload');image_count+=images.length;iframe_count+=iframes.length;rocketlazy_count+=rocket_lazy.length;if(is_image){image_count+=1}
-if(is_iframe){iframe_count+=1}}});if(image_count>0||iframe_count>0||rocketlazy_count>0){lazyLoadInstance.update()}});var b=document.getElementsByTagName("body")[0];var config={childList:!0,subtree:!0};observer.observe(b,config)}},!1)</script><script data-no-minify="1" async src="https://www.degc.org/wp-content/plugins/wp-rocket/assets/js/lazyload/16.1/lazyload.min.js"></script>		
-			<span class="et_pb_scroll_top et-pb-icon"></span>
-	</body>
+<p><span><a href="https://www.degc.org/_files/ugd/9ce86c_1111a9c9e7324221afd3b0d58c4a5acd.pdf" target="_blank"><span>JUNE 11, 2024 LDFA BOARD MEETING CANCELLATION NOTICE</span></a></span></p>
+<p><span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/9ce86c_991bd1cb9957473da00b57346d389450.pdf" target="_blank"><span>MAY 23, 2024 LDFA BOARD MEETING CANCELLATION NOTICE</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-mcdkfe4v"><!--$--><div id="comp-mcdkfe4v"><div><div><!--$--><div id="comp-mghy76gu"><p><span><a href="https://www.degc.org/_files/ugd/69e7f0_3d93ca50c7604ff39d9d0e5ff2cedcba.pdf" target="_blank">JUNE 23, 2026 LDFA BOARD MEETING CANCELLATION NOTICE</a></span></p>
+<p><span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_3a865bba9528471685aef9ffece3e55c.pdf" target="_blank">JUNE 16, 2026 LDFA BOARD MEETING AGENDA</a></span>&nbsp;</p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_47f5db742c9e4261ac13288ad513ed36.pdf" target="_blank">JUNE 16, 2026 LDFA BOARD MEETING NOTICE</a></span></p>
+<p><span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_4a4a874b47c5488096a13a3103bedcbf.pdf" target="_blank">JUNE 9, 2026 LDFA BOARD MEETING CANCELLATION</a></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_273c630fe27f4745853008675a746d9d.pdf" target="_blank">JUNE 9, 2026 LDFA BOARD MEETING NOTICE</a></span></p>
+<p><span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_365e0441e59e4a2daa7898928095986b.pdf" target="_blank"><span>NOTICE OF THE DECEMBER 3, 2025 PUBLIC INFORMATIONAL MEETING NO. 2</span></a></span></p>
+<p><span><span><span>​</span></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_2c62d4535c084e75b27b62c2d2e50dc2.pdf" target="_blank"><span>JANUARY 13, 2026 LDFA BOARD MEETING NOTICE</span></a></span></p>
+<p><span>​</span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_41d99a42762c42a19224519e8d4b68a7.pdf" target="_blank">OCTOBER 28, 2025 LDFA BOARD MEETING CANCELLATION NOTICE</a></span></p>
+<p><span><span>​</span>​</span></p>
+<p><span><span><a href="https://www.degc.org/_files/ugd/69e7f0_9a2eabd0780a44e19eea15c15b0b63da.pdf" target="_blank">OCTOBER 14, 2025 LDFA BOARD MEETING MINUTES</a></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_7004cf8a11914d23a40b90a42c9fcc5f.pdf" target="_blank">OCTOBER 14, 2025 LDFA BOARD MEETING AGENDA</a></span></p>
+<p><span><span>OCTOBER 14, 2025 LDFA BOARD MEETING NOTICE</span></span></p>
+<p><span><span><span><span>​</span>​</span></span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_944fc2f3c73542de89ee78fc60ff30f5.pdf" target="_blank"><span><span>​</span></span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div><div><div aria-hidden="true" tabindex="-1" role="tabpanel" aria-labelledby="tab-comp-mqv2vh64"><!--$--><div id="comp-mqv2vh64"><div><div><!--$--><div id="comp-mqv2vh77"><p><span><a href="https://www.degc.org/_files/ugd/69e7f0_8942f88c6129480fa8f051115f5e224f.pdf" target="_blank">LDFA FY 2026-2027 REGULAR BOARD MEETINGS&nbsp;</a></span></p>
+<p><span><span>​</span></span></p>
+<p><span><a href="https://www.degc.org/_files/ugd/69e7f0_303502854fa749d88374308aeaabacad.pdf" target="_blank"><span>NOTICE OF THE AUGUST 5, 2026 PUBLIC INFORMATIONAL MEETING NO. 1</span></a></span></p></div><!--/$--></div></div></div><!--/$--></div></div></div></div></div><!--/$--></div></div></section><!--/$--><!--$--><section id="comp-ltq9l6zn5" tabindex="-1"><div id="bgLayers_comp-ltq9l6zn5"><div></div><div id="bgMedia_comp-ltq9l6zn5"></div></div><div><div><!--$--><section id="comp-ltq9l6zr"><div id="bgLayers_comp-ltq9l6zr"><div></div><div id="bgMedia_comp-ltq9l6zr"></div></div><div><!--$--><div id="comp-ltq9l6zt"><div id="bgLayers_comp-ltq9l6zt"><div></div><div id="bgMedia_comp-ltq9l6zt"><wow-image id="img_comp-ltq9l6zt"><img src="https://static.wixstatic.com/media/nsplsh_8fa1edd053454c4189b84ad3842d29e3~mv2.jpg/v1/fill/w_134,h_90,al_c,q_80,usm_0.66_1.00_0.01,blur_2,enc_avif,quality_auto/nsplsh_8fa1edd053454c4189b84ad3842d29e3~mv2.jpg" alt="Image by LinkedIn Sales Solutions" width="980" height="598"/></wow-image></div></div><div><div><!--$--><div id="comp-ltq9l6zu7"><div></div><div><div><!--$--><div id="comp-ltq9l6zw"><div><img loading="lazy" sizes="282px" srcSet="https://static.wixstatic.com/media/3435b9_6b5218398ccb47a29b87f68a96da7c4b~mv2.png/v1/fill/w_282,h_282,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/team_jennifer.png 1x, https://static.wixstatic.com/media/3435b9_6b5218398ccb47a29b87f68a96da7c4b~mv2.png/v1/fill/w_564,h_564,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/team_jennifer.png 2x" id="img_comp-ltq9l6zw" src="https://static.wixstatic.com/media/3435b9_6b5218398ccb47a29b87f68a96da7c4b~mv2.png/v1/fill/w_282,h_282,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/team_jennifer.png" alt="team_jennifer.png" width="282" height="282"/></div></div><!--/$--><!--$--><div id="comp-ltq9l6zx2"><div><div><!--$--><div id="comp-ltq9l6zy3"><h3><span>JENNIFER KANALOS</span></h3></div><!--/$--><!--$--><div id="comp-ltq9l6zz6"><p>Vice President of Board Administration &amp; Governmental Affairs</p></div><!--/$--><!--$--><div id="comp-ltq9l7011"><ul aria-label="Social Bar"><li id="dataItem-ltq9l71h-comp-ltq9l7011"><a href="tel:313-483-4150"><img sizes="28px" srcSet="https://static.wixstatic.com/media/a7a51b_8750b669f34d4e57b496228353518a79~mv2.png/v1/fill/w_28,h_28,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a7a51b_8750b669f34d4e57b496228353518a79~mv2.png 1x, https://static.wixstatic.com/media/a7a51b_8750b669f34d4e57b496228353518a79~mv2.png/v1/fill/w_56,h_56,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a7a51b_8750b669f34d4e57b496228353518a79~mv2.png 2x" id="img_0_comp-ltq9l7011" src="https://static.wixstatic.com/media/a7a51b_8750b669f34d4e57b496228353518a79~mv2.png/v1/fill/w_28,h_28,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a7a51b_8750b669f34d4e57b496228353518a79~mv2.png" alt="" width="28" height="28"/></a></li><li id="dataItem-ltq9l71h2-comp-ltq9l7011"><a href="mailto:jkanalos@degc.org" target="_self"><img sizes="28px" srcSet="https://static.wixstatic.com/media/a7a51b_3a62609e11ae437e97b2e322f6a99b5a~mv2.png/v1/fill/w_28,h_28,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a7a51b_3a62609e11ae437e97b2e322f6a99b5a~mv2.png 1x, https://static.wixstatic.com/media/a7a51b_3a62609e11ae437e97b2e322f6a99b5a~mv2.png/v1/fill/w_56,h_56,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a7a51b_3a62609e11ae437e97b2e322f6a99b5a~mv2.png 2x" id="img_1_comp-ltq9l7011" src="https://static.wixstatic.com/media/a7a51b_3a62609e11ae437e97b2e322f6a99b5a~mv2.png/v1/fill/w_28,h_28,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a7a51b_3a62609e11ae437e97b2e322f6a99b5a~mv2.png" alt="" width="28" height="28"/></a></li></ul></div><!--/$--></div></div></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-ltq9l7041"><h3><span><span><span>LET US HELP YOU WITH LOCAL DEVELOPMENT FINANCING</span></span></span></h3></div><!--/$--></div></div></div><!--/$--></div></section><!--/$--></div></div></section><!--/$--></div></div></div><!--/$--></div></div></div></div></main><!--$--><div id="soapAfterPagesContainer"><div><div><!--$--><div id="CONTROLLER_COMP_CUSTOM_ID"></div><!--/$--></div></div></div><!--/$--><div id="pinnedBottomRight"><!--$--><div id="comp-lxeuggzx-pinned-layer"><!--$--><div id="comp-lxeuggzx"><a href="https://www.degc.org/ldfa" target="_self"><div>
+</div></a></div><!--/$--></div><!--/$--></div><footer id="SITE_FOOTER" tabindex="-1"><div><div></div></div><div><div><div></div></div><div><div><div><!--$--><section id="comp-juqqc61m"><div id="bgLayers_comp-juqqc61m"><div></div><div id="bgMedia_comp-juqqc61m"></div></div><div><!--$--><div id="comp-juqqc62s"><div id="bgLayers_comp-juqqc62s"><div></div><div id="bgMedia_comp-juqqc62s"></div></div><div><div><!--$--><div id="comp-juqqlxvz"><h2><span><span>FOR GENERAL INQUIRIES</span></span></h2></div><!--/$--><!--$--><div id="comp-juqqn5ca"><p><span><span><span>Please fill out the form below to get in touch with us.</span></span></span></p></div><!--/$--><!--$--><div id="comp-juqqz6mh"><div><div><!--$--><form id="comp-juqqz6nm"><div><div><!--$--><div id="comp-juqqz6wu"><div><input name="name" id="input_comp-juqqz6wu" type="text" placeholder="Name" aria-invalid="false" maxLength="100" autoComplete="off" aria-required="false" value=""/></div></div><!--/$--><!--$--><div id="comp-jutim66s"><div><input name="email" id="input_comp-jutim66s" type="email" placeholder="Email" required="" aria-invalid="false" pattern="^.+@.+\.[a-zA-Z]{2,63}$" maxLength="250" autoComplete="off" value=""/></div></div><!--/$--><!--$--><div id="comp-juqqz6x1"><div><input name="phone" id="input_comp-juqqz6x1" type="tel" placeholder="Phone" aria-invalid="false" maxLength="50" autoComplete="off" aria-required="false" value=""/></div></div><!--/$--><!--$--><div id="comp-ltfyr3ph"><label for="textarea_comp-ltfyr3ph"></label><textarea id="textarea_comp-ltfyr3ph" placeholder="How can we help you?" aria-required="false" aria-invalid="false"></textarea></div><!--/$--><!--$--><div id="comp-juqqz6xj"><p><span>Thanks for Submitting!</span></p></div><!--/$--><!--$--><div id="comp-juqqz6xg" aria-disabled="false"><button aria-disabled="false" aria-label="SUBMIT"><span>SUBMIT</span></button></div><!--/$--></div></div></form><!--/$--></div></div></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-juqqej7m"><div id="bgLayers_comp-juqqej7m"><div></div><div id="bgMedia_comp-juqqej7m"></div></div><div><div><!--$--><div id="comp-ltg9tdhw"><div><div><!--$--><div id="comp-juqu94kw"><h3><span>ADDRESS</span></h3></div><!--/$--><!--$--><div id="comp-juqudjj8"><p><span>Detroit Economic Growth Corporation </span></p>
+<p><span>150 W. Jefferson, Suite 1700, Detroit, MI 48226</span></p></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-juqtfe32"><div></div><div><div><!--$--><div id="comp-juqtkolj" aria-disabled="false"><a href="https://www.facebook.com/DEGCAllBusiness/" target="_blank" rel="noreferrer noopener" aria-disabled="false" aria-label="Facebook"><span>Facebook</span></a></div><!--/$--><!--$--><div id="comp-juqth4iz"><ul aria-label="Social Bar"><li id="dataItem-juqth4jv1-comp-juqth4iz"><a href="https://www.facebook.com/DEGCAllBusiness/" target="_blank" rel="noreferrer noopener" aria-label="Facebook logo"><img sizes="40px" srcSet="https://static.wixstatic.com/media/0fdef751204647a3bbd7eaa2827ed4f9.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/0fdef751204647a3bbd7eaa2827ed4f9.png 1x, https://static.wixstatic.com/media/0fdef751204647a3bbd7eaa2827ed4f9.png/v1/fill/w_80,h_80,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/0fdef751204647a3bbd7eaa2827ed4f9.png 2x" id="img_0_comp-juqth4iz" src="https://static.wixstatic.com/media/0fdef751204647a3bbd7eaa2827ed4f9.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/0fdef751204647a3bbd7eaa2827ed4f9.png" alt="Facebook logo" width="40" height="40"/></a></li></ul></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-juqu0j6m"><div></div><div><div><!--$--><div id="comp-juqu0j7s" aria-disabled="false"><a href="https://www.instagram.com/degcallbusiness/" target="_blank" rel="noreferrer noopener" aria-disabled="false" aria-label="Instagram"><span>Instagram</span></a></div><!--/$--><!--$--><div id="comp-juqu0j7o"><ul aria-label="Social Bar"><li id="dataItem-juqu0j7p1-comp-juqu0j7o"><a href="https://www.instagram.com/degcallbusiness/" target="_blank" rel="noreferrer noopener" aria-label="Instagram logo"><img sizes="40px" srcSet="https://static.wixstatic.com/media/01c3aff52f2a4dffa526d7a9843d46ea.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/01c3aff52f2a4dffa526d7a9843d46ea.png 1x, https://static.wixstatic.com/media/01c3aff52f2a4dffa526d7a9843d46ea.png/v1/fill/w_80,h_80,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/01c3aff52f2a4dffa526d7a9843d46ea.png 2x" id="img_0_comp-juqu0j7o" src="https://static.wixstatic.com/media/01c3aff52f2a4dffa526d7a9843d46ea.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/01c3aff52f2a4dffa526d7a9843d46ea.png" alt="Instagram logo" width="40" height="40"/></a></li></ul></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-juqu0m1y"><div></div><div><div><!--$--><div id="comp-juqu0m30" aria-disabled="false"><a href="https://www.linkedin.com/company/detroit-economic-growth-corporation/" target="_blank" rel="noreferrer noopener" aria-disabled="false" aria-label="Linked In"><span>Linked In</span></a></div><!--/$--><!--$--><div id="comp-juqu0m2x"><ul aria-label="Social Bar"><li id="dataItem-ltfylo0l-comp-juqu0m2x"><a href="https://www.linkedin.com/company/detroit-economic-growth-corporation/" target="_blank" rel="noreferrer noopener"><img sizes="40px" srcSet="https://static.wixstatic.com/media/11062b_72c275822d4344358ee379f14e7e115f~mv2.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_72c275822d4344358ee379f14e7e115f~mv2.png 1x, https://static.wixstatic.com/media/11062b_72c275822d4344358ee379f14e7e115f~mv2.png/v1/fill/w_80,h_80,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_72c275822d4344358ee379f14e7e115f~mv2.png 2x" id="img_0_comp-juqu0m2x" src="https://static.wixstatic.com/media/11062b_72c275822d4344358ee379f14e7e115f~mv2.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_72c275822d4344358ee379f14e7e115f~mv2.png" alt="" width="40" height="40"/></a></li></ul></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-lxeuofkb"><div></div><div><div><!--$--><div id="comp-lxeuoflb1" aria-disabled="false"><a href="https://www.youtube.com/channel/UCYOkOt8yzAfrbgxFSH7_WNA/videos" target="_blank" rel="noreferrer noopener" aria-disabled="false" aria-label="YouTube"><span>YouTube</span></a></div><!--/$--><!--$--><div id="comp-lxeuoflg1"><ul aria-label="Social Bar"><li id="dataItem-lxeuq8dp-comp-lxeuoflg1"><a href="https://www.youtube.com/channel/UCYOkOt8yzAfrbgxFSH7_WNA/videos" target="_blank" rel="noreferrer noopener" aria-label="Youtube"><img sizes="40px" srcSet="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png 1x, https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_80,h_80,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png 2x" id="img_0_comp-lxeuoflg1" src="https://static.wixstatic.com/media/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png/v1/fill/w_40,h_40,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_30de4e7217e64dfdadc3ea03beea7b94~mv2.png" alt="Youtube" width="40" height="40"/></a></li></ul></div><!--/$--></div></div></div><!--/$--><!--$--><div id="comp-mhdxtbmn"><a href="https://lp.constantcontactpages.com/sl/oyRcR1w" target="_blank" rel="noreferrer noopener" aria-label="Sign up for the DEGC Newsletter!"><span><span>Sign up for the DEGC Newsletter!</span><span aria-hidden="true"><span>
+</span></span></span></a></div><!--/$--><!--$--><div id="comp-juqui4sl"><p><span><span><span>&copy; 2026 Detroit Economic Growth Corporation. All Rights Reserved.</span></span></span></p></div><!--/$--><!--$--><div id="comp-jv533hyj"><p><span><span><a href="https://www.degc.org/ldfa" target="_self"><span>Back to Top</span></a></span></span></p></div><!--/$--><div></div></div></div></div><!--/$--></div></section><!--/$--></div></div></div></div></footer></div></div><div id="SCROLL_TO_BOTTOM" role="region" tabindex="-1" aria-label="bottom of page"><span>bottom of page</span></div></div></div>
+    <!-- Polyfills check -->
+<!-- initCustomElements # 1-->
+<!-- preloading pre-scripts -->
+    </link>
+    </link>
+    </link>
+    </link>
+  <!-- sentryOnLoad Setup Script -->
+  <!-- Sentry Loader Script -->
+  <!-- Sentry's makeMultiplexedTransport -->
+  <!-- Sentry's moduleMetadataIntegration -->
+<!-- Add the rest of the ViewerModel -->
+<!-- renderIndicator -->
+<!-- versionIndicator -->
+<!-- used platform apis start -->
+<!-- used platform apis end -->
+<!-- Business Manager -->
+<!-- initCustomElements #2 -->
+<!-- react -->
+<!-- react-dom -->
+<!-- lodash script -->
+<!-- initial scripts -->
+<!-- scriptTagsToPreload -->
+    <!-- Old Browsers Deprecation -->
+<!-- bi -->
+<!-- bi -->
+    <!--pageHtmlEmbeds.bodyEnd start-->
+    <!--pageHtmlEmbeds.bodyEnd end-->
+<!-- warmup data start -->
+<!-- warmup data end -->
+<!-- presets polyfill -->
+<!-- detect browser zoom -->
+</body>
 </html>
-
-<!-- This website is like a Rocket, isn't it? Performance optimized by WP Rocket. Learn more: https://wp-rocket.me -->
