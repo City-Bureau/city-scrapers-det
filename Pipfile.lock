@@ -400,7 +400,7 @@
             ],
             "git": "https://github.com/City-Bureau/city-scrapers-core.git",
             "markers": "python_version >= '3.6' and python_version < '4.0'",
-            "ref": "1d06f640cdcfd5986e089379a134f8aec35ce2a9"
+            "ref": "4609239a06444f05b7dc30214f639063f1eb3a49"
         },
         "constantly": {
             "hashes": [
