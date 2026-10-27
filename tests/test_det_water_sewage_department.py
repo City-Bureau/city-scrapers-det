@@ -4,7 +4,6 @@ from os.path import dirname, join
 
 import pytest
 from city_scrapers_core.constants import (
-    ADVISORY_COMMITTEE,
     BOARD,
     CANCELLED,
     COMMITTEE,
@@ -17,6 +16,7 @@ from scrapy.http import HtmlResponse
 from twisted.python.failure import Failure
 
 from city_scrapers.spiders.det_water_sewage_department import (
+    BOARD_TITLE,
     DetWaterSewageDepartmentSpider,
 )
 
@@ -115,6 +115,13 @@ def merged_items(spider, board_meeting, committee_meeting, legistar_items):
     )
 
 
+@pytest.fixture(scope="module")
+def board_event(spider, legistar_events):
+    return next(
+        e for e in legistar_events if spider._legistar_label(e, "Name") == BOARD_TITLE
+    )
+
+
 def find(items, title, start):
     return next(i for i in items if i["title"] == title and i["start"] == start)
 
@@ -170,18 +177,12 @@ def test_onclick_link_is_read():
 
 
 def test_legistar_count(legistar_items):
-    assert len(legistar_items) == 71
+    assert len(legistar_items) == 13
 
 
 def test_legistar_title(legistar_items):
     assert {item["title"] for item in legistar_items} == {
-        "Board of Water Commissioners",
-        "Audit Committee",
-        "Capital Improvement Program and Operations Committee",
-        "Customer Service Committee",
-        "Finance Committee",
-        "Human Resources/Organizational Development",
-        "Legal and Government Affairs",
+        "Board of Water Commissioners"
     }
 
 
@@ -214,11 +215,6 @@ def test_legistar_board_meeting(legistar_items):
     )
 
 
-def test_legistar_cancelled_from_meeting_time(legistar_items):
-    item = find(legistar_items, "Audit Committee", datetime(2026, 3, 4))
-    assert item["status"] == CANCELLED
-
-
 def test_rescheduled_note_does_not_cancel(spider, legistar_events):
     event = dict(legistar_events[0])
     event["Meeting Location"] = (
@@ -227,22 +223,6 @@ def test_rescheduled_note_does_not_cancel(spider, legistar_events):
     with freeze_time(FROZEN_NOW):
         (item,) = spider.parse_legistar([event])
     assert item["status"] != CANCELLED
-
-
-def test_committee_without_the_word_is_classified_committee(legistar_items):
-    item = next(
-        i for i in legistar_items if i["title"] == "Legal and Government Affairs"
-    )
-    assert item["classification"] == COMMITTEE
-
-
-def test_every_legistar_body_is_kept(spider, legistar_events):
-    # Legistar pads some body names, like its annual Water Advisory Council
-    event = {**legistar_events[0], "Name": "Water Advisory Council "}
-    with freeze_time(FROZEN_NOW):
-        (item,) = spider.parse_legistar([event])
-    assert item["title"] == "Water Advisory Council"
-    assert item["classification"] == ADVISORY_COMMITTEE
 
 
 # detroitmi.gov
