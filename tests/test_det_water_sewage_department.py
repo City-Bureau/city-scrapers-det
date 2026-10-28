@@ -4,6 +4,7 @@ from os.path import dirname, join
 
 import pytest
 from city_scrapers_core.constants import (
+    FORUM,
     BOARD,
     CANCELLED,
     COMMITTEE,
@@ -226,6 +227,16 @@ def test_rescheduled_note_does_not_cancel(spider, legistar_events):
 
 
 # detroitmi.gov
+
+
+def test_primary_community_meeting_is_forum(spider):
+    # Department-tagged events that aren't the board or a committee still
+    # go through _classify
+    response = HtmlResponse(
+        url="https://detroitmi.gov/events/jefferson-chalmers-community-meeting",
+        body=b'<div class="title"><span>Jefferson Chalmers Community Meeting</span></div>',  # noqa
+    )
+    assert spider._parse_classification(response) == FORUM
 
 
 def test_event_list_requests_each_event_once(list_response):

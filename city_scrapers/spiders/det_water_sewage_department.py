@@ -5,6 +5,8 @@ from functools import partial
 
 import scrapy
 from city_scrapers_core.constants import (
+    ADVISORY_COMMITTEE,
+    FORUM,
     BOARD,
     CANCELLED,
     COMMITTEE,
@@ -220,10 +222,7 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
                 title=title,
                 # Legistar's location column holds the virtual attendance details
                 description=self._legistar_label(event, "Meeting Location"),
-                # Every body on this Legistar site belongs to DWSD. Those that aren't
-                # the board or an advisory council are board committees, some
-                # without the word in their name.
-                classification=self._classify(title, default=BOARD),
+                classification=BOARD,
                 start=start,
                 end=None,
                 time_notes="",
@@ -406,8 +405,12 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
 
     def _classify(self, title, default=NOT_CLASSIFIED):
         lowered = title.lower()
+        if "advisory" in lowered:
+            return ADVISORY_COMMITTEE
         if "committee" in lowered:
             return COMMITTEE
         if title.startswith(BOARD_TITLE):
             return BOARD
+        if "community" in lowered or "town hall" in lowered:
+            return FORUM
         return default
