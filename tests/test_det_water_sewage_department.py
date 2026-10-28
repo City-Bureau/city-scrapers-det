@@ -4,10 +4,10 @@ from os.path import dirname, join
 
 import pytest
 from city_scrapers_core.constants import (
-    FORUM,
     BOARD,
     CANCELLED,
     COMMITTEE,
+    FORUM,
     PASSED,
 )
 from city_scrapers_core.utils import file_response

@@ -6,10 +6,10 @@ from functools import partial
 import scrapy
 from city_scrapers_core.constants import (
     ADVISORY_COMMITTEE,
-    FORUM,
     BOARD,
     CANCELLED,
     COMMITTEE,
+    FORUM,
     NOT_CLASSIFIED,
 )
 from city_scrapers_core.items import Meeting
