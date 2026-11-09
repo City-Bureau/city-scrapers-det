@@ -32,8 +32,9 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
     - detroitmi.gov calendar (primary): every event tagged with the DWSD
       department or the Board of Water Commissioners. It is the only source for
       the monthly combined committee meeting and for physical locations.
-    - dwsd.legistar.com (secondary): each board and committee meeting with its
-      agenda and minutes, and the only place cancellations are shown.
+    - dwsd.legistar.com (secondary): each Board of Water Commissioners meeting
+      with its agenda and minutes, and the only place cancellations are shown.
+      Committee and other bodies on this site are skipped.
 
     A primary board meeting and the Legistar board meeting on the same date are
     the same meeting, so they are merged. Everything is held until both sources
@@ -215,16 +216,13 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
         for event in events:
             title = self._legistar_label(event, "Name")
             start = self._legistar_start(event)
-            if start is None:
+            if start is None or title != BOARD_TITLE:
                 continue
             meeting = Meeting(
                 title=title,
                 # Legistar's location column holds the virtual attendance details
                 description=self._legistar_label(event, "Meeting Location"),
-                # Every body on this Legistar site belongs to DWSD. Those that aren't
-                # the board or an advisory council are board committees, some
-                # without the word in their name.
-                classification=self._classify(title, default=COMMITTEE),
+                classification=BOARD,
                 start=start,
                 end=None,
                 time_notes="",
@@ -369,8 +367,7 @@ class DetWaterSewageDepartmentSpider(DetCityMixin, LegistarSpider):
         """
         board_by_date = defaultdict(list)
         for meeting in legistar_meetings:
-            if meeting["title"] == BOARD_TITLE:
-                board_by_date[meeting["start"].date()].append(meeting)
+            board_by_date[meeting["start"].date()].append(meeting)
 
         matched = set()
         for meeting in primary_meetings:
