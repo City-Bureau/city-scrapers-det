@@ -3,7 +3,6 @@ from datetime import time
 from urllib.parse import urlparse
 
 import pytz
-import scrapy
 from city_scrapers_core.constants import (
     ADVISORY_COMMITTEE,
     BOARD,
@@ -98,7 +97,7 @@ class DetDwihnSpider(CityScrapersSpider):
 
     def start_requests(self):
         for url in self.start_urls:
-            yield scrapy.Request(url, callback=self.parse, errback=self._request_failed)
+            yield Request(url, callback=self.parse, errback=self._request_failed)
 
     def parse(self, response):
         """Parse the events listing and follow each event to its detail page."""
@@ -241,7 +240,6 @@ class DetDwihnSpider(CityScrapersSpider):
         self.logger.warning(
             f"Could not fetch the media page, keeping its link: {request.url}"
         )
-        self._request_failed(failure)
         yield from self._resolve_links(
             request.cb_kwargs["meeting"], request.cb_kwargs["index"] + 1
         )

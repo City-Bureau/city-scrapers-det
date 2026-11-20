@@ -528,7 +528,7 @@ def test_media_page_error_keeps_link(spider, caplog):
         "full-board-meeting-feb-18-2026-oma"
     )
     assert "Could not fetch the media page" in caplog.text
-    assert spider._failed_requests == 1
+    assert spider._failed_requests == 0
 
 
 def test_media_page_without_document_is_logged(spider, caplog):
