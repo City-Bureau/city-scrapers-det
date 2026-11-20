@@ -59,7 +59,10 @@ class DetCityPlanningSpider(DetCityMixin, CityScrapersSpider):
 
     def _parse_description(self, response):
         """The event's whole description: its purpose and how to join virtually"""
-        text = " ".join(response.css("article.description *::text").extract())
+        # " ::text" also reads text directly inside the article, outside any tag.
+        # One selector reads each text node once, even where a description pasted
+        # from another page nests a second article.description (March 5, 2026).
+        text = " ".join(response.css("article.description ::text").extract())
         return " ".join(text.split())
 
     def _parse_classification(self, response):

@@ -201,6 +201,40 @@ def test_description(item):
     )
 
 
+def test_description_reads_text_outside_tags(spider):
+    # Description text not wrapped in a tag is kept, along with tagged text
+    with freeze_time("2026-11-18"):
+        item = spider.parse_event_page(
+            event_response(
+                "city-planning-commission-meeting-june-4-2026",
+                "City Planning Commission Meeting - June 4, 2026",
+                "Regular meeting of the City Planning Commission. "
+                "<p>Join online at Zoom.</p>",
+                location=LOCATION_HTML,
+            )
+        )
+    assert item["description"] == (
+        "Regular meeting of the City Planning Commission. Join online at Zoom."
+    )
+
+
+def test_nested_description_read_once(spider):
+    # March 5, 2026: the description pasted from another page nests a second
+    # article.description, and its text must not be repeated
+    with freeze_time("2026-11-18"):
+        item = spider.parse_event_page(
+            event_response(
+                "city-planning-commission-meeting-march-5-2026",
+                "City Planning Commission Meeting - March 5, 2026",
+                '<article class="description"><p>Regular meeting of the City '
+                "Planning Commission.</p></article>",
+                location=LOCATION_HTML,
+                day="2026-03-05",
+            )
+        )
+    assert item["description"] == "Regular meeting of the City Planning Commission."
+
+
 def test_classification(item):
     assert item["classification"] == COMMISSION
 
@@ -317,7 +351,7 @@ def test_workshop_same_day_as_meeting(june_4_items):
     # The June 4 minutes document goes to the meeting only
     assert meeting["links"] == [
         {
-            "title": "City Planning Commission Minutes - June 4, 2026",
+            "title": "Minutes",
             "href": "https://detroitmi.gov/document/city-planning-commission-minutes-june-4-2026",  # noqa
         }
     ]

@@ -290,6 +290,7 @@ class DetCityMixin:
     def _parse_links(self, response, start):
         """Parse links from the event page, then add matching documents by date"""
         page_links = []
+        page_hrefs = set()
         for field in response.css(".agenda-min-pres .field"):
             label = (field.css(".field__label::text").extract_first() or "").strip()
             for link in field.css("a"):
@@ -299,16 +300,17 @@ class DetCityMixin:
                 )
                 if not href:
                     continue
+                href = response.urljoin(href)
+                # The same file can be attached under two headings; list it once
+                if href in page_hrefs:
+                    continue
+                page_hrefs.add(href)
                 page_links.append(
-                    {
-                        "title": self._link_title(label, title.strip()),
-                        "href": response.urljoin(href),
-                    }
+                    {"title": self._link_title(label, title.strip()), "href": href}
                 )
         # Copy the date's documents rather than appending to the shared list, so
         # two events on the same day don't collect each other's links
         links = []
-        page_hrefs = {link["href"] for link in page_links}
         page_titles = {link["title"] for link in page_links}
         for doc in self._date_documents(response, start):
             if doc["href"] in page_hrefs:
@@ -316,7 +318,10 @@ class DetCityMixin:
             # The same minutes are often both a document and an event attachment
             if "Minutes" in page_titles and "minutes" in doc["title"].lower():
                 continue
-            links.append(dict(doc))
+            # Title documents like page links ("Agenda", "Minutes")
+            links.append(
+                {"title": self._link_title("", doc["title"]), "href": doc["href"]}
+            )
         return links + page_links
 
     def _link_title(self, label, title):

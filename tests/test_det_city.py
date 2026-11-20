@@ -142,15 +142,37 @@ def test_parse_links_does_not_share_date_documents():
         ),
         start,
     )
+    # The document is titled "Minutes" like a page link, without changing the map
+    minutes = {"title": "Minutes", "href": "https://example.com/doc"}
     assert first == [
-        doc,
+        minutes,
         {"title": "Agenda", "href": "https://detroitmi.gov/files/a.pdf"},
     ]
     assert second == [
-        doc,
+        minutes,
         {"title": "Agenda", "href": "https://detroitmi.gov/files/b.pdf"},
     ]
     assert spider.document_date_map[start.date()] == [doc]
+
+
+def test_parse_links_lists_a_file_under_two_headings_once():
+    spider = MockCalendarSpider()
+    body = (
+        '<section class="agenda-min-pres">'
+        '<div class="field"><div class="field__label">Agendas</div>'
+        '<a href="/files/agenda.pdf">agenda.pdf</a></div>'
+        '<div class="field"><div class="field__label">Documents</div>'
+        '<a href="/files/agenda.pdf">agenda.pdf</a>'
+        '<a href="/files/report.pdf">report.pdf</a></div>'
+        "</section>"
+    )
+    response = HtmlResponse(
+        "https://detroitmi.gov/events/a", body=body, encoding="utf-8"
+    )
+    assert spider._parse_links(response, datetime(2026, 10, 1, 15)) == [
+        {"title": "Agenda", "href": "https://detroitmi.gov/files/agenda.pdf"},
+        {"title": "report.pdf", "href": "https://detroitmi.gov/files/report.pdf"},
+    ]
 
 
 def test_minutes_filed_as_document_skip_duplicate_minutes():
