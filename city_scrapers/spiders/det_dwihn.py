@@ -13,7 +13,12 @@ from city_scrapers_core.constants import (
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
 from dateutil.parser import ParserError, parse
-from scrapy import Request
+from scrapy import Request, signals
+from twisted.python.failure import Failure
+
+
+class DetDwihnError(Exception):
+    """DWIHN's events pages could not be read as expected."""
 
 
 class DetDwihnSpider(CityScrapersSpider):
@@ -22,9 +27,15 @@ class DetDwihnSpider(CityScrapersSpider):
     timezone = "America/Detroit"
     base_url = "https://dwihn.org"
 
+    # Every event rather than the "Board Meetings" category, since some board
+    # meetings are posted without a category. They're sorted on the event page.
     start_urls = [
-        "https://dwihn.org/news-events/events?field_categories_target_id=14&event_time=All"  # noqa
+        "https://dwihn.org/news-events/events?field_categories_target_id=All&event_time=All"  # noqa
     ]
+    board_category = "Board Meetings"
+    # Untagged events are only kept when the title names a board body. Every
+    # title in the "Board Meetings" category matches this.
+    untagged_meeting_re = re.compile(r"\b(board|committee|hearing)\b", re.I)
     youtube_link = {
         "title": "YouTube channel",
         "href": "https://www.youtube.com/channel/UCnIswzB1YZzx0BgnsUFZKcg",
@@ -70,19 +81,45 @@ class DetDwihnSpider(CityScrapersSpider):
     )
     login_link_re = re.compile(r"log\s*-?\s*in|meeting details", re.I)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._problems = []
+        self._failed_requests = 0
+        self._events_requested = 0
+        self._missing_categories = []
+        self._meetings_parsed = 0
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super().from_crawler(crawler, *args, **kwargs)
+        crawler.signals.connect(spider._on_spider_closed, signal=signals.spider_closed)
+        return spider
+
+    def start_requests(self):
+        for url in self.start_urls:
+            yield Request(url, callback=self.parse, errback=self._request_failed)
+
     def parse(self, response):
         """Parse the events listing and follow each event to its detail page."""
         cards = response.css("a.event-cards-row__link")
         if not cards:
-            self.logger.warning(f"No events found on the listing page: {response.url}")
+            self._add_problem(
+                f"No events found on the listing page {response.url}; the page "
+                "layout may have changed"
+            )
         for card in cards:
             href = card.attrib.get("href")
             if href:
-                yield response.follow(href, callback=self.parse_event)
+                self._events_requested += 1
+                yield response.follow(
+                    href, callback=self.parse_event, errback=self._request_failed
+                )
 
         next_page = response.css("a.js-views-infinite-scroll-load-more::attr(href)")
         if next_page:
-            yield response.follow(next_page.get(), callback=self.parse)
+            yield response.follow(
+                next_page.get(), callback=self.parse, errback=self._request_failed
+            )
 
     def parse_event(self, response):
         """
@@ -94,6 +131,8 @@ class DetDwihnSpider(CityScrapersSpider):
         raw_title = self._clean_text(
             " ".join(response.css("h1.interior-hero__h1 ::text").getall())
         )
+        if not self._is_board_meeting(response, raw_title):
+            return
         start, end = self._parse_times(response)
         if not raw_title or start is None:
             self.logger.warning(
@@ -126,6 +165,46 @@ class DetDwihnSpider(CityScrapersSpider):
 
         yield from self._resolve_links(meeting, 0)
 
+    def _is_board_meeting(self, response, raw_title):
+        """
+        Keep events in the "Board Meetings" category, and untagged events
+        whose title names a board body. Events in other categories are skipped.
+        """
+        categories_block = response.css(".evt-categories")
+        if not categories_block:
+            # Without it every event would look untagged. Reported once on close.
+            self.logger.warning(
+                f"No categories section on the event page: {response.url}"
+            )
+            self._missing_categories.append(response.url)
+            return False
+        categories = [
+            self._clean_text(text)
+            for text in categories_block.css(".evt-categories__link::text").getall()
+        ]
+        categories = [category for category in categories if category]
+        if self.board_category in categories:
+            return True
+        if categories:
+            self.logger.debug(
+                f"Skipping event in categories {categories}: {response.url}"
+            )
+            return False
+        title = self._parse_title(raw_title)
+        if self.untagged_meeting_re.search(title):
+            self.logger.info(
+                f"Keeping untagged event {raw_title!r} as a board meeting: "
+                f"{response.url}"
+            )
+            return True
+        # Untagged and not named like a board body. Logged so a board meeting
+        # with an unusual title doesn't go missing without a trace.
+        self.logger.warning(
+            f"Skipping untagged event {raw_title!r}, its title doesn't name a "
+            f"board body: {response.url}"
+        )
+        return False
+
     def _resolve_links(self, meeting, index):
         """Request the next unresolved media page, or yield the finished meeting."""
         for i in range(index, len(meeting["links"])):
@@ -139,6 +218,7 @@ class DetDwihnSpider(CityScrapersSpider):
                     dont_filter=True,
                 )
                 return
+        self._meetings_parsed += 1
         yield meeting
 
     def _parse_media_page(self, response, meeting, index):
@@ -158,11 +238,57 @@ class DetDwihnSpider(CityScrapersSpider):
         """Keep the media page link as is if it can't be fetched."""
         request = failure.request
         self.logger.warning(
-            f"Could not fetch the media page, keeping its link: {request.url} "
-            f"({failure.value})"
+            f"Could not fetch the media page, keeping its link: {request.url}"
         )
         yield from self._resolve_links(
             request.cb_kwargs["meeting"], request.cb_kwargs["index"] + 1
+        )
+
+    def _request_failed(self, failure):
+        """
+        Without an errback, HTTP errors and network failures are only logged
+        by Scrapy and never reach Sentry; reported on spider close.
+        """
+        self._failed_requests += 1
+        request = getattr(failure, "request", None)
+        url = request.url if request else self.start_urls[0]
+        self._add_problem(f"request to {url} failed: {failure.value!r}")
+
+    def _add_problem(self, problem):
+        self.logger.warning(problem)
+        self._problems.append(problem)
+
+    def _on_spider_closed(self, spider, reason):
+        """Report one error per run for major breakages only."""
+        problems = list(self._problems)
+        if self._missing_categories:
+            problems.append(
+                f"no categories section on {len(self._missing_categories)} event "
+                f"page(s), e.g. {self._missing_categories[0]}; the page layout may "
+                "have changed"
+            )
+        if reason == "finished" and self._meetings_parsed == 0:
+            problems.append("0 meetings parsed")
+        if not problems:
+            return
+        self._report_error(
+            DetDwihnError(
+                f"{self.name}: {'; '.join(problems)} (finish_reason={reason}, "
+                f"failed_requests={self._failed_requests}, "
+                f"events={self._events_requested}, "
+                f"meetings={self._meetings_parsed})"
+            )
+        )
+
+    def _report_error(self, exc):
+        """Log and send spider_error (forwarded to Sentry)."""
+        self.logger.error(str(exc))
+        self.crawler.stats.inc_value(f"spider_exceptions/{exc.__class__.__name__}")
+        self.crawler.signals.send_catch_log(
+            signal=signals.spider_error,
+            failure=Failure(exc),
+            response=None,
+            spider=self,
         )
 
     def _parse_title(self, raw_title):
