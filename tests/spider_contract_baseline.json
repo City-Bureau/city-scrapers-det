@@ -56,28 +56,8 @@
     "det_board_of_education": [
       "C12"
     ],
-    "det_city_council": [
-      "C12",
-      "C13"
-    ],
-    "det_city_planning": [
-      "C12",
-      "C13"
-    ],
-    "det_emergency_planning": [
-      "C12",
-      "C13"
-    ],
     "det_general_retirement_system": [
       "C20"
-    ],
-    "det_historic_district": [
-      "C12",
-      "C13"
-    ],
-    "det_human_rights": [
-      "C12",
-      "C13"
     ],
     "det_library_commission": [
       "C15"
@@ -89,14 +69,6 @@
       "C12",
       "C14",
       "C16"
-    ],
-    "det_transportation": [
-      "C12",
-      "C13"
-    ],
-    "det_zoning_appeals": [
-      "C12",
-      "C13"
     ]
   }
 }
