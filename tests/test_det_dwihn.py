@@ -16,10 +16,11 @@ from city_scrapers_core.constants import (
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
-from scrapy import Request
+from scrapy import Request, signals
+from scrapy.utils.test import get_crawler
 from twisted.python.failure import Failure
 
-from city_scrapers.spiders.det_dwihn import DetDwihnSpider
+from city_scrapers.spiders.det_dwihn import DetDwihnError, DetDwihnSpider
 
 FILES_DIR = join(dirname(__file__), "files")
 FROZEN_DATE = "2026-09-30"
@@ -38,6 +39,11 @@ EVENT_FILES = {
     "full-board-directors-meeting-6": "det_dwihn.html",
     "rescheduled-ad-hoc-policy-committee-meeting": "det_dwihn_detail_rescheduled.html",  # noqa
     "ad-hoc-policy-committee-meeting-new-date": "det_dwihn_detail_new_date.html",
+    "finance-committee-meeting-8": "det_dwihn_detail_untagged.html",
+}
+# Saved event pages that aren't board meetings
+OTHER_EVENT_FILES = {
+    "crsp-outpatient-provider-meeting": "det_dwihn_detail_other_category.html",
 }
 
 
@@ -48,7 +54,8 @@ def listing_response(spider):
 
 
 def event_response(slug):
-    return file_response(join(FILES_DIR, EVENT_FILES[slug]), url=EVENT_URL.format(slug))
+    filename = EVENT_FILES.get(slug) or OTHER_EVENT_FILES[slug]
+    return file_response(join(FILES_DIR, filename), url=EVENT_URL.format(slug))
 
 
 def media_file(url):
@@ -93,6 +100,28 @@ def parse_items(spider, slugs=tuple(EVENT_FILES)):
 
 def find_item(items, start):
     return next(i for i in items if i["start"] == start)
+
+
+def crawler_spider():
+    """A spider connected to a crawler, plus the errors it sends to Sentry"""
+    crawler = get_crawler(DetDwihnSpider)
+    spider = DetDwihnSpider.from_crawler(crawler)
+    crawler.spider = spider
+    errors = []
+
+    def on_error(failure, **kwargs):
+        errors.append(failure.value)
+
+    # Signal handlers are weak references, so keep this one alive
+    spider._test_on_error = on_error
+    crawler.signals.connect(on_error, signal=signals.spider_error)
+    return spider, errors
+
+
+def close(spider, reason="finished"):
+    spider.crawler.signals.send_catch_log(
+        signal=signals.spider_closed, spider=spider, reason=reason
+    )
 
 
 @pytest.fixture
@@ -147,8 +176,14 @@ def new_date_item(parsed_items):
     return find_item(parsed_items, datetime(2026, 10, 21, 14, 15))
 
 
+@pytest.fixture(scope="module")
+def untagged_item(parsed_items):
+    """Board meeting posted without a category"""
+    return find_item(parsed_items, datetime(2026, 12, 2, 13))
+
+
 def test_count(parsed_items):
-    assert len(parsed_items) == 7
+    assert len(parsed_items) == 8
 
 
 def test_listing_requests(spider):
@@ -156,6 +191,9 @@ def test_listing_requests(spider):
     event_requests = [r for r in results if r.callback == spider.parse_event]
     assert len(event_requests) == 12
     assert event_requests[0].url == EVENT_URL.format("sud-oversight-policy-board")
+    # Every event is followed, since untagged board meetings can only be told
+    # apart on the event page
+    assert EVENT_URL.format("peer-chat-1") in [r.url for r in event_requests]
 
 
 def test_listing_pagination(spider):
@@ -163,15 +201,107 @@ def test_listing_pagination(spider):
     next_pages = [r for r in results if r.callback == spider.parse]
     assert [r.url for r in next_pages] == [
         "https://dwihn.org/news-events/events"
-        "?field_categories_target_id=14&event_time=All&page=1"
+        "?field_categories_target_id=All&event_time=All&page=1"
     ]
 
 
-def test_empty_listing_is_logged(spider, caplog):
+def test_requests_have_errbacks(spider):
+    requests = list(spider.start_requests()) + list(
+        spider.parse(listing_response(spider))
+    )
+    assert requests
+    assert all(r.errback == spider._request_failed for r in requests)
+
+
+def test_empty_listing_is_reported(caplog):
+    spider, errors = crawler_spider()
     response = listing_response(spider).replace(body=b"")
     with caplog.at_level(logging.WARNING):
         assert list(spider.parse(response)) == []
     assert "No events found on the listing page" in caplog.text
+    close(spider)
+    assert len(errors) == 1
+    assert isinstance(errors[0], DetDwihnError)
+    assert "No events found on the listing page" in str(errors[0])
+    assert "0 meetings parsed" in str(errors[0])
+
+
+def test_failed_request_is_reported():
+    spider, errors = crawler_spider()
+    failure = Failure(Exception("503 Service Unavailable"))
+    failure.request = Request(spider.start_urls[0])
+    spider._request_failed(failure)
+    close(spider)
+    assert len(errors) == 1
+    assert f"request to {spider.start_urls[0]} failed" in str(errors[0])
+    assert "failed_requests=1" in str(errors[0])
+
+
+def test_clean_run_reports_nothing():
+    spider, errors = crawler_spider()
+    list(spider.parse(listing_response(spider)))
+    parse_items(spider, slugs=["full-board-directors-meeting-6"])
+    close(spider)
+    assert errors == []
+
+
+def test_no_meetings_is_reported():
+    spider, errors = crawler_spider()
+    close(spider)
+    assert len(errors) == 1
+    assert "0 meetings parsed" in str(errors[0])
+
+
+def test_no_meetings_not_reported_when_closed_early():
+    """A run stopped before the end is expected to be missing meetings"""
+    spider, errors = crawler_spider()
+    close(spider, reason="shutdown")
+    assert errors == []
+
+
+def test_untagged_meeting_is_kept(spider, untagged_item, caplog):
+    assert untagged_item["title"] == "Finance Committee Meeting"
+    assert untagged_item["classification"] == COMMITTEE
+    assert untagged_item["status"] == TENTATIVE
+    assert untagged_item["location"] == spider.common_location
+    with caplog.at_level(logging.INFO):
+        parse_items(spider, slugs=["finance-committee-meeting-8"])
+    assert "Keeping untagged event 'Finance Committee Meeting'" in caplog.text
+
+
+def test_untagged_non_meeting_is_skipped_loudly(spider, caplog):
+    """An untagged event whose title doesn't name a board body"""
+    response = event_response("finance-committee-meeting-8")
+    response = response.replace(
+        body=response.body.replace(b"Finance Committee Meeting", b"Peer Chat")
+    )
+    with caplog.at_level(logging.WARNING):
+        assert list(spider.parse_event(response)) == []
+    assert "Skipping untagged event 'Peer Chat'" in caplog.text
+
+
+def test_other_category_is_skipped(spider, caplog):
+    """The category wins over a title that sounds like a meeting"""
+    with caplog.at_level(logging.WARNING):
+        response = event_response("crsp-outpatient-provider-meeting")
+        assert list(spider.parse_event(response)) == []
+    assert caplog.text == ""
+
+
+def test_missing_categories_section_is_reported(caplog):
+    """Reported once for the run, not once per event"""
+    spider, errors = crawler_spider()
+    for slug in ["full-board-directors-meeting-6", "full-board"]:
+        response = event_response(slug)
+        response = response.replace(
+            body=response.body.replace(b"evt-categories", b"evt-tags")
+        )
+        with caplog.at_level(logging.WARNING):
+            assert list(spider.parse_event(response)) == []
+    assert "No categories section on the event page" in caplog.text
+    close(spider)
+    assert len(errors) == 1
+    assert "no categories section on 2 event page(s)" in str(errors[0])
 
 
 def test_title(parsed_items, board_item, cancelled_item, rescheduled_item):
@@ -187,6 +317,7 @@ def test_title(parsed_items, board_item, cancelled_item, rescheduled_item):
         "Full Board of Directors Meeting",
         "(Ad HOC) Policy Committee Meeting",
         "(Ad HOC) Policy Committee Meeting",
+        "Finance Committee Meeting",
     ]
 
 
@@ -397,6 +528,7 @@ def test_media_page_error_keeps_link(spider, caplog):
         "full-board-meeting-feb-18-2026-oma"
     )
     assert "Could not fetch the media page" in caplog.text
+    assert spider._failed_requests == 0
 
 
 def test_media_page_without_document_is_logged(spider, caplog):
